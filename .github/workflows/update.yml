@@ -1,0 +1,30 @@
+name: Mise a jour quotidienne des donnees
+
+on:
+  schedule:
+    - cron: '0 18 * * *'
+    - cron: '0 19 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Recuperer le depot
+        uses: actions/checkout@v4
+      - name: Installer Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Generer data.json
+        run: node scraper.mjs
+      - name: Publier la mise a jour
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data.json
+          git commit -m "Mise a jour automatique des donnees" || echo "Aucun changement"
+          git push

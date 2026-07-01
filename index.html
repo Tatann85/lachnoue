@@ -91,7 +91,7 @@
 <div class="wrap">
   <h1>Chnoue Wing — 9 prochains jours</h1>
   <div class="sub">Les Sables-d'Olonne · La Ch'noue</div>
-  <div class="upd">Dernière mise à jour : <b>30/06/2026, 00:00</b> — données rafraîchies automatiquement chaque nuit à minuit (heure de Paris).</div>
+  <div class="upd" id="upd">Dernière mise à jour : <b>30/06/2026</b> — rafraîchi automatiquement chaque soir vers 20h (heure de Paris).</div>
 
   <div class="explain">
     <b>Comment marche l'eau de la Ch'noue ?</b> La Ch'noue est un marais alimenté par l'<b>écluse de la Rocade</b>.
@@ -187,7 +187,7 @@ function wx(c){c=(c||'').toLowerCase();if(/ensoleill/.test(c))return '☀️';if
 
 // DONNÉES RÉELLES — instantané 30/06/2026.
 // Vent : Windguru GFS (spot 48522) [heure, kn, rafale kn, direction °]. Météo : Météo-France. Marées/coeff : SHOM (maree.info ; 07-08/07 estimés ~). Écluse : calendrier Rocade (PDF) + sémantique officielle (Agglo des Sables).
-const days=[
+let days=[
  {d:'Mar 30/06',today:1,wxc:'Peu nuageux',tmin:15,tmax:25,eclM:'PRISE',eclS:'PRISE',coM:'67',coS:'69',pmM:'05:51',pmS:'18:00',water:'plein',tideHigh:18,wind:[[14,13,19,298],[16,16,24,303],[18,17,26,307],[20,17,26,308]],partial:1},
  {d:'Mer 01/07',wxc:'Eclaircies',tmin:17,tmax:24,eclM:'PRISE',eclS:'PRISE',coM:'70',coS:'71',pmM:'06:23',pmS:'18:35',water:'plein',tideHigh:18,wind:[[7,6,10,357],[9,6,10,358],[11,9,13,315],[13,12,18,300],[15,15,21,298],[17,16,23,298],[19,16,25,307],[21,14,23,316]]},
  {d:'Jeu 02/07',wxc:'Ensoleillé',tmin:16,tmax:25,eclM:'PRISE',eclS:'RENVOI',coM:'71',coS:'72',pmM:'06:54',pmS:'19:09',water:'renvoiSoir',tideHigh:19,wind:[[7,6,9,7],[9,5,9,4],[11,8,13,304],[13,12,18,300],[15,13,20,301],[17,14,22,302],[19,15,22,306],[21,14,22,313]]},
@@ -225,7 +225,7 @@ function daySVG(d){
   s+='<text x="2" y="'+(yw+4)+'" font-size="9" fill="#9aa3ac">ciel</text>';
   [7,9,11,13,15,17,19,21].forEach(h=>{s+='<text x="'+X(h).toFixed(1)+'" y="'+(yw+5)+'" text-anchor="middle" font-size="13">'+icon+'</text>';});
   const yc=212,hc=24;
-  s+='<text x="'+xL+'" y="'+(yc-6)+'" font-size="9.5" fill="#9aa3ac">vent Windguru (kn) &amp; direction</text>';
+  s+='<text x="'+xL+'" y="'+(yc-6)+'" font-size="9.5" fill="#9aa3ac">vent (kn) &amp; direction</text>';
   d.wind.filter(w=>w[0]>=7&&w[0]<=21).forEach(w=>{const k=w[1],cx=X(w[0]),ad=((w[3]||0)+180)%360,f=favOf(sectOf(w[3]||0));const col=f==='good'?'#1f8f4e':f==='mid'?'#c9851a':'#b23b3b';
     s+='<rect x="'+(cx-px*0.9).toFixed(1)+'" y="'+yc+'" width="'+(px*1.8).toFixed(1)+'" height="'+hc+'" rx="3" fill="'+wc(k)+'"/>';
     s+='<text x="'+cx.toFixed(1)+'" y="'+(yc+16)+'" text-anchor="middle" font-size="11" font-weight="800" fill="'+wtc(k)+'">'+k+'</text>';
@@ -235,7 +235,9 @@ function daySVG(d){
 }
 
 const tb=document.getElementById('tb');
-days.forEach((d,i)=>{
+function render(){
+  tb.innerHTML='';
+  days.forEach((d,i)=>{
   const goSlots=d.wind.filter(w=>w[0]>=7&&w[0]<=21&&present(w[0],d)&&w[1]>=12);
   const goH=goSlots.map(w=>w[0]);
   const anyWater=HS.some(h=>present(h,d));
@@ -260,10 +262,14 @@ days.forEach((d,i)=>{
   det.innerHTML='<td colspan="6"><div class="detin"><div class="ampm">'
    +'<div class="seg"><b>Matin (haut de la case)</b><div class="li">Écluse : '+eclHTML(d.eclM)+'</div><div class="li">Coefficient : '+d.coM+'</div><div class="li">Marée haute : '+d.pmM+'</div><div class="li">Vent : '+(am?am.s+' ~'+am.f+' kn':'n/d (jour en cours)')+'</div><div class="li">Ciel : '+wx(d.wxc)+' '+d.wxc+'</div></div>'
    +'<div class="seg"><b>Après-midi / soir (bas de la case)</b><div class="li">Écluse : '+eclHTML(d.eclS)+'</div><div class="li">Coefficient : '+d.coS+'</div><div class="li">Marée haute : '+d.pmS+'</div><div class="li">Vent : '+(pm?pm.s+' ~'+pm.f+' kn':'n/d')+'</div><div class="li">Températures : '+d.tmin+'–'+d.tmax+' °C</div></div>'
-   +'</div>'+daySVG(d)+'<div style="font-size:10.5px;color:#9aa3ac;margin-top:4px">Vent : Windguru (kn). Météo : Météo-France (tendance du jour). Eau : calendrier écluse Rocade (cote de remplissage ~5,20 m l’été) + marées SHOM. Coefficient sans unité.</div></div></td>';
+   +'</div>'+daySVG(d)+'<div style="font-size:10.5px;color:#9aa3ac;margin-top:4px">Vent &amp; météo : Open-Meteo (modèles GFS/ICON/AROME). Eau : calendrier écluse Rocade (cote de remplissage ~5,20 m l’été) + marées SHOM. Coefficient sans unité.</div></div></td>';
   tr.addEventListener('click',()=>{const o=det.style.display!=='none';det.style.display=o?'none':'';tr.classList.toggle('open',!o);tr.querySelector('.chev').textContent=o?'▸':'▾';});
   tb.appendChild(tr);tb.appendChild(det);
-});
+  });
+}
+function fmtUpd(iso){try{return new Date(iso).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',timeZone:'Europe/Paris'});}catch(e){return '';}}
+render();
+fetch('data.json?v='+Date.now()).then(function(r){return r.ok?r.json():Promise.reject();}).then(function(j){if(j&&j.days&&j.days.length){days=j.days;render();}var u=document.getElementById('upd');if(u&&j&&j.generatedAt){u.textContent='Dernière mise à jour : '+fmtUpd(j.generatedAt)+' — rafraîchi automatiquement chaque soir vers 20h (heure de Paris).';}}).catch(function(){});
 </script>
 </body>
 </html>

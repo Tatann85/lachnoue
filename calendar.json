@@ -1,0 +1,33 @@
+{
+  "_note": "Calendrier écluse de la Rocade (manœuvres) + marées (SHOM via maree.info). À compléter au fil des mois. Valeurs m (matin) / s (soir/après-midi) : PRISE, RENVOI, FBM (fermeture basse mer), VAV (va-et-vient), ou null.",
+  "ecluse": {
+    "2026-06-30": { "m": "PRISE", "s": "PRISE" },
+    "2026-07-01": { "m": "PRISE", "s": "PRISE" },
+    "2026-07-02": { "m": "PRISE", "s": "RENVOI" },
+    "2026-07-03": { "m": "PRISE", "s": "PRISE" },
+    "2026-07-04": { "m": null, "s": "PRISE" },
+    "2026-07-12": { "m": "RENVOI", "s": "FBM" },
+    "2026-07-13": { "m": "VAV", "s": "VAV" },
+    "2026-07-14": { "m": "PRISE", "s": "PRISE" },
+    "2026-07-15": { "m": "PRISE", "s": "PRISE" },
+    "2026-07-16": { "m": "PRISE", "s": "RENVOI" },
+    "2026-07-17": { "m": "PRISE", "s": "PRISE" },
+    "2026-07-18": { "m": null, "s": "PRISE" },
+    "2026-07-27": { "m": "RENVOI", "s": "FBM" },
+    "2026-07-28": { "m": "VAV", "s": "VAV" },
+    "2026-07-29": { "m": "PRISE", "s": null },
+    "2026-07-30": { "m": "PRISE", "s": "PRISE" },
+    "2026-07-31": { "m": "PRISE", "s": "PRISE" }
+  },
+  "marees": {
+    "2026-06-30": { "coM": "67", "coS": "69", "pmM": "05:51", "pmS": "18:00" },
+    "2026-07-01": { "coM": "70", "coS": "71", "pmM": "06:23", "pmS": "18:35" },
+    "2026-07-02": { "coM": "71", "coS": "72", "pmM": "06:54", "pmS": "19:09" },
+    "2026-07-03": { "coM": "72", "coS": "71", "pmM": "07:25", "pmS": "19:45" },
+    "2026-07-04": { "coM": "70", "coS": "69", "pmM": "07:59", "pmS": "20:23" },
+    "2026-07-05": { "coM": "68", "coS": "66", "pmM": "08:36", "pmS": "21:05" },
+    "2026-07-06": { "coM": "64", "coS": "61", "pmM": "09:20", "pmS": "21:53" },
+    "2026-07-07": { "coM": "~60", "coS": "~57", "pmM": "10:08", "pmS": "22:45" },
+    "2026-07-08": { "coM": "~56", "coS": "~53", "pmM": "11:00", "pmS": "23:40" }
+  }
+}

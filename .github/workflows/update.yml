@@ -1,17 +1,28 @@
-name: Mise a jour quotidienne des donnees
+name: Mise a jour et publication
 
 on:
   schedule:
     - cron: '0 18 * * *'
     - cron: '0 19 * * *'
   workflow_dispatch:
+  push:
+    branches: [ main ]
 
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
 
 jobs:
-  update:
+  build-deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - name: Recuperer le depot
         uses: actions/checkout@v4
@@ -21,10 +32,17 @@ jobs:
           node-version: '20'
       - name: Generer data.json
         run: node scraper.mjs
-      - name: Publier la mise a jour
+      - name: Preparer le site
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data.json
-          git commit -m "Mise a jour automatique des donnees" || echo "Aucun changement"
-          git push
+          mkdir -p _site
+          cp index.html data.json _site/
+          cp *.png _site/ 2>/dev/null || true
+      - name: Configurer Pages
+        uses: actions/configure-pages@v5
+      - name: Uploader le site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - name: Deployer sur Pages
+        id: deploy
+        uses: actions/deploy-pages@v4

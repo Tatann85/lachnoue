@@ -46,7 +46,10 @@
   .jour{font-weight:700;text-align:left;white-space:nowrap}
   .jour small{display:block;color:var(--muted);font-weight:400;font-size:11px}
   .jour .wx{display:block;font-weight:400;font-size:11.5px;color:#48535f;margin-top:2px}
-  .chev{color:var(--muted);font-size:11px;margin-left:4px}
+  .chev{display:inline-block;margin-top:5px;font-size:10.5px;font-weight:800;color:#fff;background:var(--water);border-radius:20px;padding:2px 10px;letter-spacing:.02em;white-space:nowrap}
+  tr.day:hover .chev{background:#1d5a97}
+  tr.day.open .chev{background:#5b6470}
+  .hint{background:#eef6ff;border:1px solid #cfe2f5;color:#28435f;border-radius:8px;padding:8px 12px;font-size:12.5px;margin:0 0 10px;display:flex;align-items:flex-start;gap:7px;line-height:1.4}
   .stars{color:var(--star);font-size:14px;white-space:nowrap}.stars .o{color:#d8dde3}
   .windcell{display:inline-block;min-width:46px;border-radius:6px;padding:3px 4px;font-weight:800;font-size:13.5px}
   .gust{display:block;font-size:10.5px;color:var(--muted);font-weight:400;margin-top:2px}
@@ -114,7 +117,8 @@
     <span class="s w0">&lt;8</span><span class="s w1">8–11</span><span class="s w2">12–15</span><span class="s w3">16–19</span><span class="s w4">20–24</span><span class="s w5">25–29</span><span class="s w6">30–39</span><span class="s w7">40+</span>
   </div>
 
-  <h2>Vue 9 jours <span style="text-transform:none;font-weight:400;color:var(--muted)">— clique une ligne pour le détail</span></h2>
+  <h2>Vue 9 jours</h2>
+  <div class="hint"><span>👆</span><span><b>Clique sur un jour</b> pour dérouler son détail : graphique du niveau d'eau, vent matin / après-midi, marées et météo.</span></div>
   <table>
     <thead><tr><th class="jour" style="text-align:left">Jour</th><th>Note</th><th>Eau</th><th>Vent (kn)</th><th>Dir.</th><th>Créneau GO</th></tr></thead>
     <tbody id="tb"></tbody>
@@ -268,7 +272,7 @@ function render(){
   const goTxt=goH.length?Math.min(...goH)+'h–'+Math.max(...goH)+'h':'—';
 
   const tr=document.createElement('tr');tr.className='day'+(d.today?' today':'');
-  tr.innerHTML='<td class="jour">'+d.d+(d.today?'<small>aujourd’hui</small>':i===1?'<small>demain</small>':'')+'<span class="wx">'+wx(d.wxc)+' '+d.tmin+'–'+d.tmax+' °C</span><span class="chev">▸</span></td>'
+  tr.innerHTML='<td class="jour">'+d.d+(d.today?'<small>aujourd’hui</small>':i===1?'<small>demain</small>':'')+'<span class="wx">'+wx(d.wxc)+' '+d.tmin+'–'+d.tmax+' °C</span><span class="chev">Détail ▾</span></td>'
    +'<td class="stars">'+stars(note)+'</td>'
    +'<td><span class="eau '+(anyWater?'eau-y':'eau-n')+'">'+eauTxt+'</span></td>'
    +'<td><span class="windcell" style="background:'+wc(peakK)+';color:'+wtc(peakK)+'">'+peakK+' kn</span><span class="gust">raf. '+peakG+' kn</span></td>'
@@ -280,7 +284,7 @@ function render(){
    +'<div class="seg"><b>Matin (haut de la case)</b><div class="li">Écluse : '+eclHTML(d.eclM)+'</div><div class="li">Coefficient : '+d.coM+'</div><div class="li">Marée haute : '+d.pmM+'</div><div class="li">Vent : '+(am?am.s+' ~'+am.f+' kn':'n/d (jour en cours)')+'</div><div class="li">Ciel : '+wx(d.wxc)+' '+d.wxc+'</div></div>'
    +'<div class="seg"><b>Après-midi / soir (bas de la case)</b><div class="li">Écluse : '+eclHTML(d.eclS)+'</div><div class="li">Coefficient : '+d.coS+'</div><div class="li">Marée haute : '+d.pmS+'</div><div class="li">Vent : '+(pm?pm.s+' ~'+pm.f+' kn':'n/d')+'</div><div class="li">Températures : '+d.tmin+'–'+d.tmax+' °C</div></div>'
    +'</div>'+daySVG(d)+'<div style="font-size:10.5px;color:#9aa3ac;margin-top:4px">Vent &amp; météo : Open-Meteo (modèles GFS/ICON/AROME). Eau : calendrier écluse Rocade (cote de remplissage ~5,20 m l’été) + marées SHOM. Coefficient sans unité.</div></div></td>';
-  tr.addEventListener('click',()=>{const o=det.style.display!=='none';det.style.display=o?'none':'';tr.classList.toggle('open',!o);tr.querySelector('.chev').textContent=o?'▸':'▾';});
+  tr.addEventListener('click',()=>{const o=det.style.display!=='none';det.style.display=o?'none':'';tr.classList.toggle('open',!o);tr.querySelector('.chev').textContent=o?'Détail ▾':'Masquer ▴';});
   tb.appendChild(tr);tb.appendChild(det);
   });
 }

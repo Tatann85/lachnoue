@@ -1,0 +1,50 @@
+name: Mise a jour et publication
+
+on:
+  schedule:
+    - cron: '0 18 * * *'   # ~20h heure de Paris (ete)
+    - cron: '0 19 * * *'   # ~20h heure de Paris (hiver)
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: Recuperer le depot
+        uses: actions/checkout@v4
+      - name: Installer Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Generer data.json
+        run: node scraper.mjs
+      - name: Preparer le site
+        run: |
+          mkdir -p _site
+          cp index.html data.json _site/
+          cp *.png *.jpg *.jpeg _site/ 2>/dev/null || true
+          cp robots.txt sitemap.xml _site/ 2>/dev/null || true
+          echo 'lachnoue.fr' > _site/CNAME
+      - name: Configurer Pages
+        uses: actions/configure-pages@v5
+      - name: Uploader le site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - name: Deployer sur Pages
+        id: deploy
+        uses: actions/deploy-pages@v4

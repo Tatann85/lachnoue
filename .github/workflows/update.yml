@@ -36,7 +36,7 @@ jobs:
         run: |
           mkdir -p _site
           cp index.html data.json _site/
-          cp *.png _site/ 2>/dev/null || true
+          cp *.png *.jpg *.jpeg _site/ 2>/dev/null || true
           cp robots.txt sitemap.xml _site/ 2>/dev/null || true
           echo 'lachnoue.fr' > _site/CNAME
       - name: Configurer Pages

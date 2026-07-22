@@ -252,7 +252,7 @@ function goGroups(hs){hs=hs.slice().sort(function(a,b){return a-b;});var g=[],cu
 function goText(hs){return goGroups(hs).map(function(g){return g.length>1?g[0]+'h–'+g[g.length-1]+'h':g[0]+'h';}).join(', ');}
 
 function daySVG(d){
-  const W=660,H=296,xL=52,xR=636,top=14,bot=158,px=(xR-xL)/14;
+  const W=660,H=296,xL=88,xR=636,top=14,bot=158,px=(xR-xL)/14;
   const X=h=>xL+(h-7)*px, maxM=6, Y=L=>bot-(L/maxM)*(bot-top);
   const icon=wx(d.wxc);
   let s='<svg viewBox="0 0 '+W+' '+H+'">';
@@ -272,17 +272,20 @@ function daySVG(d){
   const yw=186;
   s+='<text x="2" y="'+(yw+4)+'" font-size="9" fill="#9aa3ac">ciel</text>';
   [7,9,11,13,15,17,19,21].forEach(h=>{s+='<text x="'+X(h).toFixed(1)+'" y="'+(yw+5)+'" text-anchor="middle" font-size="13">'+icon+'</text>';});
-  s+='<text x="2" y="'+(yw+20)+'" font-size="9" fill="#9aa3ac">temp.</text>';
+  s+='<text x="2" y="'+(yw+20)+'" font-size="9" fill="#9aa3ac">temp. (°C)</text>';
   const tByH={}; d.wind.forEach(w=>{ if(w[4]!=null) tByH[w[0]]=w[4]; });
   if(Object.keys(tByH).length){ [7,9,11,13,15,17,19,21].forEach(h=>{ if(tByH[h]!=null) s+='<text x="'+X(h).toFixed(1)+'" y="'+(yw+20)+'" text-anchor="middle" font-size="10" font-weight="700" fill="#48535f">'+tByH[h]+'°</text>'; }); }
   else s+='<text x="'+((xL+xR)/2).toFixed(1)+'" y="'+(yw+20)+'" text-anchor="middle" font-size="11" font-weight="700" fill="#48535f">'+d.tmin+'–'+d.tmax+' °C</text>';
-  const yc=226,hc=24;
-  s+='<text x="'+xL+'" y="'+(yc-6)+'" font-size="9.5" fill="#9aa3ac">vent (kn) &amp; direction</text>';
-  d.wind.filter(w=>w[0]>=7&&w[0]<=21).forEach(w=>{const k=w[1],cx=X(w[0]),ad=((w[3]||0)+180)%360,f=favOf(sectOf(w[3]||0));const col=f==='good'?'#1f8f4e':f==='mid'?'#c9851a':'#b23b3b';
+  const yc=218,hc=19,yr=251;
+  s+='<text x="2" y="'+(yc+13)+'" font-size="9" fill="#9aa3ac">vent (kn)</text>';
+  s+='<text x="2" y="'+(yr+13)+'" font-size="9" fill="#9aa3ac">raf. (kn)</text>';
+  d.wind.filter(w=>w[0]>=7&&w[0]<=21).forEach(w=>{const k=w[1],g=w[2],cx=X(w[0]),ad=((w[3]||0)+180)%360,f=favOf(sectOf(w[3]||0));const col=f==='good'?'#1f8f4e':f==='mid'?'#c9851a':'#b23b3b';
     s+='<rect x="'+(cx-px*0.9).toFixed(1)+'" y="'+yc+'" width="'+(px*1.8).toFixed(1)+'" height="'+hc+'" rx="3" fill="'+wc(k)+'"/>';
-    s+='<text x="'+cx.toFixed(1)+'" y="'+(yc+16)+'" text-anchor="middle" font-size="11" font-weight="800" fill="'+wtc(k)+'">'+k+'</text>';
-    s+='<text x="'+cx.toFixed(1)+'" y="'+(yc+hc+13)+'" text-anchor="middle" font-size="13" fill="'+col+'" transform="rotate('+ad+' '+cx.toFixed(1)+' '+(yc+hc+9)+')">↑</text>';});
-  if(d.partial)s+='<text x="'+((xL+xR)/2).toFixed(1)+'" y="'+(yc+hc+29)+'" text-anchor="middle" font-size="10" fill="#b23b3b">Prévision Windguru partielle en journée (jour en cours)</text>';
+    s+='<text x="'+cx.toFixed(1)+'" y="'+(yc+13.5)+'" text-anchor="middle" font-size="11" font-weight="800" fill="'+wtc(k)+'">'+k+'</text>';
+    s+='<text x="'+cx.toFixed(1)+'" y="'+(yc+hc+8)+'" text-anchor="middle" font-size="12" fill="'+col+'" transform="rotate('+ad+' '+cx.toFixed(1)+' '+(yc+hc+4)+')">↑</text>';
+    s+='<rect x="'+(cx-px*0.9).toFixed(1)+'" y="'+yr+'" width="'+(px*1.8).toFixed(1)+'" height="'+hc+'" rx="3" fill="'+wc(g)+'"/>';
+    s+='<text x="'+cx.toFixed(1)+'" y="'+(yr+13.5)+'" text-anchor="middle" font-size="11" font-weight="800" fill="'+wtc(g)+'">'+g+'</text>';});
+  if(d.partial)s+='<text x="'+((xL+xR)/2).toFixed(1)+'" y="'+(yr+hc+13)+'" text-anchor="middle" font-size="10" fill="#b23b3b">Prévision partielle en journée (jour en cours)</text>';
   s+='</svg>';return s;
 }
 

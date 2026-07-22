@@ -76,7 +76,46 @@ export function build(om, cal) {
       pmM, pmS, water: st.water, tideHigh, wind
     };
   });
-  return { generatedAt: new Date().toISOString(), source: 'Open-Meteo (vent/météo) + calendrier écluse/marées', days };
+  return { generatedAt: new Date().toISOString(), source: 'Open-Meteo (vent/météo) + marées SHOM (auto) + calendrier écluse', days };
+}
+
+const MOIS_FR = ['janvier', 'fevrier', 'mars', 'avril', 'mai', 'juin', 'juillet', 'aout', 'septembre', 'octobre', 'novembre', 'decembre'];
+const JOURS_FR = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
+
+// Récupère les marées (coeff + heures de pleine mer) depuis Météo Consult (données SHOM).
+// Best effort : lève une erreur si indisponible/incomplet → repli automatique sur calendar.json.
+async function fetchMareesAuto(dates) {
+  const need = [...new Set(dates.map(d => d.slice(0, 7)))]; // ["YYYY-MM", ...]
+  const out = {};
+  for (const ym of need) {
+    const [y, mo] = ym.split('-');
+    const url = 'https://marine.meteoconsult.fr/meteo-marine/horaires-des-marees/les-sables-d-olonne-1025/' + MOIS_FR[+mo - 1] + '-' + y;
+    const res = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0 (chnoue-wing)' } });
+    if (!res.ok) throw new Error('marées HTTP ' + res.status + ' ' + ym);
+    const txt = (await res.text()).replace(/<[^>]+>/g, ' ').replace(/&[a-z0-9#]+;/gi, ' ').replace(/\s+/g, ' ');
+    const dayRe = new RegExp('(?:' + JOURS_FR.join('|') + ')\\s+(\\d{1,2})\\b([\\s\\S]*?)(?=(?:' + JOURS_FR.join('|') + ')\\s+\\d{1,2}\\b|$)', 'gi');
+    let dm, count = 0;
+    while ((dm = dayRe.exec(txt))) {
+      const day = +dm[1];
+      if (day < 1 || day > 31) continue;
+      const highRe = /haute[^0-9]{0,8}(\d{1,2})h(\d{2})[^0-9]{0,14}[\d.,]+\s*m[^0-9]{0,8}(\d{2,3})/gi;
+      let hm; const highs = [];
+      while ((hm = highRe.exec(dm[2]))) {
+        const hh = +hm[1], mm = +hm[2], coef = +hm[3];
+        if (hh > 23 || mm > 59 || coef < 20 || coef > 121) continue;
+        highs.push({ time: pad(hh) + ':' + hm[2], hh, coef });
+      }
+      if (!highs.length) continue;
+      const am = highs.find(x => x.hh < 12), pm = highs.find(x => x.hh >= 12);
+      out[ym + '-' + pad(day)] = {
+        coM: am ? String(am.coef) : '—', coS: pm ? String(pm.coef) : '—',
+        pmM: am ? am.time : '—', pmS: pm ? pm.time : '—'
+      };
+      count++;
+    }
+    if (count < 20) throw new Error('marées parse incomplet (' + count + ' j, ' + ym + ')');
+  }
+  return out;
 }
 
 async function main() {
@@ -88,7 +127,15 @@ async function main() {
   const res = await fetch(url);
   if (!res.ok) throw new Error('Open-Meteo HTTP ' + res.status);
   const om = await res.json();
-  const data = build(om, cal);
+  let marees = cal.marees || {};
+  try {
+    const auto = await fetchMareesAuto(om.daily.time);
+    marees = { ...marees, ...auto };
+    console.log('Marées auto OK —', Object.keys(auto).length, 'jours (SHOM / Météo Consult).');
+  } catch (e) {
+    console.log('Marées auto indisponibles (' + e.message + ') — repli sur calendar.json.');
+  }
+  const data = build(om, { ecluse: cal.ecluse, marees });
   fs.writeFileSync('data.json', JSON.stringify(data, null, 1));
   console.log('data.json écrit —', data.days.length, 'jours, generatedAt', data.generatedAt);
 }

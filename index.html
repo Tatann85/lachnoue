@@ -235,6 +235,8 @@ let days=[
 function present(h,d){if(d.water==='plein')return true;if(d.water==='renvoiSoir')return h<=21;if(d.water==='vav')return Math.abs(h-d.tideHigh)<=2;return false;}
 function cote(h,d){if(d.water==='plein')return FILL;if(d.water==='renvoiSoir')return h<=20?FILL:Math.max(2.6,FILL-0.85*(h-20));if(d.water==='vav')return Math.max(0.8,FILL-0.55*Math.abs(h-d.tideHigh));return 1;}
 function windSumm(d,morning){const sl=d.wind.filter(w=>morning?w[0]<=12:(w[0]>=13&&w[0]<=21));if(!sl.length)return null;return {s:sectOf(avgDir(sl.map(w=>w[3]))),f:Math.round(mean(sl.map(w=>w[1])))};}
+function goGroups(hs){hs=hs.slice().sort(function(a,b){return a-b;});var g=[],cur=[];for(var i=0;i<hs.length;i++){if(!cur.length||hs[i]-cur[cur.length-1]<=2)cur.push(hs[i]);else{g.push(cur);cur=[hs[i]];}}if(cur.length)g.push(cur);return g;}
+function goText(hs){return goGroups(hs).map(function(g){return g.length>1?g[0]+'h–'+g[g.length-1]+'h':g[0]+'h';}).join(', ');}
 
 function daySVG(d){
   const W=660,H=296,xL=52,xR=636,top=14,bot=158,px=(xR-xL)/14;
@@ -242,8 +244,8 @@ function daySVG(d){
   const icon=wx(d.wxc);
   let s='<svg viewBox="0 0 '+W+' '+H+'">';
   const goH=d.wind.filter(w=>w[0]>=7&&w[0]<=21&&present(w[0],d)&&w[1]>=10).map(w=>w[0]);
-  if(goH.length){const a=X(Math.min(...goH))-px/2,b=X(Math.max(...goH))+px/2;
-    s+='<rect x="'+a.toFixed(1)+'" y="'+top+'" width="'+(b-a).toFixed(1)+'" height="'+(bot-top)+'" fill="rgba(31,143,78,.15)"/><text x="'+((a+b)/2).toFixed(1)+'" y="'+(top+12)+'" text-anchor="middle" font-size="10" font-weight="700" fill="#1f8f4e">GO</text>';}
+  goGroups(goH).forEach(function(g){const a=X(g[0])-px,b=X(g[g.length-1])+px;
+    s+='<rect x="'+a.toFixed(1)+'" y="'+top+'" width="'+(b-a).toFixed(1)+'" height="'+(bot-top)+'" fill="rgba(31,143,78,.15)"/><text x="'+((a+b)/2).toFixed(1)+'" y="'+(top+12)+'" text-anchor="middle" font-size="10" font-weight="700" fill="#1f8f4e">GO</text>';});
   for(let m=0;m<=6;m+=2){const y=Y(m);s+='<line x1="'+xL+'" y1="'+y.toFixed(1)+'" x2="'+xR+'" y2="'+y.toFixed(1)+'" stroke="#e7ebf0"/><text x="'+(xL-6)+'" y="'+(y+3).toFixed(1)+'" text-anchor="end" font-size="10" fill="#9aa3ac">'+m+' m</text>';}
   const yF=Y(FILL);
   s+='<line x1="'+xL+'" y1="'+yF.toFixed(1)+'" x2="'+xR+'" y2="'+yF.toFixed(1)+'" stroke="#8a4b00" stroke-width="1.2" stroke-dasharray="5 4"/><text x="'+xR+'" y="'+(yF-4).toFixed(1)+'" text-anchor="end" font-size="9.5" fill="#8a4b00">cote de remplissage été ~5,20 m</text>';
@@ -283,7 +285,7 @@ function render(){
   const peakK=Math.max(...refSet.map(w=>w[1])), peakG=Math.max(...refSet.map(w=>w[2]));
   const dom=sectOf(avgDir(d.wind.map(w=>w[3]))), domF=favCls(favOf(dom));
   const eauTxt=d.water==='plein'?'toute la journée':d.water==='renvoiSoir'?'jusqu’à ~21h':(anyWater?'autour de la marée':'pas d’eau');
-  const goTxt=goH.length?Math.min(...goH)+'h–'+Math.max(...goH)+'h':'—';
+  const goTxt=goH.length?goText(goH):'—';
 
   const tr=document.createElement('tr');tr.className='day'+(d.today?' today':'');
   tr.innerHTML='<td class="jour">'+d.d+(d.today?'<small>aujourd’hui</small>':i===1?'<small>demain</small>':'')+'<span class="wx">'+wx(d.wxc)+' '+d.tmin+'–'+d.tmax+' °C</span><span class="chev">Détail ▾</span></td>'

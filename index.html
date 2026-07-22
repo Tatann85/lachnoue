@@ -7,6 +7,8 @@
 <meta name="description" content="Quand naviguer en wingfoil à la Ch'noue, aux Sables-d'Olonne ? Niveau d'eau (écluse de la Rocade), vent, marées et météo sur 9 jours, avec une note par jour.">
 <meta name="robots" content="index, follow">
 <meta name="theme-color" content="#13202c">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="apple-touch-icon" href="favicon.svg">
 <link rel="canonical" href="https://lachnoue.fr/">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="fr_FR">
@@ -25,6 +27,11 @@
   body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
   .banner{width:100%;height:clamp(200px,32vw,430px);overflow:hidden;line-height:0}
   .banner img{width:100%;height:100%;object-fit:cover;object-position:center 55%;display:block}
+  .tabs{display:flex;gap:6px;max-width:980px;margin:0 auto;padding:12px 14px 0;flex-wrap:wrap}
+  .tab{flex:1;min-width:130px;text-align:center;text-decoration:none;font-size:13px;font-weight:700;color:#48535f;background:#fff;border:1px solid var(--line);border-radius:9px;padding:10px 8px;transition:transform .08s,box-shadow .08s,color .1s}
+  .tab:hover{transform:translateY(-1px);box-shadow:0 3px 10px rgba(0,0,0,.08);color:var(--water)}
+  .tab.active{background:var(--water);color:#fff;border-color:var(--water)}
+  .tab .ext{font-size:11px;opacity:.75}
   .wrap{max-width:980px;margin:0 auto;padding:16px 14px 56px}
   h1{margin:10px 0 2px;font-size:20px}
   .sub{color:var(--muted);font-size:12.5px}
@@ -101,9 +108,14 @@
 <body>
 <div class="banner"><img src="banniere.jpg" alt="Vue aérienne des Sables-d'Olonne — le port, la baie et le marais de la Ch'noue" fetchpriority="high"></div>
 <div class="wrap">
+  <nav class="tabs" aria-label="Navigation du site">
+    <a class="tab active" href="./" aria-current="page">La Ch'noue</a>
+    <a class="tab" href="https://vertimewingfoil.com/" target="_blank" rel="noopener">Où prendre des cours <span class="ext">↗</span></a>
+    <a class="tab" href="https://wingfoil-sablais.fr/" target="_blank" rel="noopener">Association Wing LSO <span class="ext">↗</span></a>
+  </nav>
   <h1>Chnoue Wing — 9 prochains jours</h1>
   <div class="sub">Wingfoil à la Ch'noue, aux Sables-d'Olonne — niveau d'eau, vent, marées et météo sur 9 jours.</div>
-  <div class="upd" id="upd">Dernière mise à jour : <b>30/06/2026</b> — rafraîchi automatiquement chaque soir vers 20h (heure de Paris).</div>
+  <div class="upd" id="upd">Dernière mise à jour : <b>30/06/2026</b> — rafraîchi automatiquement toutes les 4 h environ (à partir de midi, heure de Paris).</div>
 
   <div class="explain">
     <b>Comment marche l'eau de la Ch'noue ?</b> La Ch'noue est un marais alimenté par l'<b>écluse de la Rocade</b>.
@@ -167,7 +179,7 @@
   <h2>Questions fréquentes sur la Ch'noue</h2>
   <div class="faq">
     <details><summary>Où se trouve la Ch'noue ?</summary><p>La Ch'noue est un chenal du marais salé des Sables-d'Olonne (Vendée) : un plan d'eau plat idéal pour le wingfoil, le windfoil et l'apprentissage. On y accède côté route de l'Aubraie / base nautique des Salines.</p></details>
-    <details><summary>Quand peut-on naviguer en wingfoil à la Ch'noue ?</summary><p>Quand le marais est plein (écluse de la Rocade en PRISE ou eau retenue) <b>et</b> que le vent dépasse ~12 nœuds. Ce site calcule ces créneaux « GO » sur 9 jours à partir du vent, des marées et du calendrier de l'écluse.</p></details>
+    <details><summary>Quand peut-on naviguer en wingfoil à la Ch'noue ?</summary><p>Quand le marais est plein (écluse de la Rocade en PRISE ou eau retenue) <b>et</b> qu'il y a du vent : dès ~10-12 nœuds en grande aile, ~15 nœuds en petite aile. Ce site calcule ces créneaux « GO » sur 9 jours à partir du vent, des marées et du calendrier de l'écluse.</p></details>
     <details><summary>Pourquoi la Ch'noue est-elle parfois à sec ?</summary><p>Le niveau dépend de l'écluse de la Rocade : elle remplit le marais (PRISE) puis le garde plusieurs jours, ou le vide (RENVOI / fermeture basse mer). Marais vidé = plus assez d'eau pour foiler jusqu'à la prochaine prise.</p></details>
     <details><summary>Quel matériel pour la Ch'noue ?</summary><p>Un mât de foil d'environ 80 cm passe quand le marais est plein. Les secteurs de vent les plus favorables sont Ouest, Nord-Ouest et Nord (plan d'eau plat).</p></details>
   </div>
@@ -220,8 +232,8 @@ let days=[
  {d:'Mer 08/07',wxc:'Ensoleillé',tmin:22,tmax:32,eclM:'aucune (retenu plein)',eclS:'aucune (retenu plein)',coM:'~56',coS:'~53',pmM:'~11:00',pmS:'~23:40',water:'plein',tideHigh:11,wind:[[8,10,13,66],[11,7,10,78],[14,8,9,305],[17,13,15,308],[20,14,18,323]]},
 ];
 
-function present(h,d){if(d.water==='plein')return true;if(d.water==='renvoiSoir')return h<=19;if(d.water==='vav')return Math.abs(h-d.tideHigh)<=2;return false;}
-function cote(h,d){if(d.water==='plein')return FILL;if(d.water==='renvoiSoir')return h<=18?FILL:Math.max(2.6,FILL-0.65*(h-18));if(d.water==='vav')return Math.max(0.8,FILL-0.55*Math.abs(h-d.tideHigh));return 1;}
+function present(h,d){if(d.water==='plein')return true;if(d.water==='renvoiSoir')return h<=21;if(d.water==='vav')return Math.abs(h-d.tideHigh)<=2;return false;}
+function cote(h,d){if(d.water==='plein')return FILL;if(d.water==='renvoiSoir')return h<=20?FILL:Math.max(2.6,FILL-0.85*(h-20));if(d.water==='vav')return Math.max(0.8,FILL-0.55*Math.abs(h-d.tideHigh));return 1;}
 function windSumm(d,morning){const sl=d.wind.filter(w=>morning?w[0]<=12:(w[0]>=13&&w[0]<=21));if(!sl.length)return null;return {s:sectOf(avgDir(sl.map(w=>w[3]))),f:Math.round(mean(sl.map(w=>w[1])))};}
 
 function daySVG(d){
@@ -229,7 +241,7 @@ function daySVG(d){
   const X=h=>xL+(h-7)*px, maxM=6, Y=L=>bot-(L/maxM)*(bot-top);
   const icon=wx(d.wxc);
   let s='<svg viewBox="0 0 '+W+' '+H+'">';
-  const goH=d.wind.filter(w=>w[0]>=7&&w[0]<=21&&present(w[0],d)&&w[1]>=12).map(w=>w[0]);
+  const goH=d.wind.filter(w=>w[0]>=7&&w[0]<=21&&present(w[0],d)&&w[1]>=10).map(w=>w[0]);
   if(goH.length){const a=X(Math.min(...goH))-px/2,b=X(Math.max(...goH))+px/2;
     s+='<rect x="'+a.toFixed(1)+'" y="'+top+'" width="'+(b-a).toFixed(1)+'" height="'+(bot-top)+'" fill="rgba(31,143,78,.15)"/><text x="'+((a+b)/2).toFixed(1)+'" y="'+(top+12)+'" text-anchor="middle" font-size="10" font-weight="700" fill="#1f8f4e">GO</text>';}
   for(let m=0;m<=6;m+=2){const y=Y(m);s+='<line x1="'+xL+'" y1="'+y.toFixed(1)+'" x2="'+xR+'" y2="'+y.toFixed(1)+'" stroke="#e7ebf0"/><text x="'+(xL-6)+'" y="'+(y+3).toFixed(1)+'" text-anchor="end" font-size="10" fill="#9aa3ac">'+m+' m</text>';}
@@ -259,16 +271,18 @@ const tb=document.getElementById('tb');
 function render(){
   tb.innerHTML='';
   days.forEach((d,i)=>{
-  const goSlots=d.wind.filter(w=>w[0]>=7&&w[0]<=21&&present(w[0],d)&&w[1]>=12);
+  const goSlots=d.wind.filter(w=>w[0]>=7&&w[0]<=21&&present(w[0],d)&&w[1]>=10);
   const goH=goSlots.map(w=>w[0]);
   const anyWater=HS.some(h=>present(h,d));
+  const waterWind=d.wind.filter(w=>w[0]>=7&&w[0]<=21&&present(w[0],d)).map(w=>w[1]);
+  const peakW=waterWind.length?Math.max(...waterWind):0;
   let note;
-  if(!anyWater)note=0; else if(!goSlots.length)note=1; else{const peak=Math.max(...goSlots.map(w=>w[1]));const f=favOf(sectOf(avgDir(goSlots.map(w=>w[3]))));note=Math.max(1,Math.min(5,(peak>=15?3:2)+(f==='good'?1:f==='bad'?-1:0)+(goH.length<2?-1:0)));}
+  if(!anyWater||peakW<10)note=0; else if(peakW<11)note=1; else if(peakW<13)note=2; else if(peakW<14)note=3; else if(peakW<15)note=4; else note=5;
   const aft=d.wind.filter(w=>w[0]>=13&&w[0]<=21);
   const refSet=goSlots.length?goSlots:(aft.length?aft:d.wind);
   const peakK=Math.max(...refSet.map(w=>w[1])), peakG=Math.max(...refSet.map(w=>w[2]));
   const dom=sectOf(avgDir(d.wind.map(w=>w[3]))), domF=favCls(favOf(dom));
-  const eauTxt=d.water==='plein'?'toute la journée':d.water==='renvoiSoir'?'jusqu’à ~19h':(anyWater?'autour de la marée':'pas d’eau');
+  const eauTxt=d.water==='plein'?'toute la journée':d.water==='renvoiSoir'?'jusqu’à ~21h':(anyWater?'autour de la marée':'pas d’eau');
   const goTxt=goH.length?Math.min(...goH)+'h–'+Math.max(...goH)+'h':'—';
 
   const tr=document.createElement('tr');tr.className='day'+(d.today?' today':'');
@@ -290,7 +304,7 @@ function render(){
 }
 function fmtUpd(iso){try{return new Date(iso).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',timeZone:'Europe/Paris'});}catch(e){return '';}}
 render();
-fetch('data.json?v='+Date.now()).then(function(r){return r.ok?r.json():Promise.reject();}).then(function(j){if(j&&j.days&&j.days.length){days=j.days;render();}var u=document.getElementById('upd');if(u&&j&&j.generatedAt){u.textContent='Dernière mise à jour : '+fmtUpd(j.generatedAt)+' — rafraîchi automatiquement chaque soir vers 20h (heure de Paris).';}}).catch(function(){});
+fetch('data.json?v='+Date.now()).then(function(r){return r.ok?r.json():Promise.reject();}).then(function(j){if(j&&j.days&&j.days.length){days=j.days;render();}var u=document.getElementById('upd');if(u&&j&&j.generatedAt){u.textContent='Dernière mise à jour : '+fmtUpd(j.generatedAt)+' — rafraîchi automatiquement toutes les 4 h environ (heure de Paris).';}}).catch(function(){});
 </script>
 <!-- Statistiques de fréquentation anonymes, sans cookie (GoatCounter) -->
 <script data-goatcounter="https://lachnoue.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>

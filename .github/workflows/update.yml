@@ -2,8 +2,7 @@ name: Mise a jour et publication
 
 on:
   schedule:
-    - cron: '0 18 * * *'
-    - cron: '0 19 * * *'
+    - cron: '0 10,14,18,22,2,6 * * *'   # toutes les 4h a partir de midi (heures de Paris ~12/16/20/00/04/08 en ete)
   workflow_dispatch:
   push:
     branches: [ main ]
@@ -36,7 +35,7 @@ jobs:
         run: |
           mkdir -p _site
           cp index.html data.json _site/
-          cp *.png *.jpg *.jpeg _site/ 2>/dev/null || true
+          cp *.png *.jpg *.jpeg *.svg _site/ 2>/dev/null || true
           cp robots.txt sitemap.xml _site/ 2>/dev/null || true
           echo 'lachnoue.fr' > _site/CNAME
       - name: Configurer Pages

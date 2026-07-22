@@ -57,11 +57,11 @@ function ecluseStates(cal, fromISO, toISO) {
 // Construit les 9 jours à partir de la réponse Open-Meteo + calendar. Fonction pure = testable.
 export function build(om, cal) {
   const H = {};
-  om.hourly.time.forEach((t, i) => { H[t.slice(0, 13)] = { s: om.hourly.wind_speed_10m[i], g: om.hourly.wind_gusts_10m[i], d: om.hourly.wind_direction_10m[i], t: om.hourly.temperature_2m[i] }; });
+  om.hourly.time.forEach((t, i) => { H[t.slice(0, 13)] = { s: om.hourly.wind_speed_10m[i], g: om.hourly.wind_gusts_10m[i], d: om.hourly.wind_direction_10m[i], t: om.hourly.temperature_2m[i], c: om.hourly.weather_code[i] }; });
   const dates = om.daily.time;
   const es = ecluseStates(cal, dates[0], dates[dates.length - 1]);
   const days = dates.map((date, i) => {
-    const wind = HS.map(h => { const k = H[date + 'T' + pad(h)] || {}; return [h, Math.round(k.s || 0), Math.round(k.g || 0), Math.round(k.d || 0), k.t != null ? Math.round(k.t) : null]; });
+    const wind = HS.map(h => { const k = H[date + 'T' + pad(h)] || {}; return [h, Math.round(k.s || 0), Math.round(k.g || 0), Math.round(k.d || 0), k.t != null ? Math.round(k.t) : null, k.c != null ? wmoLabel(k.c) : null]; });
     const st = es[date] || { water: 'plein', eclM: 'aucune (retenu plein)', eclS: 'aucune (retenu plein)' };
     const mar = (cal.marees && cal.marees[date]) || {};
     const pmM = mar.pmM || '—', pmS = mar.pmS || '—';
@@ -121,7 +121,7 @@ async function fetchMareesAuto(dates) {
 async function main() {
   const cal = JSON.parse(fs.readFileSync('calendar.json', 'utf8'));
   const url = 'https://api.open-meteo.com/v1/forecast?latitude=' + LAT + '&longitude=' + LON +
-    '&hourly=wind_speed_10m,wind_gusts_10m,wind_direction_10m,temperature_2m' +
+    '&hourly=wind_speed_10m,wind_gusts_10m,wind_direction_10m,temperature_2m,weather_code' +
     '&daily=weather_code,temperature_2m_max,temperature_2m_min' +
     '&wind_speed_unit=kn&timezone=Europe%2FParis&forecast_days=9';
   const res = await fetch(url);

@@ -84,13 +84,21 @@ const JOURS_FR = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', '
 
 // Récupère les marées (coeff + heures de pleine mer) depuis Météo Consult (données SHOM).
 // Best effort : lève une erreur si indisponible/incomplet → repli automatique sur calendar.json.
+// fetch avec timeout dur (Node n'en met aucun par défaut → un serveur muet bloquait le robot des heures).
+async function fetchWithTimeout(url, opts = {}, ms = 20000) {
+  const ac = new AbortController();
+  const t = setTimeout(() => ac.abort(), ms);
+  try { return await fetch(url, { ...opts, signal: ac.signal }); }
+  finally { clearTimeout(t); }
+}
+
 async function fetchMareesAuto(dates) {
   const need = [...new Set(dates.map(d => d.slice(0, 7)))]; // ["YYYY-MM", ...]
   const out = {};
   for (const ym of need) {
     const [y, mo] = ym.split('-');
     const url = 'https://marine.meteoconsult.fr/meteo-marine/horaires-des-marees/les-sables-d-olonne-1025/' + MOIS_FR[+mo - 1] + '-' + y;
-    const res = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0 (chnoue-wing)' } });
+    const res = await fetchWithTimeout(url, { headers: { 'User-Agent': 'Mozilla/5.0 (chnoue-wing)' } }, 15000);
     if (!res.ok) throw new Error('marées HTTP ' + res.status + ' ' + ym);
     const txt = (await res.text()).replace(/<[^>]+>/g, ' ').replace(/&[a-z0-9#]+;/gi, ' ').replace(/\s+/g, ' ');
     const dayRe = new RegExp('(?:' + JOURS_FR.join('|') + ')\\s+(\\d{1,2})\\b([\\s\\S]*?)(?=(?:' + JOURS_FR.join('|') + ')\\s+\\d{1,2}\\b|$)', 'gi');
@@ -124,7 +132,7 @@ async function main() {
     '&hourly=wind_speed_10m,wind_gusts_10m,wind_direction_10m,temperature_2m,weather_code' +
     '&daily=weather_code,temperature_2m_max,temperature_2m_min' +
     '&wind_speed_unit=kn&timezone=Europe%2FParis&forecast_days=9';
-  const res = await fetch(url);
+  const res = await fetchWithTimeout(url, {}, 25000);
   if (!res.ok) throw new Error('Open-Meteo HTTP ' + res.status);
   const om = await res.json();
   let marees = cal.marees || {};

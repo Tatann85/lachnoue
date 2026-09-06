@@ -8,6 +8,9 @@
 <meta name="robots" content="index, follow">
 <meta name="theme-color" content="#13202c">
 <link rel="canonical" href="https://lachnoue.fr/cours.html">
+<link rel="alternate" hreflang="fr" href="https://lachnoue.fr/cours.html">
+<link rel="alternate" hreflang="en" href="https://lachnoue.fr/en/cours.html">
+<link rel="alternate" hreflang="x-default" href="https://lachnoue.fr/cours.html">
 <link rel="icon" type="image/png" href="Gemini_Generated_Image_fo5ekyfo5ekyfo5e.png">
 <link rel="apple-touch-icon" href="Gemini_Generated_Image_fo5ekyfo5ekyfo5e.png">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,8 +19,13 @@
   :root{--bg:#eef1f4;--card:#fff;--ink:#1f2a36;--muted:#6b7785;--line:#dfe4ea;--water:#2b6cb0}
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
-  .banner{width:100%;height:clamp(200px,32vw,430px);overflow:hidden;line-height:0}
+  .banner{position:relative;width:100%;height:clamp(200px,32vw,430px);overflow:hidden;line-height:0}
   .banner img{width:100%;height:100%;object-fit:cover;object-position:center 55%;display:block}
+  .lang{position:absolute;top:10px;right:12px;z-index:5;display:flex;gap:6px}
+  .lang a{display:inline-flex;width:30px;height:22px;border-radius:5px;overflow:hidden;box-shadow:0 1px 5px rgba(0,0,0,.4);opacity:.55;transition:opacity .1s,transform .08s;background:#fff}
+  .lang a:hover{opacity:1;transform:translateY(-1px)}
+  .lang a.on{opacity:1;outline:2px solid #fff}
+  .lang svg{display:block;width:100%;height:100%}
   .wrap{max-width:980px;margin:0 auto;padding:16px 14px 56px}
   .tabs{display:flex;gap:6px;flex-wrap:wrap;padding:12px 0 0}
   .tab{flex:1;min-width:150px;text-align:center;text-decoration:none;font-family:'Anton',sans-serif;letter-spacing:.04em;font-size:17px;font-weight:400;color:var(--water);background:#e9f1fb;border:2px solid #bcd4ef;border-radius:11px;padding:16px 14px;box-shadow:0 2px 6px rgba(43,108,176,.12);transition:transform .08s,box-shadow .1s,background .1s,color .1s}
@@ -46,7 +54,7 @@
 </style>
 </head>
 <body>
-<div class="banner"><img src="banniere.jpg" alt="Vue aérienne des Sables-d'Olonne — la Ch'noue" fetchpriority="high"></div>
+<div class="banner"><img src="banniere.jpg" alt="Vue aérienne des Sables-d'Olonne — la Ch'noue" fetchpriority="high"><div class="lang"><a class="on" href="/cours.html" hreflang="fr" title="Français" aria-label="Français"><svg viewBox="0 0 3 2"><rect width="3" height="2" fill="#fff"/><rect width="1" height="2" fill="#0055A4"/><rect x="2" width="1" height="2" fill="#EF4135"/></svg></a><a href="/en/cours.html" hreflang="en" title="English" aria-label="English"><svg viewBox="0 0 60 30"><clipPath id="ukc"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath><rect width="60" height="30" fill="#012169"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#ukc)" stroke="#C8102E" stroke-width="4"/><path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/><path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/></svg></a></div></div>
 <div class="wrap">
   <nav class="tabs" aria-label="Navigation du site">
     <a class="tab" href="index.html">La Ch'noue</a>

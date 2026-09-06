@@ -36,6 +36,7 @@ jobs:
         run: |
           mkdir -p _site
           cp index.html contact.html cours.html association.html data.json _site/
+          mkdir -p _site/en && cp en/*.html _site/en/ 2>/dev/null || true
           cp *.png *.jpg *.jpeg *.svg _site/ 2>/dev/null || true
           cp robots.txt sitemap.xml _site/ 2>/dev/null || true
           echo 'lachnoue.fr' > _site/CNAME

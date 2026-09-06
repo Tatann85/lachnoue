@@ -32,7 +32,7 @@ jobs:
           node-version: '20'
       - name: Generer data.json
         run: node scraper.mjs
-        - name: Preparer le site
+      - name: Preparer le site
         run: |
           mkdir -p _site
           node build.mjs _site

@@ -27,7 +27,7 @@ function head(lang,pg,extra){ const t=T[lang]; extra=extra||{}; const title=extr
  return '<!DOCTYPE html>\n<html lang="'+META[lang].htmlLang+'">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n'
  +'<title>'+title+'</title>\n<meta name="description" content="'+desc+'">\n'
  +(extra.keywords!==false?'<meta name="keywords" content="'+t.keywords+'">\n':'')
- +'<meta name="robots" content="'+robots+'">\n<meta name="theme-color" content="#13202c">\n'
+ +'<meta name="robots" content="'+robots+'">\n<meta name="theme-color" content="#12857f">\n'
  +'<link rel="icon" type="image/png" href="'+FAV+'">\n<link rel="apple-touch-icon" href="'+FAV+'">\n'
  +'<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n<link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">\n'
  +'<link rel="canonical" href="'+abs(lang,pg)+'">\n'+hreflangs(pg)
@@ -41,7 +41,12 @@ function shell(lang,pg,active,body,extra){ const t=T[lang];
   +'<a class="tab'+(active==='club'?' active':'')+'" href="'+url(lang,'club')+'">'+t.tabClub+'</a>'
   +'<a class="tab'+(active==='lessons'?' active':'')+'" href="'+url(lang,'lessons')+'">'+t.tabLessons+'</a>'
   +'<a class="tab'+(active==='contact'?' active':'')+'" href="'+url(lang,'contact')+'">'+t.tabContact+'</a></nav>';
- return head(lang,pg,extra)+'<body>\n<div class="banner"><img src="/banniere.jpg" alt="Les Sables-d\'Olonne &mdash; La Ch\'noue" fetchpriority="high">'+langSwitch(lang,pg)+'</div>\n<div class="wrap">\n'+tabs+'\n'+body+'\n</div>\n'
+ const banner='<div class="banner"><img src="/banniere.jpg" alt="Les Sables-d\'Olonne &mdash; La Ch\'noue" fetchpriority="high">'
+  +langSwitch(lang,pg)
+  +'<div class="banner-cap"><p class="eyebrow">Les Sables-d\'Olonne &middot; Vend&eacute;e</p><span class="brand">La Ch\'noue</span></div>'
+  +'<svg class="wave" viewBox="0 0 1000 32" preserveAspectRatio="none"><path d="M0 20 C180 4 340 4 520 15 C700 27 860 20 1000 11 L1000 32 L0 32 Z" fill="#f6fbfb"></path></svg>'
+  +'</div>';
+ return head(lang,pg,extra)+'<body>\n'+banner+'\n<div class="wrap">\n'+tabs+'\n'+body+'\n</div>\n'
   +(extra&&extra.tail?extra.tail:'')
   +'<script data-goatcounter="https://lachnoue.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>\n</body>\n</html>\n';
 }
@@ -67,7 +72,7 @@ function renderIndex(lang){ const t=T[lang];
   +'<a class="cam" href="https://www.skaping.com/sables-d-olonne/port-olona/panoramique" target="_blank" rel="noopener"><div class="view"><span class="live">'+t.live+'</span><span class="play">▶</span></div><div class="bd"><div class="t">'+t.camPort+'</div><div class="s">'+t.camPortS+'</div></div></a>'
   +'<a class="cam" href="https://viewsurf.com/univers/surf/vue/4511-france-pays-de-la-loire-les-sables-dolonne-baie-des-sables" target="_blank" rel="noopener"><div class="view"><span class="live">'+t.live+'</span><span class="play">▶</span></div><div class="bd"><div class="t">'+t.camBay+'</div><div class="s">'+t.camBayS+'</div></div></a>'
   +'</div>';
- const access='<h2>'+t.h2Access+'</h2><div style="border:1px solid var(--line);border-radius:10px;overflow:hidden"><iframe title="'+t.accessIframe+'" src="'+MAPSEMBED+'" style="width:100%;height:360px;border:0;display:block" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe></div><div style="font-size:12px;color:#48535f;margin-top:6px">'+t.accessHtml+'<a href="'+MAPS+'" target="_blank" rel="noopener" style="display:block;text-align:center;background:var(--water);color:#fff;font-weight:800;font-size:15px;padding:14px 16px;border-radius:10px;text-decoration:none;margin-top:10px;box-shadow:0 3px 12px rgba(43,108,176,.35)">'+t.accessBtn+'</a></div>';
+ const access='<h2>'+t.h2Access+'</h2><div style="border:1px solid var(--line);border-radius:10px;overflow:hidden"><iframe title="'+t.accessIframe+'" src="'+MAPSEMBED+'" style="width:100%;height:360px;border:0;display:block" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe></div><div style="font-size:12px;color:#48535f;margin-top:6px">'+t.accessHtml+'<a href="'+MAPS+'" target="_blank" rel="noopener" style="display:block;text-align:center;background:var(--water);color:#fff;font-weight:800;font-size:15px;padding:14px 16px;border-radius:10px;text-decoration:none;margin-top:10px;box-shadow:0 3px 12px rgba(18,133,127,.32)">'+t.accessBtn+'</a></div>';
  const body='<h1>'+t.h1+'</h1>\n<div class="explain">'+t.explain+'</div>\n'
   +'<div class="hint"><span>👆</span><span>'+t.hint+'<br><span class="upd" id="upd">'+t.updBefore+' <b>—</b> '+t.updAfter+'</span></span></div>\n'
   +'<table><thead><tr><th class="jour" style="text-align:left">'+t.thDay+'</th><th>'+t.thRating+'</th><th>'+t.thWater+'</th><th>'+t.thWind+'</th><th>'+t.thDir+'</th><th>'+t.thGo+'</th></tr></thead><tbody id="tb"></tbody></table>\n'

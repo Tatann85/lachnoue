@@ -41,14 +41,14 @@ function daySVG(d){
   var s='<svg viewBox="0 0 '+W+' '+H+'">';
   var goH=d.wind.filter(function(w){return w[0]>=7&&w[0]<=21&&present(w[0],d)&&w[1]>=10;}).map(function(w){return w[0];});
   goGroups(goH).forEach(function(g){var a=X(g[0])-px,b=X(g[g.length-1])+px;
-    s+='<rect x="'+a.toFixed(1)+'" y="'+top+'" width="'+(b-a).toFixed(1)+'" height="'+(bot-top)+'" fill="rgba(31,143,78,.15)"/><text x="'+((a+b)/2).toFixed(1)+'" y="'+(top+12)+'" text-anchor="middle" font-size="10" font-weight="700" fill="#1f8f4e">GO</text>';});
+    s+='<rect x="'+a.toFixed(1)+'" y="'+top+'" width="'+(b-a).toFixed(1)+'" height="'+(bot-top)+'" fill="rgba(15,110,86,.14)"/><text x="'+((a+b)/2).toFixed(1)+'" y="'+(top+12)+'" text-anchor="middle" font-size="10" font-weight="700" fill="#0f6e56">GO</text>';});
   for(var m=0;m<=6;m+=2){var y=Y(m);s+='<line x1="'+xL+'" y1="'+y.toFixed(1)+'" x2="'+xR+'" y2="'+y.toFixed(1)+'" stroke="#e7ebf0"/><text x="'+(xL-6)+'" y="'+(y+3).toFixed(1)+'" text-anchor="end" font-size="10" fill="#9aa3ac">'+m+' m</text>';}
   var yF=Y(FILL);
   s+='<line x1="'+xL+'" y1="'+yF.toFixed(1)+'" x2="'+xR+'" y2="'+yF.toFixed(1)+'" stroke="#8a4b00" stroke-width="1.2" stroke-dasharray="5 4"/><text x="'+xR+'" y="'+(yF-4).toFixed(1)+'" text-anchor="end" font-size="9.5" fill="#8a4b00">'+T.svFill+'</text>';
   var tm=d.tideHigh;
   s+='<line x1="'+X(tm).toFixed(1)+'" y1="'+top+'" x2="'+X(tm).toFixed(1)+'" y2="'+bot+'" stroke="#c9851a" stroke-width="1.1" stroke-dasharray="3 3"/><text x="'+(X(tm)+3).toFixed(1)+'" y="'+(top+22)+'" font-size="9.5" fill="#c9851a">'+T.svHigh+'</text>';
   var pts=HS.map(function(h){return X(h).toFixed(1)+','+Y(cote(h,d)).toFixed(1);}).join(' ');
-  s+='<polyline points="'+pts+'" fill="none" stroke="#2b6cb0" stroke-width="2.6" stroke-linejoin="round"/>';
+  s+='<polyline points="'+pts+'" fill="none" stroke="#12857f" stroke-width="2.6" stroke-linejoin="round"/>';
   s+='<line x1="'+xL+'" y1="'+bot+'" x2="'+xR+'" y2="'+bot+'" stroke="#cfd6dd"/>';
   [7,9,11,13,15,17,19,21].forEach(function(h){s+='<text x="'+X(h).toFixed(1)+'" y="'+(bot+13)+'" text-anchor="middle" font-size="10" fill="#6b7785">'+h+':00</text>';});
   s+='<text x="'+xL+'" y="'+(top-2)+'" font-size="9.5" fill="#9aa3ac">'+T.svMarsh+'</text>';

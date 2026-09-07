@@ -15,6 +15,19 @@ function mean(a){return a.reduce(function(s,v){return s+v;},0)/a.length;}
 function wc(k){return k<8?'#eef3f6':k<12?'#cdebd6':k<16?'#83d483':k<20?'#f2df76':k<25?'#f4b657':k<30?'#ef8a4e':k<40?'#e2553f':'#a4508b';}
 function wtc(k){return k<25?'#1f2a36':'#fff';}
 function stars(n){var s='';for(var i=0;i<5;i++)s+=i<n?'★':'<span class="o">★</span>';return s;}
+function favColor(f){return f==='good'?'#0f6e56':f==='mid'?'#c9851a':'#b23b3b';}
+// Boussole HTML (colonne DIR.) : cadran + aiguille orientée dans le sens où va le vent.
+function compassHTML(deg,col){return '<svg viewBox="0 0 40 40" style="width:36px;height:36px;display:inline-block;vertical-align:middle" aria-hidden="true">'
+ +'<circle cx="20" cy="20" r="18" fill="#fff" stroke="#cfdad7" stroke-width="1.6"/>'
+ +'<text x="20" y="8.6" text-anchor="middle" font-size="7" fill="#9aa3ac" font-weight="700">N</text>'
+ +'<g transform="rotate('+deg+' 20 20)"><polygon points="20,4 14.5,20 25.5,20" fill="'+col+'"/><polygon points="20,36 14.5,20 25.5,20" fill="#e0e7e4"/></g>'
+ +'<circle cx="20" cy="20" r="2.4" fill="#12302e"/></svg>';}
+// Boussole SVG (dans le graphique) : dessinée en éléments, translatée à (cx,cy).
+function chartCompass(cx,cy,r,deg,col){var s='<g transform="translate('+cx.toFixed(1)+','+cy+')">';
+ s+='<circle r="'+r+'" fill="#fff" stroke="#cfdad7" stroke-width="1.2"/>';
+ s+='<text x="0" y="'+(-r+4)+'" text-anchor="middle" font-size="'+(r*0.48).toFixed(1)+'" fill="#b3bdba" font-weight="700">N</text>';
+ s+='<g transform="rotate('+deg+')"><polygon points="0,'+(-r+2.5).toFixed(1)+' '+(-r*0.34).toFixed(1)+',0 '+(r*0.34).toFixed(1)+',0" fill="'+col+'"/><polygon points="0,'+(r-2.5).toFixed(1)+' '+(-r*0.34).toFixed(1)+',0 '+(r*0.34).toFixed(1)+',0" fill="#e0e7e4"/></g>';
+ s+='<circle r="1.7" fill="#12302e"/></g>';return s;}
 var SDEG={N:0,NE:45,E:90,SE:135,S:180,SO:225,O:270,NO:315,SW:225,W:270,NW:315,ZO:135,Z:180,ZW:225};
 function sectDeg(s){return SDEG[s]||0;}
 function ecl(state){var t=(state||'').toLowerCase();
@@ -36,7 +49,7 @@ function goGroups(hs){hs=hs.slice().sort(function(a,b){return a-b;});var g=[],cu
 function goText(hs){return goGroups(hs).map(function(g){return g.length>1?g[0]+':00–'+g[g.length-1]+':00':g[0]+':00';}).join(', ');}
 
 function daySVG(d){
-  var W=660,H=296,xL=88,xR=636,top=14,bot=158,px=(xR-xL)/14;
+  var W=660,H=312,xL=88,xR=636,top=14,bot=158,px=(xR-xL)/14;
   var X=function(h){return xL+(h-7)*px;}, Y=function(L){return bot-(L/6)*(bot-top);};
   var s='<svg viewBox="0 0 '+W+' '+H+'">';
   var goH=d.wind.filter(function(w){return w[0]>=7&&w[0]<=21&&present(w[0],d)&&w[1]>=10;}).map(function(w){return w[0];});
@@ -60,13 +73,14 @@ function daySVG(d){
   var tByH={}; d.wind.forEach(function(w){ if(w[4]!=null) tByH[w[0]]=w[4]; });
   if(Object.keys(tByH).length){ [7,9,11,13,15,17,19,21].forEach(function(h){ if(tByH[h]!=null) s+='<text x="'+X(h).toFixed(1)+'" y="'+(yw+20)+'" text-anchor="middle" font-size="10" font-weight="700" fill="#48535f">'+tByH[h]+'°</text>'; }); }
   else s+='<text x="'+((xL+xR)/2).toFixed(1)+'" y="'+(yw+20)+'" text-anchor="middle" font-size="11" font-weight="700" fill="#48535f">'+d.tmin+'–'+d.tmax+' °C</text>';
-  var yc=218,hc=19,yr=251;
+  var yc=214,hc=19,yd=250,cr=13,yr=274;
   s+='<text x="2" y="'+(yc+13)+'" font-size="9" fill="#9aa3ac">'+T.svWind+'</text>';
+  s+='<text x="2" y="'+(yd+4)+'" font-size="13">🧭</text>';
   s+='<text x="2" y="'+(yr+13)+'" font-size="9" fill="#9aa3ac">'+T.svGust+'</text>';
-  d.wind.filter(function(w){return w[0]>=7&&w[0]<=21;}).forEach(function(w){var k=w[1],g=w[2],cx=X(w[0]),ad=((w[3]||0)+180)%360,f=favOf(w[3]||0);var col=f==='good'?'#1f8f4e':f==='mid'?'#c9851a':'#b23b3b';
+  d.wind.filter(function(w){return w[0]>=7&&w[0]<=21;}).forEach(function(w){var k=w[1],g=w[2],cx=X(w[0]),ad=((w[3]||0)+180)%360,f=favOf(w[3]||0);var col=favColor(f);
     s+='<rect x="'+(cx-px*0.9).toFixed(1)+'" y="'+yc+'" width="'+(px*1.8).toFixed(1)+'" height="'+hc+'" rx="3" fill="'+wc(k)+'"/>';
     s+='<text x="'+cx.toFixed(1)+'" y="'+(yc+13.5)+'" text-anchor="middle" font-size="11" font-weight="800" fill="'+wtc(k)+'">'+k+'</text>';
-    s+='<text x="'+cx.toFixed(1)+'" y="'+(yc+hc+8)+'" text-anchor="middle" font-size="12" fill="'+col+'" transform="rotate('+ad+' '+cx.toFixed(1)+' '+(yc+hc+4)+')">↑</text>';
+    s+=chartCompass(cx,yd,cr,ad,col);
     s+='<rect x="'+(cx-px*0.9).toFixed(1)+'" y="'+yr+'" width="'+(px*1.8).toFixed(1)+'" height="'+hc+'" rx="3" fill="'+wc(g)+'"/>';
     s+='<text x="'+cx.toFixed(1)+'" y="'+(yr+13.5)+'" text-anchor="middle" font-size="11" font-weight="800" fill="'+wtc(g)+'">'+g+'</text>';});
   if(d.partial)s+='<text x="'+((xL+xR)/2).toFixed(1)+'" y="'+(yr+hc+13)+'" text-anchor="middle" font-size="10" fill="#b23b3b">'+T.svPartial+'</text>';
@@ -93,7 +107,7 @@ function render(){
    +'<td class="stars">'+stars(note)+'</td>'
    +'<td><span class="eau '+(anyWater?'eau-y':'eau-n')+'">'+eauTxt+'</span></td>'
    +'<td><span class="windcell" style="background:'+wc(peakK)+';color:'+wtc(peakK)+'">'+peakK+' kn</span><span class="gust">'+T.gust+' '+peakG+' kn</span></td>'
-   +'<td><span class="arrow '+domF+'" style="transform:rotate('+((sectDeg(dom)+180)%360)+'deg)">↑</span><span class="sect">'+dom+'</span></td>'
+   +'<td><span class="dircell">'+compassHTML((sectDeg(dom)+180)%360,favColor(favOf(avgDir(d.wind.map(function(w){return w[3];})))))+'<span class="sect">'+dom+'</span></span></td>'
    +'<td class="go '+(goH.length?'go-y':'go-n')+'">'+goTxt+'</td>';
   var det=document.createElement('tr');det.className='det';det.style.display='none';
   det.innerHTML='<td colspan="6"><div class="detin"><div class="ampm">'

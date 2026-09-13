@@ -17,16 +17,16 @@ function wtc(k){return k<25?'#1f2a36':'#fff';}
 function stars(n){var s='';for(var i=0;i<5;i++)s+=i<n?'★':'<span class="o">★</span>';return s;}
 function favColor(f){return f==='good'?'#0f6e56':f==='mid'?'#c9851a':'#b23b3b';}
 // Boussole HTML (colonne DIR.) : cadran + aiguille orientée dans le sens où va le vent.
-function compassHTML(deg,col){return '<svg viewBox="0 0 40 40" style="width:36px;height:36px;display:inline-block;vertical-align:middle" aria-hidden="true">'
+function compassHTML(deg,col){return '<svg viewBox="0 -8 40 46" style="width:34px;height:39px;display:inline-block;vertical-align:middle" aria-hidden="true">'
+ +'<text x="20" y="-1" text-anchor="middle" font-size="8" fill="#5c716d" font-weight="700">N</text>'
  +'<circle cx="20" cy="20" r="18" fill="#fff" stroke="#cfdad7" stroke-width="1.6"/>'
- +'<text x="20" y="8.6" text-anchor="middle" font-size="7" fill="#9aa3ac" font-weight="700">N</text>'
- +'<g transform="rotate('+deg+' 20 20)"><path d="M20 3 L29.5 33 L20 26 L10.5 33 Z" fill="'+col+'"/></g>'
+ +'<g transform="rotate('+deg+' 20 20)"><path d="M20 4 L29 33 L20 26.5 L11 33 Z" fill="'+col+'"/></g>'
  +'</svg>';}
 // Boussole SVG (dans le graphique) : dessinée en éléments, translatée à (cx,cy).
 function chartCompass(cx,cy,r,deg,col){var s='<g transform="translate('+cx.toFixed(1)+','+cy+')">';
+ s+='<text x="0" y="'+(-r-3).toFixed(1)+'" text-anchor="middle" font-size="'+(r*0.55).toFixed(1)+'" fill="#5c716d" font-weight="700">N</text>';
  s+='<circle r="'+r+'" fill="#fff" stroke="#cfdad7" stroke-width="1.2"/>';
- s+='<text x="0" y="'+(-r+4)+'" text-anchor="middle" font-size="'+(r*0.48).toFixed(1)+'" fill="#b3bdba" font-weight="700">N</text>';
- s+='<g transform="rotate('+deg+')"><path d="M0 '+(-r+1.5).toFixed(1)+' L'+(r*0.6).toFixed(1)+' '+(r-1.5).toFixed(1)+' L0 '+(r*0.32).toFixed(1)+' L'+(-r*0.6).toFixed(1)+' '+(r-1.5).toFixed(1)+' Z" fill="'+col+'"/></g>';
+ s+='<g transform="rotate('+deg+')"><path d="M0 '+(-r+2).toFixed(1)+' L'+(r*0.6).toFixed(1)+' '+(r-1.5).toFixed(1)+' L0 '+(r*0.34).toFixed(1)+' L'+(-r*0.6).toFixed(1)+' '+(r-1.5).toFixed(1)+' Z" fill="'+col+'"/></g>';
  s+='</g>';return s;}
 var SDEG={N:0,NE:45,E:90,SE:135,S:180,SO:225,O:270,NO:315,SW:225,W:270,NW:315,ZO:135,Z:180,ZW:225};
 function sectDeg(s){return SDEG[s]||0;}
@@ -49,7 +49,7 @@ function goGroups(hs){hs=hs.slice().sort(function(a,b){return a-b;});var g=[],cu
 function goText(hs){return goGroups(hs).map(function(g){return g.length>1?g[0]+':00–'+g[g.length-1]+':00':g[0]+':00';}).join(', ');}
 
 function daySVG(d){
-  var W=660,H=312,xL=88,xR=636,top=14,bot=158,px=(xR-xL)/14;
+  var W=660,H=322,xL=88,xR=636,top=14,bot=158,px=(xR-xL)/14;
   var X=function(h){return xL+(h-7)*px;}, Y=function(L){return bot-(L/6)*(bot-top);};
   var s='<svg viewBox="0 0 '+W+' '+H+'">';
   var goH=d.wind.filter(function(w){return w[0]>=7&&w[0]<=21&&present(w[0],d)&&w[1]>=10;}).map(function(w){return w[0];});
@@ -73,7 +73,7 @@ function daySVG(d){
   var tByH={}; d.wind.forEach(function(w){ if(w[4]!=null) tByH[w[0]]=w[4]; });
   if(Object.keys(tByH).length){ [7,9,11,13,15,17,19,21].forEach(function(h){ if(tByH[h]!=null) s+='<text x="'+X(h).toFixed(1)+'" y="'+(yw+20)+'" text-anchor="middle" font-size="10" font-weight="700" fill="#48535f">'+tByH[h]+'°</text>'; }); }
   else s+='<text x="'+((xL+xR)/2).toFixed(1)+'" y="'+(yw+20)+'" text-anchor="middle" font-size="11" font-weight="700" fill="#48535f">'+d.tmin+'–'+d.tmax+' °C</text>';
-  var yc=214,hc=19,yd=250,cr=13,yr=274;
+  var yc=208,hc=19,yd=252,cr=12,yr=284;
   s+='<text x="2" y="'+(yc+13)+'" font-size="9" fill="#9aa3ac">'+T.svWind+'</text>';
   s+='<text x="2" y="'+(yd+4)+'" font-size="13">🧭</text>';
   s+='<text x="2" y="'+(yr+13)+'" font-size="9" fill="#9aa3ac">'+T.svGust+'</text>';
@@ -81,6 +81,7 @@ function daySVG(d){
     s+='<rect x="'+(cx-px*0.9).toFixed(1)+'" y="'+yc+'" width="'+(px*1.8).toFixed(1)+'" height="'+hc+'" rx="3" fill="'+wc(k)+'"/>';
     s+='<text x="'+cx.toFixed(1)+'" y="'+(yc+13.5)+'" text-anchor="middle" font-size="11" font-weight="800" fill="'+wtc(k)+'">'+k+'</text>';
     s+=chartCompass(cx,yd,cr,ad,col);
+    s+='<text x="'+cx.toFixed(1)+'" y="'+(yd+cr+10)+'" text-anchor="middle" font-size="9" font-weight="600" fill="#5c716d">'+sectOf(w[3]||0)+'</text>';
     s+='<rect x="'+(cx-px*0.9).toFixed(1)+'" y="'+yr+'" width="'+(px*1.8).toFixed(1)+'" height="'+hc+'" rx="3" fill="'+wc(g)+'"/>';
     s+='<text x="'+cx.toFixed(1)+'" y="'+(yr+13.5)+'" text-anchor="middle" font-size="11" font-weight="800" fill="'+wtc(g)+'">'+g+'</text>';});
   if(d.partial)s+='<text x="'+((xL+xR)/2).toFixed(1)+'" y="'+(yr+hc+13)+'" text-anchor="middle" font-size="10" fill="#b23b3b">'+T.svPartial+'</text>';

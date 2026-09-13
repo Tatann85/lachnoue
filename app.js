@@ -20,14 +20,14 @@ function favColor(f){return f==='good'?'#0f6e56':f==='mid'?'#c9851a':'#b23b3b';}
 function compassHTML(deg,col){return '<svg viewBox="0 0 40 40" style="width:36px;height:36px;display:inline-block;vertical-align:middle" aria-hidden="true">'
  +'<circle cx="20" cy="20" r="18" fill="#fff" stroke="#cfdad7" stroke-width="1.6"/>'
  +'<text x="20" y="8.6" text-anchor="middle" font-size="7" fill="#9aa3ac" font-weight="700">N</text>'
- +'<g transform="rotate('+deg+' 20 20)"><polygon points="20,4 14.5,20 25.5,20" fill="'+col+'"/><polygon points="20,36 14.5,20 25.5,20" fill="#e0e7e4"/></g>'
- +'<circle cx="20" cy="20" r="2.4" fill="#12302e"/></svg>';}
+ +'<g transform="rotate('+deg+' 20 20)"><path d="M20 3 L29.5 33 L20 26 L10.5 33 Z" fill="'+col+'"/></g>'
+ +'</svg>';}
 // Boussole SVG (dans le graphique) : dessinée en éléments, translatée à (cx,cy).
 function chartCompass(cx,cy,r,deg,col){var s='<g transform="translate('+cx.toFixed(1)+','+cy+')">';
  s+='<circle r="'+r+'" fill="#fff" stroke="#cfdad7" stroke-width="1.2"/>';
  s+='<text x="0" y="'+(-r+4)+'" text-anchor="middle" font-size="'+(r*0.48).toFixed(1)+'" fill="#b3bdba" font-weight="700">N</text>';
- s+='<g transform="rotate('+deg+')"><polygon points="0,'+(-r+2.5).toFixed(1)+' '+(-r*0.34).toFixed(1)+',0 '+(r*0.34).toFixed(1)+',0" fill="'+col+'"/><polygon points="0,'+(r-2.5).toFixed(1)+' '+(-r*0.34).toFixed(1)+',0 '+(r*0.34).toFixed(1)+',0" fill="#e0e7e4"/></g>';
- s+='<circle r="1.7" fill="#12302e"/></g>';return s;}
+ s+='<g transform="rotate('+deg+')"><path d="M0 '+(-r+1.5).toFixed(1)+' L'+(r*0.6).toFixed(1)+' '+(r-1.5).toFixed(1)+' L0 '+(r*0.32).toFixed(1)+' L'+(-r*0.6).toFixed(1)+' '+(r-1.5).toFixed(1)+' Z" fill="'+col+'"/></g>';
+ s+='</g>';return s;}
 var SDEG={N:0,NE:45,E:90,SE:135,S:180,SO:225,O:270,NO:315,SW:225,W:270,NW:315,ZO:135,Z:180,ZW:225};
 function sectDeg(s){return SDEG[s]||0;}
 function ecl(state){var t=(state||'').toLowerCase();

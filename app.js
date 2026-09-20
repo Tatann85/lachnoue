@@ -3,6 +3,20 @@
 (function(){
 var T=window.T||{}, LANG=window.LANG||'fr';
 var HS=[7,8,9,10,11,12,13,14,15,16,17,18,19,20,21], FILL=5.2;
+/* ---------------------------------------------------------------------------
+   SEUILS DU SITE, regroupes ici pour n'avoir qu'un seul endroit a modifier.
+   ATTENTION : ces valeurs ne sont PAS calibrees sur des sessions reelles.
+   C'est le point C5 du backlog. Elles sont volontairement prudentes.
+   --------------------------------------------------------------------------- */
+var GO_MIN       = 11; /* vent moyen mini (kn) pour afficher un creneau GO.
+                          B12 : etait a 10, soit exactement le seuil de 1 etoile,
+                          donc un jour note 1/5 affichait quand meme un GO. */
+var GO_GUST_MAX  = 30; /* au-dela de cette rafale (kn), aucun creneau GO.
+                          A4 : 11 kn de moyen avec 35 kn de rafale donnait un GO vert. */
+var NOTE_STRONG  = 30; /* au-dela (kn), la note est plafonnee a 2 etoiles. */
+var NOTE_TOOMUCH = 35; /* au-dela (kn), la note tombe a 1 etoile : trop de vent.
+                          A5 : la note ne redescendait jamais, 40 kn valait 5 etoiles. */
+function isGo(w,d){ return w[0]>=7 && w[0]<=21 && present(w[0],d) && w[1]>=GO_MIN && w[2]<GO_GUST_MAX; }
 var SM={fr:['N','NE','E','SE','S','SO','O','NO'],en:['N','NE','E','SE','S','SW','W','NW'],de:['N','NO','O','SO','S','SW','W','NW'],nl:['N','NO','O','ZO','Z','ZW','W','NW'],es:['N','NE','E','SE','S','SO','O','NO'],it:['N','NE','E','SE','S','SO','O','NO'],zh:['N','NE','E','SE','S','SW','W','NW'],br:['N','NE','E','SE','S','SW','W','NW']};
 var SECT=SM[LANG]||SM.en;
 function sIdx(d){return Math.round(((d%360)+360)%360/45)%8;}
@@ -52,7 +66,7 @@ function daySVG(d){
   var W=660,H=322,xL=88,xR=636,top=14,bot=158,px=(xR-xL)/14;
   var X=function(h){return xL+(h-7)*px;}, Y=function(L){return bot-(L/6)*(bot-top);};
   var s='<svg viewBox="0 0 '+W+' '+H+'">';
-  var goH=d.wind.filter(function(w){return w[0]>=7&&w[0]<=21&&present(w[0],d)&&w[1]>=10;}).map(function(w){return w[0];});
+  var goH=d.wind.filter(function(w){return isGo(w,d);}).map(function(w){return w[0];});
   goGroups(goH).forEach(function(g){var a=X(g[0])-px,b=X(g[g.length-1])+px;
     s+='<rect x="'+a.toFixed(1)+'" y="'+top+'" width="'+(b-a).toFixed(1)+'" height="'+(bot-top)+'" fill="rgba(15,110,86,.14)"/><text x="'+((a+b)/2).toFixed(1)+'" y="'+(top+12)+'" text-anchor="middle" font-size="10" font-weight="700" fill="#0f6e56">GO</text>';});
   for(var m=0;m<=6;m+=2){var y=Y(m);s+='<line x1="'+xL+'" y1="'+y.toFixed(1)+'" x2="'+xR+'" y2="'+y.toFixed(1)+'" stroke="#e7ebf0"/><text x="'+(xL-6)+'" y="'+(y+3).toFixed(1)+'" text-anchor="end" font-size="10" fill="#9aa3ac">'+m+' m</text>';}
@@ -91,12 +105,14 @@ var tb=document.getElementById('tb');
 function render(){
   tb.innerHTML='';
   days.forEach(function(d,i){
-  var goSlots=d.wind.filter(function(w){return w[0]>=7&&w[0]<=21&&present(w[0],d)&&w[1]>=10;});
+  var goSlots=d.wind.filter(function(w){return isGo(w,d);});
   var goH=goSlots.map(function(w){return w[0];});
   var anyWater=HS.some(function(h){return present(h,d);});
   var waterWind=d.wind.filter(function(w){return w[0]>=7&&w[0]<=21&&present(w[0],d);}).map(function(w){return w[1];});
   var peakW=waterWind.length?Math.max.apply(null,waterWind):0;
   var note; if(!anyWater||peakW<10)note=0; else if(peakW<11)note=1; else if(peakW<13)note=2; else if(peakW<14)note=3; else if(peakW<15)note=4; else note=5;
+  /* A5 : plafond haut. Sans cela la note ne redescendait jamais et 40 kn valait 5 etoiles. */
+  if(note>0 && peakW>=NOTE_TOOMUCH) note=1; else if(note>2 && peakW>=NOTE_STRONG) note=2;
   var aft=d.wind.filter(function(w){return w[0]>=13&&w[0]<=21;});
   var refSet=goSlots.length?goSlots:(aft.length?aft:d.wind);
   var peakK=Math.max.apply(null,refSet.map(function(w){return w[1];})), peakG=Math.max.apply(null,refSet.map(function(w){return w[2];}));

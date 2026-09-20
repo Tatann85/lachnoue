@@ -22,7 +22,12 @@ function url(lang,pg){ const base = lang===XDEF ? '' : '/'+lang; if(pg==='index'
 function abs(lang,pg){ return ORIGIN+url(lang,pg); }
 const PAGES = { index:{file:'index.html'}, club:{file:'association.html'}, lessons:{file:'cours.html'}, contact:{file:'contact.html'} };
 function hreflangs(pg){ let s=''; for(const l of LANGS) s+='<link rel="alternate" hreflang="'+META[l].htmlLang+'" href="'+abs(l,pg)+'">\n'; s+='<link rel="alternate" hreflang="x-default" href="'+abs(XDEF,pg)+'">\n'; return s; }
-function langSwitch(lang,pg){ let s='<div class="lang">'; for(const l of LANGS){ s+='<a'+(l===lang?' class="on"':'')+' href="'+url(l,pg)+'" hreflang="'+META[l].htmlLang+'" title="'+META[l].name+'" aria-label="'+META[l].name+'">'+FLAG[l]+'</a>'; } return s+'</div>'; }
+function langSwitch(lang,pg){
+ // Menu deroulant "Language" : drapeau + nom de la langue. Sans JavaScript (element <details>).
+ let s='<details class="lang"><summary aria-label="Language"><span class="lang-cur">'+FLAG[lang]+'</span><span class="lang-lbl">Language</span><span class="lang-car" aria-hidden="true">&#9662;</span></summary><div class="lang-menu">';
+ for(const l of LANGS){ s+='<a'+(l===lang?' class="on" aria-current="true"':'')+' href="'+url(l,pg)+'" hreflang="'+META[l].htmlLang+'" lang="'+META[l].htmlLang+'"><span class="lang-fl">'+FLAG[l]+'</span><span class="lang-nm">'+META[l].name+'</span></a>'; }
+ return s+'</div></details>';
+}
 function head(lang,pg,extra){ const t=T[lang]; extra=extra||{}; const title=extra.title||t.title; const desc=extra.desc||t.desc; const robots=extra.robots||'index, follow';
  return '<!DOCTYPE html>\n<html lang="'+META[lang].htmlLang+'">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n'
  +'<title>'+title+'</title>\n<meta name="description" content="'+desc+'">\n'

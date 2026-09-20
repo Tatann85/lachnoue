@@ -26,6 +26,62 @@ function wmoLabel(c) {
 }
 const eclLabel = x => x === 'PRISE' ? 'PRISE' : x === 'RENVOI' ? 'RENVOI' : x === 'FBM' ? 'FERMETURE BASSE MER' : x === 'VAV' ? 'VA-ET-VIENT' : null;
 
+/* ---------------------------------------------------------------------------
+   NIVEAU D'EAU — remonté ici depuis app.js le 20/09/2026.
+   Il tournait dans le navigateur de chaque visiteur. Un robot d'alerte aurait dû
+   le refaire de son côté : deux implémentations du même modèle hydraulique, qui
+   auraient divergé à la première correction, et un mail qui aurait contredit la
+   page sans que personne ne le voie.
+   Désormais : ce fichier est le seul endroit où un niveau se calcule. data.json
+   porte le résultat, app.js et le robot le lisent. Ne recalculez rien ailleurs.
+
+   ATTENTION : les cinq nombres ci-dessous (5,20 m de remplissage, 0,85 m/h de
+   vidange à partir de 20 h, plancher 2,60 m, 0,55 m/h en va-et-vient, plancher
+   0,80 m) viennent tels quels de l'ancien app.js. Ils ne sont sourcés nulle part
+   (question Q1 du backlog, restée sans réponse) et n'ont jamais été vérifiés sur
+   l'eau. Les déplacer ne les rend pas plus vrais.
+   --------------------------------------------------------------------------- */
+const FILL = 5.2;
+const HS_LVL = [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];
+const CRENEAUX = { m: [7, 8, 9, 10, 11, 12], a: [13, 14, 15, 16, 17], s: [18, 19, 20, 21] };
+
+// Y a-t-il de l'eau à l'heure h ? Copie conforme de l'ancien app.js.
+export function present(h, d) {
+  if (d.water === 'plein') return true;
+  if (d.water === 'renvoiSoir') return h <= 21;
+  if (d.water === 'vav') return Math.abs(h - d.tideHigh) <= 2;
+  return false;
+}
+// Cote du marais à l'heure h, en mètres. Copie conforme de l'ancien app.js.
+export function cote(h, d) {
+  if (d.water === 'plein') return FILL;
+  if (d.water === 'renvoiSoir') return h <= 20 ? FILL : Math.max(2.6, FILL - 0.85 * (h - 20));
+  if (d.water === 'vav') return Math.max(0.8, FILL - 0.55 * Math.abs(h - d.tideHigh));
+  return 1;
+}
+
+/* Verdict par créneau, écrit dans data.json pour le site ET pour les alertes.
+   Trois états seulement, et c'est volontaire :
+     'plein'     de l'eau sur tout le créneau ;
+     'incertain' jour de va-et-vient. Le niveau colle à la marée, et l'heure de
+                 pleine mer est la donnée la moins fiable du modèle (B4, B5, B6).
+                 Promettre de l'eau là-dessus serait envoyer quelqu'un pour rien ;
+     'vide'      aucune eau sur le créneau. Couvre le marais vidangé et le marais
+                 bas : le modèle sait qu'un renvoi a eu lieu, il ne sait pas quelle
+                 hauteur il reste. D'où le libellé « bas ou à sec », jamais « à sec ».
+   Pas de quatrième état tant que C4 (seuil foil métrique) n'est pas tranché :
+   aujourd'hui la navigabilité est binaire, inventer un « petit fond » serait faux. */
+export function verdictEau(d) {
+  const out = {};
+  for (const [k, hs] of Object.entries(CRENEAUX)) {
+    const avec = hs.filter(h => present(h, d));
+    if (!avec.length) out[k] = 'vide';
+    else if (d.water === 'vav') out[k] = 'incertain';
+    else out[k] = 'plein';
+  }
+  return out;
+}
+
 // Calcule l'état de l'écluse jour par jour avec rétention (report du dernier état)
 function ecluseStates(cal, fromISO, toISO) {
   const evDates = Object.keys(cal.ecluse).sort();
@@ -67,13 +123,18 @@ export function build(om, cal) {
     const pmM = mar.pmM || '—', pmS = mar.pmS || '—';
     let tideHigh = 15; const mm = /(\d{1,2}):\d{2}/.exec(pmS);
     if (mm) { const hh = +mm[1]; if (hh >= 7 && hh <= 21) tideHigh = hh; else { const mo = /(\d{1,2}):\d{2}/.exec(pmM); if (mo) tideHigh = Math.min(21, Math.max(7, +mo[1])); } }
+    // Le niveau est calculé ici, une fois pour toutes. Voir le bloc NIVEAU D'EAU.
+    const ref = { water: st.water, tideHigh };
+    const lvl = HS_LVL.map(h => Math.round(cote(h, ref) * 100) / 100);
+    const nav = HS_LVL.map(h => present(h, ref) ? 1 : 0);
     return {
-      d: labelDate(date), today: i === 0,
+      d: labelDate(date), today: i === 0, iso: date,
       wxc: wmoLabel(om.daily.weather_code[i]),
       tmin: Math.round(om.daily.temperature_2m_min[i]), tmax: Math.round(om.daily.temperature_2m_max[i]),
       eclM: st.eclM, eclS: st.eclS,
       coM: mar.coM || '—', coS: mar.coS || '—',
-      pmM, pmS, water: st.water, tideHigh, wind
+      pmM, pmS, water: st.water, tideHigh, wind,
+      hs: HS_LVL, lvl, nav, eau: verdictEau(ref)
     };
   });
   return { generatedAt: new Date().toISOString(), source: 'Open-Meteo (vent/météo) + marées SHOM (auto) + calendrier écluse', days };

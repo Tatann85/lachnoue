@@ -57,8 +57,20 @@ function trDay(s){return String(s).replace(/^(Lun|Mar|Mer|Jeu|Ven|Sam|Dim)/,func
 
 var days=[{d:'Mar 30/06',today:1,wxc:'Peu nuageux',tmin:15,tmax:25,eclM:'PRISE',eclS:'PRISE',coM:'67',coS:'69',pmM:'05:51',pmS:'18:00',water:'plein',tideHigh:18,wind:[[14,13,19,298],[16,16,24,303],[18,17,26,307],[20,17,26,308]],partial:1}];
 
-function present(h,d){if(d.water==='plein')return true;if(d.water==='renvoiSoir')return h<=21;if(d.water==='vav')return Math.abs(h-d.tideHigh)<=2;return false;}
-function cote(h,d){if(d.water==='plein')return FILL;if(d.water==='renvoiSoir')return h<=20?FILL:Math.max(2.6,FILL-0.85*(h-20));if(d.water==='vav')return Math.max(0.8,FILL-0.55*Math.abs(h-d.tideHigh));return 1;}
+/* NIVEAU D'EAU — le calcul a ete remonte dans scraper.mjs le 20/09/2026.
+   data.json porte desormais nav[] (y a-t-il de l'eau) et lvl[] (la cote), aux
+   heures listees dans hs[]. Le site et le robot d'alerte lisent la meme chose :
+   il ne peut plus y avoir deux verdicts differents pour la meme journee.
+   Les deux replis ci-dessous servent si le navigateur charge un data.json
+   anterieur a ce changement. Ne pas les supprimer sans verifier que plus aucun
+   cache ne peut servir l'ancien fichier. */
+function lvlIdx(h,d){var t=d.hs||HS;var i=t.indexOf(h);return i;}
+function present(h,d){
+  if(d.nav){var i=lvlIdx(h,d);if(i>=0&&d.nav[i]!=null)return !!d.nav[i];}
+  if(d.water==='plein')return true;if(d.water==='renvoiSoir')return h<=21;if(d.water==='vav')return Math.abs(h-d.tideHigh)<=2;return false;}
+function cote(h,d){
+  if(d.lvl){var i=lvlIdx(h,d);if(i>=0&&d.lvl[i]!=null)return d.lvl[i];}
+  if(d.water==='plein')return FILL;if(d.water==='renvoiSoir')return h<=20?FILL:Math.max(2.6,FILL-0.85*(h-20));if(d.water==='vav')return Math.max(0.8,FILL-0.55*Math.abs(h-d.tideHigh));return 1;}
 function goGroups(hs){hs=hs.slice().sort(function(a,b){return a-b;});var g=[],cur=[];for(var i=0;i<hs.length;i++){if(!cur.length||hs[i]-cur[cur.length-1]<=2)cur.push(hs[i]);else{g.push(cur);cur=[hs[i]];}}if(cur.length)g.push(cur);return g;}
 function goText(hs){return goGroups(hs).map(function(g){return g.length>1?g[0]+':00–'+g[g.length-1]+':00':g[0]+':00';}).join(', ');}
 

@@ -20,7 +20,11 @@ const FLAG = {
 const CSS = fs.readFileSync('./styles.css','utf8');
 function url(lang,pg){ const base = lang===XDEF ? '' : '/'+lang; if(pg==='index') return (base||'')+'/'; return base+'/'+PAGES[pg].file; }
 function abs(lang,pg){ return ORIGIN+url(lang,pg); }
-const PAGES = { index:{file:'index.html'}, club:{file:'association.html'}, lessons:{file:'cours.html'}, contact:{file:'contact.html'} };
+const PAGES = { index:{file:'index.html'}, alerts:{file:'alertes.html'}, club:{file:'association.html'}, lessons:{file:'cours.html'}, contact:{file:'contact.html'} };
+// Feuille de style propre a l'onglet alertes : injectee sur cette seule page.
+// styles.css est inline dans les 40 pages du site, y mettre ce bloc alourdirait
+// chaque page pour une seule d'entre elles.
+const CSSAL = fs.readFileSync('./alertes.css','utf8');
 function hreflangs(pg){ let s=''; for(const l of LANGS) s+='<link rel="alternate" hreflang="'+META[l].htmlLang+'" href="'+abs(l,pg)+'">\n'; s+='<link rel="alternate" hreflang="x-default" href="'+abs(XDEF,pg)+'">\n'; return s; }
 function langSwitch(lang,pg){
  // Menu deroulant "Language" : drapeau + nom de la langue. Sans JavaScript (element <details>).
@@ -39,10 +43,13 @@ function head(lang,pg,extra){ const t=T[lang]; extra=extra||{}; const title=extr
  +'<meta property="og:type" content="website">\n<meta property="og:locale" content="'+META[lang].ogLocale+'">\n<meta property="og:url" content="'+abs(lang,pg)+'">\n'
  +'<meta property="og:title" content="'+t.ogtitle+'">\n<meta property="og:description" content="'+desc+'">\n<meta property="og:image" content="'+ORIGIN+'/banniere.jpg">\n'
  +(extra.jsonld?'<script type="application/ld+json">'+extra.jsonld+'</script>\n':'')
- +'<style>'+CSS+'</style>\n</head>\n';
+ +'<style>'+CSS+'</style>\n'
+ +(extra.css?'<style>'+extra.css+'</style>\n':'')+'</head>\n';
 }
 function shell(lang,pg,active,body,extra){ const t=T[lang];
+ // L'onglet alertes est en 2e position, demande d'Antoine le 20/09/2026.
  const tabs='<nav class="tabs" aria-label="nav"><a class="tab'+(active==='index'?' active':'')+'" href="'+url(lang,'index')+'">'+t.tabHome+'</a>'
+  +'<a class="tab'+(active==='alerts'?' active':'')+'" href="'+url(lang,'alerts')+'">'+t.tabAlerts+'</a>'
   +'<a class="tab'+(active==='club'?' active':'')+'" href="'+url(lang,'club')+'">'+t.tabClub+'</a>'
   +'<a class="tab'+(active==='lessons'?' active':'')+'" href="'+url(lang,'lessons')+'">'+t.tabLessons+'</a>'
   +'<a class="tab'+(active==='contact'?' active':'')+'" href="'+url(lang,'contact')+'">'+t.tabContact+'</a></nav>';
@@ -55,6 +62,11 @@ function shell(lang,pg,active,body,extra){ const t=T[lang];
   +(extra&&extra.tail?extra.tail:'')
   +'<script data-goatcounter="https://lachnoue.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>\n</body>\n</html>\n';
 }
+/* L'objet T entier est inline dans la page pour le JavaScript. Les textes de
+   l'onglet alertes (prefixe al) pesent environ 4 ko et ne servent qu'a
+   alertes.js : on les retire de la page d'accueil, qui est la plus visitee.
+   A l'inverse alertes.js n'a pas besoin des textes du tableau 9 jours. */
+function sansAl(t){ const o={}; for(const k in t) if(!/^al[A-Z]/.test(k)) o[k]=t[k]; return o; }
 function faqHtml(t){ let s='<div class="faq">'; for(const q of t.faq) s+='<details><summary>'+q[0]+'</summary><p>'+q[1]+'</p></details>'; return s+'</div>'; }
 function faqLd(lang){ const t=T[lang]; return JSON.stringify({"@context":"https://schema.org","@type":"FAQPage",mainEntity:t.faq.map(q=>({"@type":"Question",name:q[0],acceptedAnswer:{"@type":"Answer",text:q[1].replace(/<[^>]+>/g,'')}}))}); }
 function legalHtml(t){ return '<details class="legal"><summary>'+t.legalSummary+'</summary><p>'+t.legal+'</p></details>'; }
@@ -88,8 +100,71 @@ function renderIndex(lang){ const t=T[lang];
   +'<h2>'+t.h2Faq+'</h2>'+faqHtml(t)
   +'<script type="application/ld+json">'+faqLd(lang)+'</script>'
   +legalHtml(t);
- const tail='<script>window.LANG='+JSON.stringify(lang)+';window.T='+JSON.stringify(t)+';</script>\n<script src="/app.js" defer></script>\n';
+ const tail='<script>window.LANG='+JSON.stringify(lang)+';window.T='+JSON.stringify(sansAl(t))+';</script>\n<script src="/app.js" defer></script>\n';
  return shell(lang,'index','index',body,{jsonld:jsonld,tail:tail});
+}
+/* ---- Onglet « Mes alertes conditions par mail » (20/09/2026) ----
+   Le balisage est produit ici, traduit, et alertes.js ne fait qu'y accrocher
+   le comportement : la page reste lisible et indexable sans JavaScript.
+   Les identifiants sont contractuels avec alertes.js, ne pas les renommer. */
+function renderAlertes(lang){ const t=T[lang];
+ const cur=(cle,lbl,txt,lo,hi)=>'<div class="cur"><div class="cur-hd"><span>'+lbl+'</span><b><span id="'+cle+'Txt">'+txt+'</span></b></div>'
+  +'<div class="rail" id="rail'+cle.toUpperCase()+'"><div class="fond"></div><div class="plein" id="pl'+cle.toUpperCase()+'"></div>'
+  +'<button type="button" class="poi" id="'+cle+'MinP" aria-label="'+lbl+' min"></button>'
+  +'<button type="button" class="poi" id="'+cle+'MaxP" aria-label="'+lbl+' max"></button></div>'
+  +'<div class="bornes"><span>'+lo+'</span><span>'+hi+'</span></div></div>';
+ const gauche='<div class="al-reglages">'
+  +'<section class="bloc"><h2>'+t.alNameH+'</h2>'
+   +'<label for="alNom">'+t.alNameLbl+'</label>'
+   +'<input id="alNom" type="text" maxlength="48" value="'+t.alNameDef+'">'
+   +'<p class="aide">'+t.alNameHelp+'</p>'
+   +'<p class="aide" style="margin-top:14px"><b>'+t.alWhatH+'</b></p>'
+   +'<div class="pils"><button type="button" class="pil mode on" id="mNav" aria-pressed="true">'+t.alModeNav+'</button>'
+   +'<button type="button" class="pil mode" id="mSec" aria-pressed="false">'+t.alModeSec+'</button></div>'
+   +'<p class="aide" id="noteSec" hidden>'+t.alSecNote+'</p></section>'
+  +'<section class="bloc" id="bVent"><h2>'+t.alWindH+' <small>'+t.alWindSub+'</small><span class="badge-off" id="offV" hidden>'+t.alNeutral+'</span></h2>'
+   +cur('v',t.alWindAvg,'12 – 28',5,40)+cur('r',t.alWindGust,'12 – 34',5,50)
+   +'<div class="recap" id="recap"></div></section>'
+  +'<section class="bloc" id="bRose"><h2>'+t.alDirH+' <small>'+t.alDirSub+'</small><span class="badge-off" id="offR" hidden>'+t.alNeutral+'</span></h2>'
+   +'<button type="button" class="pil grand" id="btTout" aria-pressed="false">'+t.alDirAll+'</button>'
+   +'<svg class="rose" id="rose" viewBox="0 0 320 320" role="img" aria-label="'+t.alDirH+'"></svg>'
+   +'<label>'+t.alDirStart+'</label><div class="dirs"><button type="button" class="fl" id="aM" aria-label="&minus;">&#8592;</button>'
+   +'<span class="nom" id="nomA">SO</span><button type="button" class="fl" id="aP" aria-label="+">&#8594;</button></div>'
+   +'<label style="margin-top:10px">'+t.alDirEnd+'</label><div class="dirs"><button type="button" class="fl" id="bM" aria-label="&minus;">&#8592;</button>'
+   +'<span class="nom" id="nomB">NE</span><button type="button" class="fl" id="bP" aria-label="+">&#8594;</button></div>'
+   +'<p class="aide" id="aideRose"></p></section>'
+  +'<section class="bloc"><h2>'+t.alWaterH+'</h2>'
+   +'<div class="pils"><button type="button" class="pil" id="btFlou" aria-pressed="false">'+t.alFlou+'</button></div>'
+   +'<p class="aide">'+t.alWaterNote+'</p><p class="aide">'+t.alFoilNote+'</p></section>'
+  +'<section class="bloc"><h2>'+t.alWhenH+'</h2>'
+   +'<label>'+t.alSlots+'</label><div class="pils" id="pCre"></div>'
+   +'<label style="margin-top:14px">'+t.alDaysL+'</label><div class="pils" id="pJours"></div></section>'
+  +'<section class="bloc"><h2>'+t.alNotifH+'</h2><div class="pils" id="pRyt"></div>'
+   +'<div class="dirs" id="zoneX" hidden style="max-width:240px;margin-top:10px">'
+   +'<button type="button" class="fl" id="xM" aria-label="&minus;">&minus;</button>'
+   +'<span class="nom" id="xTxt">3</span><button type="button" class="fl" id="xP" aria-label="+">+</button></div>'
+   +'<p class="aide" id="noteRyt"></p></section>'
+  +'</div>';
+ const apercu='<div class="al-apercu"><div class="apercu" id="apercu"><p class="eyebrow">'+t.alPrevH+'</p><p class="nomal" id="apTitre"></p>'
+   +'<div style="display:flex;align-items:baseline;gap:9px"><span class="gros" id="nbJ">0</span>'
+   +'<span style="font-size:13.5px" id="motJ"></span></div><div class="sep"></div><div id="liste"></div></div></div>';
+ const formulaire='<div class="al-form">'
+  +'<section class="bloc" id="alForm"><h2>'+t.alWhereH+'</h2>'
+   +'<label for="alMail">'+t.alEmail+'</label><input id="alMail" type="email" placeholder="'+t.alEmailP+'">'
+   +'<div class="coche"><input id="alOk" type="checkbox"><label for="alOk">'+t.alConsent+'</label></div>'
+   +'<div class="coche"><input id="alNews" type="checkbox"><label for="alNews">'+t.alNews+' <span class="opt">'+t.alOptional+'</span></label></div>'
+   +'<p class="aide">'+t.alNewsHelp+'</p>'
+   +'<button type="button" class="envoi" id="creer">'+t.alSend+'</button>'
+   +'<p class="aide">'+t.alAfterSend+'</p></section>'
+  +'<div class="alok" id="alDone"><b>'+t.alOkTitle+'</b>'+t.alOkBody+'</div>'
+  +'<div class="garde"><b>'+t.alGuardT+'</b><p>'+t.alGuardP+'</p></div>'
+  +'</div>';
+ const body='<h1>'+t.alH1+'</h1><p class="al-lead">'+t.alLead+'</p>'
+  +'<p class="al-fronly">'+t.alFrOnly+'</p>'
+  +'<div class="al" id="alPage">'+apercu+gauche+formulaire+'</div>'
+  +legalHtml(t);
+ const tail='<script>window.LANG='+JSON.stringify(lang)+';window.T='+JSON.stringify(t)+';</script>\n<script src="/alertes.js" defer></script>\n';
+ return shell(lang,'alerts','alerts',body,{title:t.alTitle,desc:t.alDesc,keywords:false,css:CSSAL,tail:tail});
 }
 function visu(href,badge,shot,ctaHost,t){ return '<div class="visu"><a href="'+href+'" target="_blank" rel="noopener"><div class="visu-frame"><img src="https://s.wordpress.com/mshots/v1/'+encodeURIComponent(href)+'?w=1200&h=750" alt="'+badge+'" loading="lazy"><span class="visu-badge">'+badge+' ↗</span></div><span class="visu-cta">'+t.visit+' '+ctaHost+' →</span></a></div>'; }
 function renderClub(lang){ const t=T[lang];
@@ -118,22 +193,24 @@ function renderContact(lang){ const t=T[lang];
 // écrire
 for(const lang of LANGS){ const dir = lang===XDEF ? OUT : OUT+'/'+lang; fs.mkdirSync(dir,{recursive:true});
  fs.writeFileSync(dir+'/index.html',renderIndex(lang));
+ fs.writeFileSync(dir+'/alertes.html',renderAlertes(lang));
  fs.writeFileSync(dir+'/association.html',renderClub(lang));
  fs.writeFileSync(dir+'/cours.html',renderLessons(lang));
  fs.writeFileSync(dir+'/contact.html',renderContact(lang));
 }
 fs.copyFileSync('./app.js', OUT + '/app.js');
+fs.copyFileSync('./alertes.js', OUT + '/alertes.js');
 // sitemap multilingue
 (function(){
-  const smPages = ['index','club','lessons','contact'];
+  const smPages = ['index','alerts','club','lessons','contact'];
   let sm = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n';
   for (const pg of smPages) {
     for (const l of LANGS) {
       sm += '  <url>\n    <loc>' + abs(l, pg) + '</loc>\n';
       for (const a of LANGS) sm += '    <xhtml:link rel="alternate" hreflang="' + META[a].htmlLang + '" href="' + abs(a, pg) + '"/>\n';
       sm += '    <xhtml:link rel="alternate" hreflang="x-default" href="' + abs(XDEF, pg) + '"/>\n';
-      sm += '    <changefreq>' + (pg === 'index' ? 'daily' : 'monthly') + '</changefreq>\n';
-      sm += '    <priority>' + (pg === 'index' ? (l === XDEF ? '1.0' : '0.9') : '0.6') + '</priority>\n  </url>\n';
+      sm += '    <changefreq>' + (pg === 'index' || pg === 'alerts' ? 'daily' : 'monthly') + '</changefreq>\n';
+      sm += '    <priority>' + (pg === 'index' ? (l === XDEF ? '1.0' : '0.9') : (pg === 'alerts' ? '0.8' : '0.6')) + '</priority>\n  </url>\n';
     }
   }
   sm += '</urlset>\n';

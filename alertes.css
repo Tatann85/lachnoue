@@ -1,0 +1,118 @@
+/* ===== Onglet « Mes alertes conditions par mail » — 20/09/2026 =====
+   Ce fichier n'est injecté QUE dans la page alertes.html (build.mjs).
+   styles.css est inliné dans les 32 pages du site : y mettre ces 200 lignes
+   alourdirait chaque page pour une seule d'entre elles.
+   Les couleurs viennent des variables de styles.css, rien n'est redéfini ici
+   sauf --sec, propre au mode « pas d'eau ». */
+
+/* Trois blocs : les réglages, l'Aperçu, le formulaire.
+   Ordinateur : réglages à gauche, Aperçu puis formulaire à droite.
+   Téléphone : l'Aperçu passe EN PREMIER, c'est ce qu'on veut voir en arrivant,
+   puis les réglages, puis le formulaire. Le formulaire ne remonte jamais
+   au-dessus des réglages : on ne demande pas une adresse avant les critères. */
+.al{--sec:#a06a1e;--sec-bg:#fdf4e4;--clair:#a8ded8;--pale:#d5e0dd;
+  display:grid;grid-template-columns:1fr;gap:16px;margin-top:6px}
+.al-apercu{order:-1}
+.al-reglages{order:0}
+.al-form{order:1}
+@media(min-width:900px){
+  .al{grid-template-columns:1fr 340px;align-items:start}
+  .al-reglages{grid-column:1;grid-row:1/span 2;order:0}
+  .al-apercu{grid-column:2;grid-row:1;order:0}
+  .al-form{grid-column:2;grid-row:2;order:0}
+}
+
+.al-lead{font-size:14.5px;line-height:1.6;color:var(--muted);margin:0 0 4px;max-width:62ch}
+.al-fronly{font-size:12.5px;color:var(--sec);background:var(--sec-bg);
+  border:1px solid #f0dfbd;border-radius:10px;padding:9px 12px;margin:0 0 10px}
+
+.bloc{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:14px}
+.bloc h2{margin:0 0 12px;font-size:16px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.bloc h2 small{font-size:12px;font-weight:400;color:var(--muted)}
+/* Mode « pas d'eau » : le vent et l'orientation ne veulent plus rien dire.
+   On les grise ET on coupe les événements, pour qu'un réglage sans effet
+   ne puisse pas être touché par erreur. */
+.bloc.off{opacity:.42;pointer-events:none}
+.badge-off{margin-left:auto;font-size:11px;font-weight:700;letter-spacing:.04em;
+  background:var(--line);color:var(--muted);border-radius:999px;padding:3px 9px}
+
+.al label{display:block;font-size:13px;font-weight:600;margin-bottom:4px}
+.al input[type=text],.al input[type=email]{width:100%;font:inherit;font-size:15px;
+  padding:11px 13px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+.al input[type=text]:focus,.al input[type=email]:focus{outline:2px solid var(--water);outline-offset:1px}
+.aide{font-size:12.5px;color:var(--muted);line-height:1.5;margin:6px 0 0}
+
+/* --- pastilles --- */
+.pil{font:inherit;font-size:13.5px;font-weight:600;cursor:pointer;
+  background:var(--bg);color:var(--muted);border:1px solid var(--line);
+  border-radius:999px;padding:9px 15px;min-height:40px}
+.pil:hover{border-color:var(--water)}
+.pil.on{background:var(--water);border-color:var(--water);color:#fff}
+.pil.grand{width:100%;padding:13px;font-size:14.5px;min-height:46px}
+.pils{display:flex;gap:8px;flex-wrap:wrap}
+.pil.mode{flex:1;min-width:190px;text-align:center}
+.pil.mode.on-sec{background:var(--sec);border-color:var(--sec);color:#fff}
+
+/* --- barre à deux poignées (vent moyen, rafales) ---
+   Une seule barre porte le mini ET le maxi, comme demandé : deux curseurs
+   séparés laissaient croire à deux réglages indépendants. */
+.cur{margin-bottom:16px}
+.cur-hd{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:2px}
+.cur-hd span{font-size:13px;font-weight:600}
+.cur-hd b{color:var(--water);font-size:15.5px;font-variant-numeric:tabular-nums;font-weight:700}
+.rail{position:relative;height:40px;touch-action:none}
+.rail .fond{position:absolute;top:17px;left:0;right:0;height:6px;border-radius:99px;background:var(--line)}
+.rail .plein{position:absolute;top:17px;height:6px;border-radius:99px;background:var(--water)}
+.rail .poi{position:absolute;top:9px;margin-left:-11px;width:22px;height:22px;border-radius:50%;
+  background:var(--card);border:3px solid var(--water);padding:0;touch-action:none;cursor:grab;
+  box-shadow:0 1px 4px rgba(6,40,38,.28)}
+.rail .poi:focus-visible{outline:3px solid var(--star);outline-offset:2px}
+.bornes{display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted)}
+.recap{font-size:13px;color:var(--muted);background:var(--bg);border-radius:10px;padding:10px 12px;line-height:1.5}
+
+/* --- rose des vents --- */
+.rose{display:block;width:100%;max-width:320px;margin:10px auto;touch-action:none}
+.dirs{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;margin-top:6px}
+.dirs .nom{text-align:center;font-weight:700;color:var(--water);font-size:15px}
+.fl{font:inherit;font-size:16px;cursor:pointer;background:var(--bg);border:1px solid var(--line);
+  border-radius:9px;width:44px;height:40px;color:var(--ink)}
+.fl:hover{border-color:var(--water)}
+
+/* --- cases à cocher --- */
+.coche{display:flex;gap:10px;align-items:flex-start;margin-top:10px}
+.coche input{margin:3px 0 0;width:18px;height:18px;accent-color:var(--water);flex:0 0 auto}
+.coche label{font-size:12.5px;font-weight:400;color:var(--muted);line-height:1.5;margin:0}
+.opt{display:inline-block;background:var(--line);color:var(--ink);border-radius:999px;
+  padding:1px 8px;font-size:11px;font-weight:600;vertical-align:1px}
+
+/* --- aperçu --- */
+.apercu{background:var(--water-d);color:#fff;border-radius:14px;padding:16px 18px}
+.apercu.sec{background:#5a3d12}
+.apercu .eyebrow{margin:0;color:var(--clair);font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+.apercu .nomal{font-size:13px;color:var(--clair);margin:4px 0 10px}
+.gros{font-size:34px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums}
+.sep{height:1px;background:rgba(255,255,255,.18);margin:12px 0}
+.jour{background:rgba(255,255,255,.09);border-radius:10px;padding:10px 12px;margin-bottom:7px}
+.jour .d{font-weight:700;font-size:14px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.jour .s{font-size:12.5px;color:var(--clair);margin-top:3px;line-height:1.45}
+.bdg{font-size:10.5px;font-weight:700;letter-spacing:.03em;background:rgba(255,255,255,.16);
+  border-radius:999px;padding:3px 8px;white-space:nowrap}
+.bdg.flou{background:#e8b45c;color:#3a2a08}
+.vide{font-size:13px;color:var(--clair);line-height:1.5}
+
+/* --- envoi --- */
+.envoi{background:var(--water);color:#fff;border:0;border-radius:10px;padding:14px;
+  font:inherit;font-size:15.5px;font-weight:700;min-height:48px;width:100%;cursor:pointer;margin-top:12px}
+.envoi:hover{background:var(--water-d)}
+.envoi:disabled{opacity:.6;cursor:default}
+.alok{display:none;background:#e7f5f1;border:1px solid #bfe3da;border-radius:12px;padding:16px 18px}
+.alok b{display:block;font-size:16px;margin-bottom:5px}
+.garde{background:var(--sand);border:1px solid #e6dbc8;border-radius:14px;padding:16px 18px;margin-top:14px}
+.garde b{display:block;margin-bottom:5px;font-size:14px}
+.garde p{margin:0;font-size:13px;color:var(--muted);line-height:1.55}
+
+@media(max-width:420px){
+  .bloc{padding:14px}
+  .pil.mode{min-width:100%}
+  .gros{font-size:30px}
+}

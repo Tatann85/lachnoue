@@ -113,7 +113,7 @@ function renderContact(lang){ const t=T[lang];
   +'<div class="cok" id="cok">'+t.conOk+'</div>';
  const body='<h1>'+t.conH1+'</h1><p class="cintro">'+t.conIntro+'</p>'+form+'<h2>'+t.h2Faq+'</h2>'+faqHtml(t)+legalHtml(t);
  const tail='<script>(function(){var f=document.getElementById("cform");if(!f)return;f.addEventListener("submit",function(e){e.preventDefault();var b=f.querySelector(".csend");b.textContent='+JSON.stringify(t.conSending)+';b.disabled=true;fetch(f.action,{method:"POST",body:new FormData(f),headers:{"Accept":"application/json"}}).then(function(r){if(r.ok){f.style.display="none";var k=document.getElementById("cok");k.style.display="block";k.scrollIntoView({behavior:"smooth",block:"center"});}else{b.textContent='+JSON.stringify(t.conSend)+';b.disabled=false;alert('+JSON.stringify(t.conErr)+');}}).catch(function(){b.textContent='+JSON.stringify(t.conSend)+';b.disabled=false;alert('+JSON.stringify(t.conErr)+');});});})();</script>\n';
- return shell(lang,'contact','contact',body,{title:t.conTitle,desc:t.conDesc,robots:'noindex, follow',keywords:false,tail:tail});
+ return shell(lang,'contact','contact',body,{title:t.conTitle,desc:t.conDesc,keywords:false,tail:tail});
 }
 // écrire
 for(const lang of LANGS){ const dir = lang===XDEF ? OUT : OUT+'/'+lang; fs.mkdirSync(dir,{recursive:true});
@@ -125,7 +125,7 @@ for(const lang of LANGS){ const dir = lang===XDEF ? OUT : OUT+'/'+lang; fs.mkdir
 fs.copyFileSync('./app.js', OUT + '/app.js');
 // sitemap multilingue
 (function(){
-  const smPages = ['index','club','lessons'];
+  const smPages = ['index','club','lessons','contact'];
   let sm = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n';
   for (const pg of smPages) {
     for (const l of LANGS) {

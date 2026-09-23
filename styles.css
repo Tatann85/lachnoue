@@ -182,14 +182,16 @@ svg{width:100%;height:auto;display:block}
   .wx{font-size:10px}
   td.jour small{font-size:9.5px}
   /* !important : la taille de la boussole peut etre posee en style inline */
-  td svg{width:30px!important;height:30px!important}
+  td .dircell svg{width:30px!important;height:30px!important}
+  .detin>svg{width:100%!important;height:auto!important}
 }
 
 @media(max-width:345px){
   .wrap{padding-left:4px;padding-right:4px}
   thead th{font-size:8.5px;padding:6px 1px}
   tbody td{padding:6px 1px;font-size:11px}
-  td svg{width:26px!important;height:26px!important}
+  td .dircell svg{width:26px!important;height:26px!important}
+  .detin>svg{width:100%!important;height:auto!important}
 }
 
 /* A3 : message quand les previsions ne sont pas encore la, ou pas chargeables. */

@@ -4,18 +4,61 @@
 var T=window.T||{}, LANG=window.LANG||'fr';
 var HS=[7,8,9,10,11,12,13,14,15,16,17,18,19,20,21], FILL=5.2;
 /* ---------------------------------------------------------------------------
-   SEUILS DU SITE, regroupes ici pour n'avoir qu'un seul endroit a modifier.
-   ATTENTION : ces valeurs ne sont PAS calibrees sur des sessions reelles.
-   C'est le point C5 du backlog. Elles sont volontairement prudentes.
+   SEUILS DU SITE — un seul endroit a modifier, et chacun est justifie.
+
+   CALIBRES LE 23/09/2026 sur 3 ans de reanalyse horaire au spot meme
+   (Open-Meteo archive, 46.498 / -1.793, 26 304 heures) et sur la litterature
+   wingfoil. Avant cette date ils etaient poses a vue : c'etait le point C5.
+
+   CE QUE LA MESURE A MONTRE, et c'est contre-intuitif. Au spot, la rafale vaut
+   environ 1,85 fois le vent moyen, et TRES regulierement : p10 a 1,69 et p90 a
+   2,04 sur les heures a plus de 11 kn. Le facteur de rafale ne distingue donc
+   PAS les journees instables des journees lisses, il est quasi constant. Par
+   consequent un plafond exprime en RAFALES est un plafond de VENT MOYEN
+   deguise. L'ancien GO_GUST_MAX = 30 kn equivalait a un plafond de 16 kn de
+   vent moyen : il refusait 99 a 100 % des heures au-dessus de 18 kn, soit
+   environ 320 heures par an, c'est-a-dire exactement les meilleures journees,
+   et ne laissait que les heures de marge. C'etait le point A8 du backlog.
+
+   NE PAS TOUCHER UN SEUIL SANS RELANCER outils/mesure-seuils.mjs : un seuil
+   deplace tous les creneaux du calendrier d'un coup.
    --------------------------------------------------------------------------- */
-var GO_MIN       = 11; /* vent moyen mini (kn) pour afficher un creneau GO.
-                          B12 : etait a 10, soit exactement le seuil de 1 etoile,
-                          donc un jour note 1/5 affichait quand meme un GO. */
-var GO_GUST_MAX  = 30; /* au-dela de cette rafale (kn), aucun creneau GO.
-                          A4 : 11 kn de moyen avec 35 kn de rafale donnait un GO vert. */
-var NOTE_STRONG  = 30; /* au-dela (kn), la note est plafonnee a 2 etoiles. */
-var NOTE_TOOMUCH = 35; /* au-dela (kn), la note tombe a 1 etoile : trop de vent.
-                          A5 : la note ne redescendait jamais, 40 kn valait 5 etoiles. */
+var GO_VENT_MIN   = 11; /* vent moyen mini (kn) pour afficher un creneau GO.
+                           B12 : etait a 10, soit exactement le seuil de 1 etoile,
+                           donc un jour note 1/5 affichait quand meme un GO. */
+var GO_VENT_MAX   = 25; /* vent moyen maxi (kn). Au-dela le site n'affiche plus de
+                           creneau. La litterature wingfoil situe entre 22 et 25 kn
+                           la frontiere entre « confortable pour la plupart » et
+                           « vent fort, petit materiel, pratiquant experimente »
+                           (Ezzy Wings, Poole Harbour Watersports, Windance ; le
+                           forum francais Tram-Riders place 30-40 kn en « tendu »).
+                           Le site s'adresse a tout le monde, debutants compris :
+                           il se tait plutot que d'envoyer quelqu'un dans des
+                           conditions d'expert. Au spot, la bande 25-30 kn ne
+                           represente de toute facon que 34 heures par an. */
+var GO_RAFALE_MAX = 50; /* rafale maxi (kn). Garde-fou d'EXCEPTION seulement, pour
+                           le grain qui ne suit pas le vent moyen. Sur la plage
+                           11-25 kn ce seuil ne coupe que 0,15 % des heures, 7 sur
+                           3 ans. Il est volontairement place AU-DESSUS de la
+                           relation normale rafale = 1,85 x vent, pour ne pas
+                           redevenir un plafond de vent deguise : c'est toute la
+                           lecon de A8, et il ne faut pas le baisser sans refaire
+                           la mesure. */
+var GO_TROU_MAX   = 1;  /* trou, en heures, comble a l'interieur d'un creneau. */
+var GO_DUREE_MIN  = 2;  /* duree mini, en heures, d'un creneau affiche. En dessous
+                           il n'est pas montre : une fenetre d'une heure obtenue
+                           parce qu'une rafale passe juste sous le seuil n'est pas
+                           une recommandation, c'est un artefact de seuil. */
+var NOTE_TENU     = 2;  /* la note porte sur le vent MAINTENU au moins ce nombre
+                           d'heures d'affilee, et non sur le maximum du jour : une
+                           journee molle avec une seule heure de pointe ne doit pas
+                           etre notee comme une bonne journee. */
+var NOTE_TOOMUCH  = 35; /* au-dela (kn de vent tenu) la note tombe a 1 etoile.
+                           A5 : la note ne redescendait jamais, 40 kn valait 5. */
+/* Au-dela de GO_VENT_MAX la note est plafonnee a 2 etoiles. La note et le creneau
+   doivent raconter la MEME journee : cinq etoiles sur une journee sans creneau
+   etait l'incoherence la plus visible de A8. Ce plafond n'a donc pas de constante
+   propre, il suit GO_VENT_MAX par construction. */
 /* Un creneau GO exige-t-il une certitude sur l'eau ?
    Aujourd'hui NON, et c'est le comportement historique : le GO ne regarde que
    present(), donc un jour de va-et-vient ou le soir d'un renvoi peuvent afficher
@@ -31,7 +74,7 @@ function isGo(w,d){
   if(w[0]<7 || w[0]>21) return false;
   if(GO_EXIGE_CERTITUDE){ if(eauCre(w[0],d)!=='plein') return false; }
   else if(!present(w[0],d)) return false;
-  return w[1]>=GO_MIN && w[2]<GO_GUST_MAX;
+  return w[1]>=GO_VENT_MIN && w[1]<=GO_VENT_MAX && w[2]<GO_RAFALE_MAX;
 }
 var SM={fr:['N','NE','E','SE','S','SO','O','NO'],en:['N','NE','E','SE','S','SW','W','NW'],de:['N','NO','O','SO','S','SW','W','NW'],nl:['N','NO','O','ZO','Z','ZW','W','NW'],es:['N','NE','E','SE','S','SO','O','NO'],it:['N','NE','E','SE','S','SO','O','NO'],zh:['N','NE','E','SE','S','SW','W','NW'],br:['N','NE','E','SE','S','SW','W','NW']};
 var SECT=SM[LANG]||SM.en;
@@ -122,7 +165,53 @@ function cote(h,d){
    desormais lu dans data.json (champ pas), avec repli a 2 h pour un ancien
    fichier encore en cache. */
 function pasDe(d){ return (d&&d.hs&&d.hs.length>=12)?1:2; }
-function goGroups(hs,pas){pas=pas||2;hs=hs.slice().sort(function(a,b){return a-b;});var g=[],cur=[];for(var i=0;i<hs.length;i++){if(!cur.length||hs[i]-cur[cur.length-1]<=pas)cur.push(hs[i]);else{g.push(cur);cur=[hs[i]];}}if(cur.length)g.push(cur);return g;}
+/* A8 — LISSAGE DES CRENEAUX GO.
+   Deux defauts corriges ici, tous deux visibles sur la journee du 29/09/2026.
+   Un TROU d'une heure au milieu d'un bon creneau le coupait en deux : il
+   suffisait d'une rafale a exactement 30 kn, et le site annoncait deux miettes
+   au lieu d'une fenetre. Un creneau ISOLE d'une heure etait presente comme une
+   recommandation alors qu'il ne tenait qu'a un noeud de prevision.
+   Desormais les trous de GO_TROU_MAX heures sont combles, et les creneaux plus
+   courts que GO_DUREE_MIN heures ne sont pas affiches du tout.
+   Cette fonction sert A LA FOIS au texte du tableau et a la bande grisee du
+   graphique : les deux ne peuvent donc pas diverger. */
+function goGroups(hs,pas){
+  pas=pas||2;
+  hs=hs.slice().sort(function(a,b){return a-b;});
+  var g=[],cur=[];
+  for(var i=0;i<hs.length;i++){
+    if(!cur.length||hs[i]-cur[cur.length-1]<=pas*(1+GO_TROU_MAX))cur.push(hs[i]);
+    else{g.push(cur);cur=[hs[i]];}
+  }
+  if(cur.length)g.push(cur);
+  return g.filter(function(c){return (c[c.length-1]-c[0]+pas)>=GO_DUREE_MIN;});
+}
+/* A8 — LE VENT QUI FAIT LA NOTE.
+   Avant, la note portait sur le MAXIMUM du jour : une journee a 6 kn avec une
+   seule heure a 15 kn valait cinq etoiles. Elle porte desormais sur le meilleur
+   vent MAINTENU au moins NOTE_TENU heures d'affilee. Les heures doivent se
+   suivre reellement : un trou dans la serie coupe la fenetre, sans quoi on
+   recollerait le matin et le soir d'une journee coupee en deux.
+   Repli assume : s'il n'existe aucune fenetre continue assez longue, on retombe
+   sur le maximum, qui est l'ancien comportement. Il n'y a rien de mieux a dire
+   avec si peu d'heures. */
+function ventTenu(set,pas,heures){
+  if(!set||!set.length) return 0;
+  var a=set.slice().sort(function(x,y){return x[0]-y[0];});
+  var maxi=Math.max.apply(null,a.map(function(w){return w[1];}));
+  var n=Math.max(1,Math.round(heures/(pas||1)));
+  if(a.length<n) return maxi;
+  var best=null;
+  for(var i=0;i+n<=a.length;i++){
+    var ok=true,mini=Infinity;
+    for(var k=0;k<n;k++){
+      if(k && a[i+k][0]-a[i+k-1][0]!==pas){ok=false;break;}
+      if(a[i+k][1]<mini)mini=a[i+k][1];
+    }
+    if(ok && (best===null||mini>best)) best=mini;
+  }
+  return best===null?maxi:best;
+}
 function goText(hs,pas){return goGroups(hs,pas).map(function(g){return g.length>1?g[0]+':00–'+g[g.length-1]+':00':g[0]+':00';}).join(', ');}
 
 var HREF=[7,9,11,13,15,17,19,21];  /* heures qui portent un chiffre dans le graphique */
@@ -144,8 +233,15 @@ function daySVG(d){
      chevauchaient les jours de maree tardive. Depuis que l'heure de pleine mer
      est donnee a la minute (B5), le cas est frequent. Libelle ancre a gauche. */
   s+='<line x1="'+xL+'" y1="'+yF.toFixed(1)+'" x2="'+xR+'" y2="'+yF.toFixed(1)+'" stroke="#8a4b00" stroke-width="1.2" stroke-dasharray="5 4"/><text x="'+(xL+4)+'" y="'+(yF-4).toFixed(1)+'" font-size="9.5" fill="#8a4b00">'+String(T.svFill||'').replace('{c}',fmtCote(fillJ))+'</text>';
+  /* Le libelle « maree haute » etait pose a top+22, c'est-a-dire exactement a la
+     hauteur ou passe la ligne de cote de remplissage en ete (5,20 m tombe a y=33
+     et le libelle a y=36) : les deux textes se chevauchaient tous les jours de la
+     belle saison. D-14 avait deja deplace le libelle de la COTE vers la gauche ;
+     il manquait le symetrique. Le libelle de maree se place desormais TOUJOURS
+     14 px sous la ligne de cote, donc de l'autre cote du trait, et jamais dessus. */
   var tm=d.tideHigh;
-  s+='<line x1="'+X(tm).toFixed(1)+'" y1="'+top+'" x2="'+X(tm).toFixed(1)+'" y2="'+bot+'" stroke="#c9851a" stroke-width="1.1" stroke-dasharray="3 3"/><text x="'+(X(tm)+3).toFixed(1)+'" y="'+(top+22)+'" font-size="9.5" fill="#c9851a">'+T.svHigh+'</text>';
+  var yT=Math.min(bot-6,yF+14);
+  s+='<line x1="'+X(tm).toFixed(1)+'" y1="'+top+'" x2="'+X(tm).toFixed(1)+'" y2="'+bot+'" stroke="#c9851a" stroke-width="1.1" stroke-dasharray="3 3"/><text x="'+(X(tm)+3).toFixed(1)+'" y="'+yT.toFixed(1)+'" font-size="9.5" fill="#c9851a">'+T.svHigh+'</text>';
   var pts=HS.map(function(h){return X(h).toFixed(1)+','+Y(cote(h,d)).toFixed(1);}).join(' ');
   s+='<polyline points="'+pts+'" fill="none" stroke="#12857f" stroke-width="2.6" stroke-linejoin="round"/>';
   s+='<line x1="'+xL+'" y1="'+bot+'" x2="'+xR+'" y2="'+bot+'" stroke="#cfd6dd"/>';
@@ -154,43 +250,53 @@ function daySVG(d){
   var yw=186;
   s+='<text x="2" y="'+(yw+4)+'" font-size="9" fill="#9aa3ac">'+T.svSky+'</text>';
   var skyByH={}; d.wind.forEach(function(w){ if(w[5]) skyByH[w[0]]=w[5]; });
-  [7,9,11,13,15,17,19,21].forEach(function(h){s+='<text x="'+X(h).toFixed(1)+'" y="'+(yw+5)+'" text-anchor="middle" font-size="13">'+wx(skyByH[h]||d.wxc)+'</text>';});
+  /* A8 : centre sur le bloc de deux heures, pas sur l'heure, pour que toute la
+     colonne (ciel, temperature, vent, boussole, rafale) soit alignee. */
+  var cBloc=function(h,i){var f=(i<HREF.length-1)?Math.min(HREF[i+1]-1,21):21;return (X(h)-px/2+X(f)+px/2)/2;};
+  HREF.forEach(function(h,i){s+='<text x="'+cBloc(h,i).toFixed(1)+'" y="'+(yw+5)+'" text-anchor="middle" font-size="13">'+wx(skyByH[h]||d.wxc)+'</text>';});
   s+='<text x="2" y="'+(yw+20)+'" font-size="9" fill="#9aa3ac">'+T.svTemp+'</text>';
   var tByH={}; d.wind.forEach(function(w){ if(w[4]!=null) tByH[w[0]]=w[4]; });
-  if(Object.keys(tByH).length){ [7,9,11,13,15,17,19,21].forEach(function(h){ if(tByH[h]!=null) s+='<text x="'+X(h).toFixed(1)+'" y="'+(yw+20)+'" text-anchor="middle" font-size="10" font-weight="700" fill="#48535f">'+tByH[h]+'°</text>'; }); }
+  if(Object.keys(tByH).length){ HREF.forEach(function(h,i){ if(tByH[h]!=null) s+='<text x="'+cBloc(h,i).toFixed(1)+'" y="'+(yw+20)+'" text-anchor="middle" font-size="10" font-weight="700" fill="#48535f">'+tByH[h]+'°</text>'; }); }
   else s+='<text x="'+((xL+xR)/2).toFixed(1)+'" y="'+(yw+20)+'" text-anchor="middle" font-size="11" font-weight="700" fill="#48535f">'+d.tmin+'–'+d.tmax+' °C</text>';
   var yc=208,hc=19,yd=252,cr=12,yr=284;
   s+='<text x="2" y="'+(yc+13)+'" font-size="9" fill="#9aa3ac">'+T.svWind+'</text>';
   s+='<text x="2" y="'+(yd+4)+'" font-size="13">🧭</text>';
   s+='<text x="2" y="'+(yr+13)+'" font-size="9" fill="#9aa3ac">'+T.svGust+'</text>';
-  /* B9 — UNE BARRE PAR HEURE, un chiffre toutes les deux heures.
-     Les donnees sont horaires depuis le 23/09/2026. Afficher quinze nombres de
-     deux chiffres dans une largeur de telephone les rendrait illisibles : sur un
-     ecran de 390 px le graphique est reduit d'un facteur 0,55, un chiffre de
-     11 px tombe a 6 px. Les quinze barres sont donc COLOREES, ce qui montre une
-     rafale d'une heure d'un coup d'oeil, et seules les huit heures de reference
-     portent le chiffre et la boussole. Rien n'est cache : la rafale maximale de
-     la journee, celle qui compte, est affichee dans la ligne du tableau, et elle
-     est calculee sur les quinze heures. */
-  /* B21 — LES BARRES SE TOUCHENT, la ligne est une bande continue.
-     Avec un blanc de 10 % entre elles, les quinze barres se lisaient comme
-     quinze CASES, dont sept colorees mais vides puisque seules les huit heures
-     de reference portent un chiffre. Signale par Antoine le 23/09/2026 comme un
-     bug d'affichage, et c'en etait un au sens ou il voulait dire : ce que l'oeil
-     comprend est faux. Barres jointives et coins droits : la ligne devient un
-     degrade continu sur lequel les huit chiffres sont poses. L'information
-     horaire de D-2 est conservee, la lecture en cases disparait. */
-  var lg=px*pas;
-  d.wind.filter(function(w){return w[0]>=7&&w[0]<=21;}).forEach(function(w){var k=w[1],g=w[2],cx=X(w[0]),ad=((w[3]||0)+180)%360,f=favOf(w[3]||0);var col=favColor(f);
-    var chiffre=HREF.indexOf(w[0])>=0;
-    s+='<rect x="'+(cx-lg/2).toFixed(1)+'" y="'+yc+'" width="'+lg.toFixed(1)+'" height="'+hc+'" fill="'+wc(k)+'"/>';
-    if(chiffre) s+='<text x="'+cx.toFixed(1)+'" y="'+(yc+13.5)+'" text-anchor="middle" font-size="11" font-weight="800" fill="'+wtc(k)+'">'+k+'</text>';
-    if(chiffre){
-      s+=chartCompass(cx,yd,cr,ad,col);
-      s+='<text x="'+cx.toFixed(1)+'" y="'+(yd+cr+10)+'" text-anchor="middle" font-size="9" font-weight="600" fill="#5c716d">'+sectOf(w[3]||0)+'</text>';
-    }
-    s+='<rect x="'+(cx-lg/2).toFixed(1)+'" y="'+yr+'" width="'+lg.toFixed(1)+'" height="'+hc+'" fill="'+wc(g)+'"/>';
-    if(chiffre) s+='<text x="'+cx.toFixed(1)+'" y="'+(yr+13.5)+'" text-anchor="middle" font-size="11" font-weight="800" fill="'+wtc(g)+'">'+g+'</text>';});
+  /* B9 + B21 + A8 — UN BLOC PAR PAIRE D'HEURES, ALIGNE SUR SON CHIFFRE.
+     Les donnees sont horaires depuis le 23/09/2026 (D-2), mais un chiffre ne
+     peut s'afficher qu'une heure sur deux : quinze nombres a deux chiffres sur
+     un ecran de 390 px sont illisibles, le graphique y est reduit d'un facteur
+     0,55 et un chiffre de 11 px tombe a 6 px.
+     Deux consequences fachees, corrigees ici.
+     1) Les heures IMPAIRES n'etaient jamais affichees. Une rafale de 40 kn a 8 h
+        etait invisible : de l'information perdue, pas de la mise en page.
+     2) La couleur changeait toutes les heures alors que le chiffre ne changeait
+        que toutes les deux. Un bloc de couleur etait donc a cheval entre deux
+        chiffres et l'oeil ne savait pas auquel il se rapportait.
+     Desormais un bloc couvre les DEUX heures qu'il represente et porte la valeur
+     la PLUS DEFAVORABLE des deux : le vent le plus FAIBLE, celui sur lequel on
+     peut compter, et la rafale la plus FORTE, celle qui peut tomber dessus.
+     Plus aucune heure n'est ignoree, le chiffre est toujours de la couleur de son
+     propre bloc, et un fin trait separe les blocs pour qu'on lise bien des
+     tranches de deux heures et non une bande continue. */
+  var parH={}; d.wind.forEach(function(w){ if(w[0]>=7&&w[0]<=21) parH[w[0]]=w; });
+  HREF.forEach(function(h,i){
+    var hFin=(i<HREF.length-1)?Math.min(HREF[i+1]-1,21):21;
+    var bloc=[]; for(var x=h;x<=hFin;x++) if(parH[x]) bloc.push(parH[x]);
+    if(!bloc.length) return;
+    var vMin=Math.min.apply(null,bloc.map(function(w){return w[1];}));
+    var gMax=Math.max.apply(null,bloc.map(function(w){return w[2];}));
+    var a=X(h)-px/2, b=X(hFin)+px/2, cx=(a+b)/2, lg=b-a;
+    var dm=avgDir(bloc.map(function(w){return w[3]||0;}));
+    s+='<rect x="'+a.toFixed(1)+'" y="'+yc+'" width="'+lg.toFixed(1)+'" height="'+hc+'" fill="'+wc(vMin)+'"/>';
+    s+='<text x="'+cx.toFixed(1)+'" y="'+(yc+13.5)+'" text-anchor="middle" font-size="11" font-weight="800" fill="'+wtc(vMin)+'">'+vMin+'</text>';
+    s+=chartCompass(cx,yd,cr,(dm+180)%360,favColor(favOf(dm)));
+    s+='<text x="'+cx.toFixed(1)+'" y="'+(yd+cr+10)+'" text-anchor="middle" font-size="9" font-weight="600" fill="#5c716d">'+sectOf(dm)+'</text>';
+    s+='<rect x="'+a.toFixed(1)+'" y="'+yr+'" width="'+lg.toFixed(1)+'" height="'+hc+'" fill="'+wc(gMax)+'"/>';
+    s+='<text x="'+cx.toFixed(1)+'" y="'+(yr+13.5)+'" text-anchor="middle" font-size="11" font-weight="800" fill="'+wtc(gMax)+'">'+gMax+'</text>';
+    if(i){ s+='<line x1="'+a.toFixed(1)+'" y1="'+yc+'" x2="'+a.toFixed(1)+'" y2="'+(yc+hc)+'" stroke="#fff" stroke-width="1"/>'
+            +'<line x1="'+a.toFixed(1)+'" y1="'+yr+'" x2="'+a.toFixed(1)+'" y2="'+(yr+hc)+'" stroke="#fff" stroke-width="1"/>'; }
+  });
   if(d.partial)s+='<text x="'+((xL+xR)/2).toFixed(1)+'" y="'+(yr+hc+13)+'" text-anchor="middle" font-size="10" fill="#b23b3b">'+T.svPartial+'</text>';
   s+='</svg>';return s;
 }
@@ -217,11 +323,16 @@ function render(){
   var aft=d.wind.filter(function(w){return w[0]>=13&&w[0]<=21;});
   var sail=d.wind.filter(function(w){return w[0]>=7&&w[0]<=21&&present(w[0],d);});
   var refSet=sail.length?sail:(aft.length?aft:d.wind);
-  var peakK=Math.max.apply(null,refSet.map(function(w){return w[1];})), peakG=Math.max.apply(null,refSet.map(function(w){return w[2];}));
+  /* A8 : la note porte sur le vent TENU, plus sur le maximum du jour. Le chiffre
+     affiche dans la ligne reste celui qui fait la note, c'est la regle B8. */
+  var peakK=ventTenu(refSet,pasDe(d),NOTE_TENU);
+  var peakG=Math.max.apply(null,refSet.map(function(w){return w[2];}));
   var peakW=anyWater?peakK:0;
   var note; if(!anyWater||peakW<10)note=0; else if(peakW<11)note=1; else if(peakW<13)note=2; else if(peakW<14)note=3; else if(peakW<15)note=4; else note=5;
-  /* A5 : plafond haut. Sans cela la note ne redescendait jamais et 40 kn valait 5 etoiles. */
-  if(note>0 && peakW>=NOTE_TOOMUCH) note=1; else if(note>2 && peakW>=NOTE_STRONG) note=2;
+  /* A5 : plafond haut. Sans cela la note ne redescendait jamais et 40 kn valait 5 etoiles.
+     A8 : le second plafond suit GO_VENT_MAX, pour que la note et le creneau
+     ne racontent jamais deux journees differentes. */
+  if(note>0 && peakW>=NOTE_TOOMUCH) note=1; else if(note>2 && peakW>GO_VENT_MAX) note=2;
   var dom=sectOf(avgDir(d.wind.map(function(w){return w[3];}))), domF=favCls(favOf(avgDir(d.wind.map(function(w){return w[3];}))));
   var eauTxt=d.water==='plein'?T.eauAllday:d.water==='renvoiSoir'?T.eauUntil:d.water==='priseSoir'?T.eauFrom:(anyWater?T.eauTide:T.eauNone);
   var goTxt=goH.length?goText(goH,pasDe(d)):'—';

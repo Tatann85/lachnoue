@@ -19,9 +19,6 @@ var HS=[7,8,9,10,11,12,13,14,15,16,17,18,19,20,21], FILL=5.2;
    vent moyen : il refusait 99 a 100 % des heures au-dessus de 18 kn, soit
    environ 320 heures par an, c'est-a-dire exactement les meilleures journees,
    et ne laissait que les heures de marge. C'etait le point A8 du backlog.
-
-   NE PAS TOUCHER UN SEUIL SANS RELANCER outils/mesure-seuils.mjs : un seuil
-   deplace tous les creneaux du calendrier d'un coup.
    --------------------------------------------------------------------------- */
 var GO_VENT_MIN   = 11; /* vent moyen mini (kn) pour afficher un creneau GO.
                            B12 : etait a 10, soit exactement le seuil de 1 etoile,
@@ -42,8 +39,8 @@ var GO_RAFALE_MAX = 50; /* rafale maxi (kn). Garde-fou d'EXCEPTION seulement, po
                            3 ans. Il est volontairement place AU-DESSUS de la
                            relation normale rafale = 1,85 x vent, pour ne pas
                            redevenir un plafond de vent deguise : c'est toute la
-                           lecon de A8, et il ne faut pas le baisser sans refaire
-                           la mesure. */
+                           lecon de A8. Le baisser le ramenerait vers la relation
+                           normale, donc vers un plafond de vent deguise. */
 var GO_TROU_MAX   = 1;  /* trou, en heures, comble a l'interieur d'un creneau. */
 var GO_DUREE_MIN  = 2;  /* duree mini, en heures, d'un creneau affiche. En dessous
                            il n'est pas montre : une fenetre d'une heure obtenue

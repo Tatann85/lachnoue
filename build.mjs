@@ -38,7 +38,7 @@ function head(lang,pg,extra){ const t=T[lang]; extra=extra||{}; const title=extr
  +(extra.keywords!==false?'<meta name="keywords" content="'+t.keywords+'">\n':'')
  +'<meta name="robots" content="'+robots+'">\n<meta name="theme-color" content="#12857f">\n'
  +'<link rel="icon" type="image/png" href="'+FAV+'">\n<link rel="apple-touch-icon" href="'+FAV+'">\n'
- +'<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n<link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">\n'
+ +'<link rel="preload" as="font" type="font/woff2" href="/fonts/anton-latin-400.woff2" crossorigin>\n'
  +'<link rel="canonical" href="'+abs(lang,pg)+'">\n'+hreflangs(pg)
  +'<meta property="og:type" content="website">\n<meta property="og:locale" content="'+META[lang].ogLocale+'">\n<meta property="og:url" content="'+abs(lang,pg)+'">\n'
  +'<meta property="og:title" content="'+t.ogtitle+'">\n<meta property="og:description" content="'+desc+'">\n<meta property="og:image" content="'+ORIGIN+'/banniere.jpg">\n'
@@ -70,6 +70,8 @@ function sansAl(t){ const o={}; for(const k in t) if(!/^al[A-Z]/.test(k)) o[k]=t
 function faqHtml(t){ let s='<div class="faq">'; for(const q of t.faq) s+='<details><summary>'+q[0]+'</summary><p>'+q[1]+'</p></details>'; return s+'</div>'; }
 function faqLd(lang){ const t=T[lang]; return JSON.stringify({"@context":"https://schema.org","@type":"FAQPage",mainEntity:t.faq.map(q=>({"@type":"Question",name:q[0],acceptedAnswer:{"@type":"Answer",text:q[1].replace(/<[^>]+>/g,'')}}))}); }
 function legalHtml(t){ return '<details class="legal"><summary>'+t.legalSummary+'</summary><p>'+t.legal+'</p></details>'; }
+/* true : la carte ne se charge qu'apres un clic du visiteur. Voir renderIndex. */
+const CARTE_AU_CLIC = true;
 const MAPS='https://www.google.com/maps/dir/?api=1&destination=Bassin+de+la+Chnoue,+85100+Les+Sables-d%27Olonne&waypoints=46.50528,-1.80045%7CGymnase+des+Sauniers,+8+Impasse+de+la+Salle+des+Sauniers,+85100+Les+Sables-d%27Olonne';
 const MAPSEMBED='https://www.google.com/maps?q=Gymnase+des+Sauniers,+8+Impasse+de+la+Salle+des+Sauniers,+85100+Les+Sables-d%27Olonne&z=16&output=embed';
 
@@ -89,7 +91,20 @@ function renderIndex(lang){ const t=T[lang];
   +'<a class="cam" href="https://www.skaping.com/sables-d-olonne/port-olona/panoramique" target="_blank" rel="noopener"><div class="view"><span class="live">'+t.live+'</span><span class="play">▶</span></div><div class="bd"><div class="t">'+t.camPort+'</div><div class="s">'+t.camPortS+'</div></div></a>'
   +'<a class="cam" href="https://viewsurf.com/univers/surf/vue/4511-france-pays-de-la-loire-les-sables-dolonne-baie-des-sables" target="_blank" rel="noopener"><div class="view"><span class="live">'+t.live+'</span><span class="play">▶</span></div><div class="bd"><div class="t">'+t.camBay+'</div><div class="s">'+t.camBayS+'</div></div></a>'
   +'</div>';
- const access='<h2>'+t.h2Access+'</h2><div style="border:1px solid var(--line);border-radius:10px;overflow:hidden"><iframe title="'+t.accessIframe+'" src="'+MAPSEMBED+'" style="width:100%;height:360px;border:0;display:block" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe></div><div style="font-size:12px;color:#48535f;margin-top:6px">'+t.accessHtml+'<a href="'+MAPS+'" target="_blank" rel="noopener" style="display:block;text-align:center;background:var(--water);color:#fff;font-weight:800;font-size:15px;padding:14px 16px;border-radius:10px;text-decoration:none;margin-top:10px;box-shadow:0 3px 12px rgba(18,133,127,.32)">'+t.accessBtn+'</a></div>';
+ /* CARTE AU CLIC (22/09/2026). L'iframe Google Maps declenchait 18 requetes
+    vers Google des l'ouverture de la page d'accueil : chaque visiteur y laissait
+    son adresse IP sans rien demander. Elle n'est plus chargee qu'apres un clic.
+    Le bouton d'itineraire reste un simple lien : rien ne part tant qu'on ne
+    clique pas dessus non plus.
+    Pour revenir a la carte affichee d'emblee : passer CARTE_AU_CLIC a false,
+    et corriger la phrase des mentions legales, qui dit aujourd'hui que rien ne
+    part avant le clic. Les deux vont ensemble. */
+ const carte = CARTE_AU_CLIC
+  ? '<div class="carte" id="carte" data-src="'+MAPSEMBED+'" data-titre="'+t.accessIframe+'">'
+    +'<button type="button" class="carte-bt" id="carteBt">&#128506;&#65039; '+t.mapShow+'</button>'
+    +'<p class="carte-note">'+t.mapNote+'</p></div>'
+  : '<div style="border:1px solid var(--line);border-radius:10px;overflow:hidden"><iframe title="'+t.accessIframe+'" src="'+MAPSEMBED+'" style="width:100%;height:360px;border:0;display:block" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe></div>';
+ const access='<h2>'+t.h2Access+'</h2>'+carte+'<div style="font-size:12px;color:#48535f;margin-top:6px">'+t.accessHtml+'<a href="'+MAPS+'" target="_blank" rel="noopener" style="display:block;text-align:center;background:var(--water);color:#fff;font-weight:800;font-size:15px;padding:14px 16px;border-radius:10px;text-decoration:none;margin-top:10px;box-shadow:0 3px 12px rgba(18,133,127,.32)">'+t.accessBtn+'</a></div>';
  const body='<h1>'+t.h1+'</h1>\n<div class="explain">'+t.explain+'</div>\n'
   +'<div class="hint"><span>👆</span><span>'+t.hint+'<br><span class="upd" id="upd">'+t.updBefore+' <b>—</b> '+t.updAfter+'</span></span></div>\n'
   +'<table><thead><tr><th class="jour" style="text-align:left">'+t.thDay+'</th><th>'+t.thRating+'</th><th>'+t.thWater+'</th><th>'+t.thWind+'</th><th>'+t.thDir+'</th><th>'+t.thGo+'</th></tr></thead><tbody id="tb"></tbody></table>\n'
@@ -200,6 +215,10 @@ for(const lang of LANGS){ const dir = lang===XDEF ? OUT : OUT+'/'+lang; fs.mkdir
 }
 fs.copyFileSync('./app.js', OUT + '/app.js');
 fs.copyFileSync('./alertes.js', OUT + '/alertes.js');
+// Les polices sont servies par le site : le workflow ne copie que les images,
+// c'est donc ici qu'on les recopie, comme app.js.
+fs.mkdirSync(OUT + '/fonts', { recursive: true });
+for (const f of ['anton-latin-400.woff2','OFL.txt']) fs.copyFileSync('./fonts/'+f, OUT + '/fonts/' + f);
 // sitemap multilingue
 (function(){
   const smPages = ['index','alerts','club','lessons','contact'];

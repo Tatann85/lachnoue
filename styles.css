@@ -1,4 +1,11 @@
 /* ===== Chnoue Wing — thème « Océan épuré » ===== */
+/* Anton, servie depuis le site et non plus depuis Google Fonts (point E16,
+   22/09/2026). Avant, chaque page appelait fonts.googleapis.com : l'adresse IP
+   de chaque visiteur partait chez Google, sans consentement. Le fichier est
+   dans /fonts/, sous licence OFL 1.1, et build.mjs le recopie a la publication.
+   swap : le titre s'affiche tout de suite en sans-serif puis bascule. */
+@font-face{font-family:'Anton';font-style:normal;font-weight:400;font-display:swap;
+  src:url(/fonts/anton-latin-400.woff2) format('woff2')}
 :root{--bg:#f6fbfb;--card:#fff;--ink:#12302e;--muted:#5c716d;--line:#e2e9e7;--go:#0f6e56;--no:#b23b3b;--star:#e8a13a;--water:#12857f;--water-d:#0d5f5a;--sand:#f4efe6}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
@@ -87,7 +94,6 @@ tr.det td{padding:0;background:#fbfdfc;border-top:0}
 .badge{display:inline-block;border-radius:5px;padding:1px 7px;color:#fff;font-weight:700;font-size:10.5px}
 .b-prise{background:var(--go)}.b-renvoi{background:#c9851a}.b-vav{background:#5b6470}.b-rien{background:#9aa3ac}
 svg{width:100%;height:auto;display:block}
-.detin>svg{width:100%!important;height:auto!important;display:block}
 .nota{background:#fff7e6;border:1px solid #f0d9a8;color:#7a5a12;border-radius:10px;padding:10px 13px;font-size:12px;margin-top:10px}
 
 /* --- Cartes liens --- */
@@ -175,15 +181,30 @@ svg{width:100%;height:auto;display:block}
   .chev{font-size:10px}
   .wx{font-size:10px}
   td.jour small{font-size:9.5px}
-  /* !important : la taille de la boussole peut etre posee en style inline.
-     Cible .dircell UNIQUEMENT : "td svg" attrapait aussi le graphique du detail,
-     qui se retrouvait reduit a 30 px sur telephone (corrige le 20/09/2026). */
-  .dircell svg{width:30px!important;height:30px!important}
+  /* !important : la taille de la boussole peut etre posee en style inline */
+  td svg{width:30px!important;height:30px!important}
 }
 
 @media(max-width:345px){
   .wrap{padding-left:4px;padding-right:4px}
   thead th{font-size:8.5px;padding:6px 1px}
   tbody td{padding:6px 1px;font-size:11px}
-  .dircell svg{width:26px!important;height:26px!important}
+  td svg{width:26px!important;height:26px!important}
 }
+
+/* A3 : message quand les previsions ne sont pas encore la, ou pas chargeables. */
+.msgtab{padding:26px 16px;text-align:center;color:var(--muted);font-size:14px;line-height:1.55}
+.msgerr{color:var(--no);font-weight:600}
+
+/* Carte chargee au clic : tant que le visiteur n'a pas clique, aucune requete
+   ne part vers Google. Le bloc garde la hauteur de la carte pour que la page
+   ne saute pas au moment du remplacement. */
+.carte{border:1px solid var(--line);border-radius:10px;background:var(--sand);
+  min-height:360px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:10px;padding:24px 18px;text-align:center}
+.carte-bt{font:inherit;font-size:15px;font-weight:700;color:#fff;background:var(--water);
+  border:0;border-radius:10px;padding:14px 22px;min-height:48px;cursor:pointer;
+  box-shadow:0 3px 12px rgba(18,133,127,.32)}
+.carte-bt:hover{background:var(--water-d)}
+.carte-note{margin:0;max-width:46ch;font-size:12.5px;color:var(--muted);line-height:1.5}
+.carte.on{padding:0;min-height:0;display:block;background:none;overflow:hidden}

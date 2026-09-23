@@ -1,0 +1,15 @@
+Anton, version v27, sous-ensemble latin, graisse 400 (la seule utilisee).
+Licence SIL Open Font License 1.1, voir OFL.txt : la redistribution est
+autorisee, la licence doit accompagner le fichier.
+Origine : paquet npm @fontsource/anton 5.3.0, qui redistribue les fichiers
+officiels du projet Google Fonts.
+
+Pourquoi ce fichier est ici : avant le 22/09/2026 chaque page chargeait
+fonts.googleapis.com, donc l'adresse IP de chaque visiteur partait chez
+Google aux Etats-Unis, sans consentement. C'etait le seul tiers vraiment
+genant du site, et les mentions legales le disaient. Point E16 du backlog.
+
+La police n'est utilisee que par .brand, le titre << La Ch'noue >> de la
+banniere. Le sous-ensemble latin suffit : ce titre est le meme dans les
+huit langues. Si un jour Anton sert a autre chose qu'a ce titre, verifier
+qu'il ne manque pas de caracteres (latin-ext, vietnamien).

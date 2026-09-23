@@ -172,16 +172,24 @@ function daySVG(d){
      portent le chiffre et la boussole. Rien n'est cache : la rafale maximale de
      la journee, celle qui compte, est affichee dans la ligne du tableau, et elle
      est calculee sur les quinze heures. */
-  var lg=px*pas*0.9;
+  /* B21 — LES BARRES SE TOUCHENT, la ligne est une bande continue.
+     Avec un blanc de 10 % entre elles, les quinze barres se lisaient comme
+     quinze CASES, dont sept colorees mais vides puisque seules les huit heures
+     de reference portent un chiffre. Signale par Antoine le 23/09/2026 comme un
+     bug d'affichage, et c'en etait un au sens ou il voulait dire : ce que l'oeil
+     comprend est faux. Barres jointives et coins droits : la ligne devient un
+     degrade continu sur lequel les huit chiffres sont poses. L'information
+     horaire de D-2 est conservee, la lecture en cases disparait. */
+  var lg=px*pas;
   d.wind.filter(function(w){return w[0]>=7&&w[0]<=21;}).forEach(function(w){var k=w[1],g=w[2],cx=X(w[0]),ad=((w[3]||0)+180)%360,f=favOf(w[3]||0);var col=favColor(f);
     var chiffre=HREF.indexOf(w[0])>=0;
-    s+='<rect x="'+(cx-lg/2).toFixed(1)+'" y="'+yc+'" width="'+lg.toFixed(1)+'" height="'+hc+'" rx="3" fill="'+wc(k)+'"/>';
+    s+='<rect x="'+(cx-lg/2).toFixed(1)+'" y="'+yc+'" width="'+lg.toFixed(1)+'" height="'+hc+'" fill="'+wc(k)+'"/>';
     if(chiffre) s+='<text x="'+cx.toFixed(1)+'" y="'+(yc+13.5)+'" text-anchor="middle" font-size="11" font-weight="800" fill="'+wtc(k)+'">'+k+'</text>';
     if(chiffre){
       s+=chartCompass(cx,yd,cr,ad,col);
       s+='<text x="'+cx.toFixed(1)+'" y="'+(yd+cr+10)+'" text-anchor="middle" font-size="9" font-weight="600" fill="#5c716d">'+sectOf(w[3]||0)+'</text>';
     }
-    s+='<rect x="'+(cx-lg/2).toFixed(1)+'" y="'+yr+'" width="'+lg.toFixed(1)+'" height="'+hc+'" rx="3" fill="'+wc(g)+'"/>';
+    s+='<rect x="'+(cx-lg/2).toFixed(1)+'" y="'+yr+'" width="'+lg.toFixed(1)+'" height="'+hc+'" fill="'+wc(g)+'"/>';
     if(chiffre) s+='<text x="'+cx.toFixed(1)+'" y="'+(yr+13.5)+'" text-anchor="middle" font-size="11" font-weight="800" fill="'+wtc(g)+'">'+g+'</text>';});
   if(d.partial)s+='<text x="'+((xL+xR)/2).toFixed(1)+'" y="'+(yr+hc+13)+'" text-anchor="middle" font-size="10" fill="#b23b3b">'+T.svPartial+'</text>';
   s+='</svg>';return s;

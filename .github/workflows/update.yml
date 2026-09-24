@@ -30,6 +30,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+      # Si le modele d'eau ne passe plus ses tests, RIEN n'est publie : mieux
+      # vaut un site qui garde la version d'hier qu'un site qui annonce de l'eau
+      # a tort (G-33). Le test ne va pas sur le reseau, il dure une seconde.
+      - name: Verifier le modele d'eau
+        run: node outils/test-modele-eau.mjs
       - name: Generer data.json
         run: node scraper.mjs
       - name: Preparer le site

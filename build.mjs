@@ -6,7 +6,21 @@ const OUT = process.argv[2] || '_site';
 const LANGS = Object.keys(T);                 // seules les langues présentes dans i18n
 const XDEF = 'fr';
 const ORIGIN = 'https://lachnoue.fr';
-const FAV = '/Gemini_Generated_Image_fo5ekyfo5ekyfo5e.png';
+/* POIDS DES IMAGES — corrige le 24/09/2026, et c'etait le pire defaut du site.
+   Mesure a la page d'accueil sur telephone AVANT : 11,0 Mo, dont 11,17 Mo pour
+   la seule banniere. Tout le reste du site pese 100 ko. Sur la 4G au spot, c'est
+   une minute d'attente pour consulter les conditions avant de se deplacer, sur
+   un site dont c'est justement la raison d'etre.
+   Deux causes, deux corrections :
+   1) banniere.jpg faisait 6032 x 4021 px pour 11 Mo, affichee au plus sur
+      1200 px de large. Ramenee a 1600 px, 380 ko, soit 97 pour cent de moins.
+      L'originale reste dans l'historique Git et dans 00-Site_web sur le Drive.
+   2) LE FAVICON etait un PNG de 2048 x 2048 px et 4,7 Mo. Pour une icone
+      d'onglet. Un favicon.svg de 539 OCTETS dormait dans le depot sans servir.
+      Il devient l'icone, et une icone 180 px de 59 ko sert a iOS, qui ne lit
+      pas le SVG. */
+const FAV = '/favicon.svg';
+const FAV_TOUCH = '/icone-180.png';
 const FLAG = {
  fr:'<svg viewBox="0 0 3 2"><rect width="3" height="2" fill="#fff"/><rect width="1" height="2" fill="#0055A4"/><rect x="2" width="1" height="2" fill="#EF4135"/></svg>',
  en:'<svg viewBox="0 0 60 30"><clipPath id="ukc"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath><rect width="60" height="30" fill="#012169"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#ukc)" stroke="#C8102E" stroke-width="4"/><path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/><path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/></svg>',
@@ -37,7 +51,7 @@ function head(lang,pg,extra){ const t=T[lang]; extra=extra||{}; const title=extr
  +'<title>'+title+'</title>\n<meta name="description" content="'+desc+'">\n'
  +(extra.keywords!==false?'<meta name="keywords" content="'+t.keywords+'">\n':'')
  +'<meta name="robots" content="'+robots+'">\n<meta name="theme-color" content="#12857f">\n'
- +'<link rel="icon" type="image/png" href="'+FAV+'">\n<link rel="apple-touch-icon" href="'+FAV+'">\n'
+ +'<link rel="icon" type="image/svg+xml" href="'+FAV+'">\n<link rel="apple-touch-icon" href="'+FAV_TOUCH+'">\n'
  +'<link rel="preload" as="font" type="font/woff2" href="/fonts/anton-latin-400.woff2" crossorigin>\n'
  +'<link rel="canonical" href="'+abs(lang,pg)+'">\n'+hreflangs(pg)
  +'<meta property="og:type" content="website">\n<meta property="og:locale" content="'+META[lang].ogLocale+'">\n<meta property="og:url" content="'+abs(lang,pg)+'">\n'

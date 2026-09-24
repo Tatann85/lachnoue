@@ -101,6 +101,10 @@ function chartCompass(cx,cy,r,deg,col){var s='<g transform="translate('+cx.toFix
 var SDEG={N:0,NE:45,E:90,SE:135,S:180,SO:225,O:270,NO:315,SW:225,W:270,NW:315,ZO:135,Z:180,ZW:225};
 function sectDeg(s){return SDEG[s]||0;}
 function ecl(state){var t=(state||'').toLowerCase();
+  /* A1 : teste EN PREMIER. Sans ce cas, un etat non reconnu tombait sur la
+     branche par defaut et le panneau affichait « FERMEE, niveau maintenu
+     (plein) », c'est-a-dire une affirmation sur une donnee incomprise. */
+  if(t.indexOf('non reconnu')>=0||t.indexOf('inconnu')>=0)return [T.eUnknown||'?','b-rien',T.eUnknownD||''];
   if(t.indexOf('prise')>=0)return [T.eFill,'b-prise',T.eFillD];
   if(t.indexOf('renvoi')>=0)return [T.eDrain,'b-renvoi',T.eDrainD];
   if(t.indexOf('va')>=0)return [T.eTidal,'b-vav',T.eTidalD];
@@ -331,7 +335,9 @@ function render(){
      ne racontent jamais deux journees differentes. */
   if(note>0 && peakW>=NOTE_TOOMUCH) note=1; else if(note>2 && peakW>GO_VENT_MAX) note=2;
   var dom=sectOf(avgDir(d.wind.map(function(w){return w[3];}))), domF=favCls(favOf(avgDir(d.wind.map(function(w){return w[3];}))));
-  var eauTxt=d.water==='plein'?T.eauAllday:d.water==='renvoiSoir'?T.eauUntil:d.water==='priseSoir'?T.eauFrom:(anyWater?T.eauTide:T.eauNone);
+  /* A1 : « inconnu » a son propre libelle. Sans lui, la journee tombait sur
+     T.eauNone, « pas d'eau », qui AFFIRME. On ne sait pas n'est pas non. */
+  var eauTxt=d.water==='plein'?T.eauAllday:d.water==='renvoiSoir'?T.eauUntil:d.water==='priseSoir'?T.eauFrom:d.water==='inconnu'?(T.eauUnknown||T.eauNone):(anyWater?T.eauTide:T.eauNone);
   var goTxt=goH.length?goText(goH,pasDe(d)):'—';
   var tr=document.createElement('tr');tr.className='day'+(d.today?' today':'');
   tr.innerHTML='<td class="jour">'+trDay(d.d)+(d.today?'<small>'+T.today+'</small>':i===1?'<small>'+T.tomorrow+'</small>':'')+'<span class="wx">'+wx((d.wind.find(function(w){return w[0]===13;})||[])[5]||d.wxc)+' '+d.tmin+'–'+d.tmax+' °C</span><span class="chev">'+T.details+'</span></td>'

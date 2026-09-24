@@ -176,6 +176,11 @@ export function verdictEau(d) {
        manquent, present() est faux partout et l'ancien ordre concluait « vide »,
        c'est-a-dire une affirmation, sur une absence de donnee. */
     if (d.water === 'vav') { out[k] = 'incertain'; continue; }
+    /* A1 — meme raisonnement pour l'etat inconnu, et pour la meme raison : une
+       absence de donnee n'est pas une affirmation. present() renvoie faux, donc
+       aucun creneau GO n'est propose ; mais le VERDICT dit « incertain » et non
+       « vide », parce que « vide » affirmerait qu'il n'y a pas d'eau. */
+    if (d.water === 'inconnu') { out[k] = 'incertain'; continue; }
     const avec = hs.filter(h => present(h, d));
     if (!avec.length) { out[k] = 'vide'; continue; }
     /* B3 — Le soir d'un jour de renvoi, l'ecluse est en train de vider le
@@ -197,7 +202,13 @@ function ecluseStates(cal, fromISO, toISO, marees, avert) {
   const evDates = Object.keys(cal.ecluse).sort();
   let start = evDates.length && evDates[0] < fromISO ? evDates[0] : fromISO;
   const out = {};
-  let held = 'plein';
+  /* A1 — L'ETAT INCONNU. Le modele demarrait ici sur « plein », ECRIT EN DUR,
+     c'est-a-dire une affirmation tiree de rien. Mesure le 24/09/2026 : 28 % des
+     journees n'ont aucune manoeuvre, donc si la saisie d'un mois commence sur
+     l'une d'elles, le site annoncait « eau toute la journee » sans source.
+     Une chance sur quatre a chaque nouveau mois saisi.
+     Desormais on part de « inconnu », qui ne promet rien et n'interdit rien. */
+  let held = 'inconnu';
   let fillHeld = null;   // C10 : cote atteinte a la derniere prise, reportee ensuite
   for (let cur = start; cur <= toISO; cur = addDays(cur, 1)) {
     const ev = cal.ecluse[cur] || {};
@@ -210,15 +221,26 @@ function ecluseStates(cal, fromISO, toISO, marees, avert) {
        C'est la seule façon de ne pas envoyer quelqu'un sur un état non modélisé. */
     for (const [ou, v] of [['matin', m], ['soir', s]]) {
       if (v != null && !ETATS_CONNUS.includes(v)) {
-        avert.push('etat d\'ecluse non reconnu le ' + cur + ' au ' + ou + ' : "' + String(v).slice(0, 40) + '" — journee forcee a « bas »');
+        avert.push('etat d\'ecluse non reconnu le ' + cur + ' au ' + ou + ' : "' + String(v).slice(0, 40) + '" — journee classee « incertaine »');
       }
     }
     const inconnu = (m != null && !ETATS_CONNUS.includes(m)) || (s != null && !ETATS_CONNUS.includes(s));
-    const heldLabel = held === 'plein' ? 'aucune (retenu plein)' : 'aucune (retenu bas)';
+    const heldLabel = held === 'plein' ? 'aucune (retenu plein)'
+                    : held === 'bas'   ? 'aucune (retenu bas)'
+                    : 'aucune (niveau inconnu)';
     let water, eclM, eclS, newHeld = held;
     if (inconnu) {
-      water = 'bas'; newHeld = 'bas';
-      eclM = eclLabel(m) || heldLabel; eclS = eclLabel(s) || heldLabel;
+      /* A1 : un libelle non reconnu devient « inconnu » et non « bas ». La
+         nuance compte : « bas » AFFIRME qu'il n'y a pas d'eau, « inconnu »
+         reconnait qu'on ne sait pas. Aucun creneau GO n'est propose dans les
+         deux cas, puisque present() renvoie faux pour « inconnu ». */
+      water = 'inconnu'; newHeld = 'inconnu';
+      /* A1 : ne PAS retomber sur heldLabel ici. Il aurait affiche « aucune
+         (retenu plein) », donc le panneau aurait annonce « Ecluse : FERMEE,
+         niveau maintenu plein » sur une journee qu'on ne comprend pas. Deux
+         affirmations fausses d'un coup, exactement ce que A1 doit supprimer. */
+      eclM = (m != null && !ETATS_CONNUS.includes(m)) ? 'ETAT NON RECONNU' : (eclLabel(m) || heldLabel);
+      eclS = (s != null && !ETATS_CONNUS.includes(s)) ? 'ETAT NON RECONNU' : (eclLabel(s) || heldLabel);
     } else if (m === 'CHASSE' || s === 'CHASSE') {
       /* C11 — CHASSE : vidange de l'eau douce de la Vertonne a chaque maree
          descendante, repetee maree apres maree. Le marais n'est jamais tenu. */
@@ -249,10 +271,17 @@ function ecluseStates(cal, fromISO, toISO, marees, avert) {
          on ne sait pas a quel niveau les portes se referment en fin de serie.
          La bonne reponse est un etat INCONNU, qui donnerait « incertain » et
          non « vide » : c'est le point A1, encore ouvert. B2 attend A1. */
-      water = 'vav'; eclM = eclLabel(m) || heldLabel; eclS = eclLabel(s) || heldLabel;
+      /* B2, ferme par A1 le 24/09/2026. On ne sait pas a quel niveau les portes
+         se referment en fin de serie de va-et-vient : l'etat retenu devient donc
+         « inconnu » et non « plein » par defaut. MESURE AVANT DE POUSSER : effet
+         nul sur les 121 journees de calendar.json comme sur les 61 journees de
+         novembre et decembre du releve ASMG, parce qu'une serie de va-et-vient
+         est toujours close par une prise. Le defaut etait reel mais dormant. */
+      water = 'vav'; newHeld = 'inconnu';
+      eclM = eclLabel(m) || heldLabel; eclS = eclLabel(s) || heldLabel;
     } else {
       // Journee sans manoeuvre, ou FERMETURE declaree (C11) : le niveau est retenu.
-      water = held === 'plein' ? 'plein' : 'bas';
+      water = held === 'plein' ? 'plein' : (held === 'bas' ? 'bas' : 'inconnu');
       eclM = eclLabel(m) || heldLabel; eclS = eclLabel(s) || heldLabel;
     }
     out[cur] = { water, eclM, eclS, fill: fillHeld };

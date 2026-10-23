@@ -34,7 +34,7 @@ const FLAG = {
 const CSS = fs.readFileSync('./styles.css','utf8');
 function url(lang,pg){ const base = lang===XDEF ? '' : '/'+lang; if(pg==='index') return (base||'')+'/'; return base+'/'+PAGES[pg].file; }
 function abs(lang,pg){ return ORIGIN+url(lang,pg); }
-const PAGES = { index:{file:'index.html'}, alerts:{file:'alertes.html'}, safety:{file:'securite.html'}, club:{file:'association.html'}, lessons:{file:'cours.html'}, contact:{file:'contact.html'} };
+const PAGES = { index:{file:'index.html'}, alerts:{file:'alertes.html'}, safety:{file:'securite.html'}, rules:{file:'regles.html'}, club:{file:'association.html'}, lessons:{file:'cours.html'}, contact:{file:'contact.html'} };
 // Feuille de style propre a l'onglet alertes : injectee sur cette seule page.
 // styles.css est inline dans les 40 pages du site, y mettre ce bloc alourdirait
 // chaque page pour une seule d'entre elles.
@@ -67,6 +67,7 @@ function shell(lang,pg,active,body,extra){ const t=T[lang];
   /* Securite en 3e position, demande d'Antoine du 23/10/2026 : juste apres les
      alertes, donc avant le club et les cours. */
   +'<a class="tab'+(active==='safety'?' active':'')+'" href="'+url(lang,'safety')+'">'+t.tabSafety+'</a>'
+  +'<a class="tab'+(active==='rules'?' active':'')+'" href="'+url(lang,'rules')+'">'+t.tabRules+'</a>'
   +'<a class="tab'+(active==='club'?' active':'')+'" href="'+url(lang,'club')+'">'+t.tabClub+'</a>'
   +'<a class="tab'+(active==='lessons'?' active':'')+'" href="'+url(lang,'lessons')+'">'+t.tabLessons+'</a>'
   +'<a class="tab'+(active==='contact'?' active':'')+'" href="'+url(lang,'contact')+'">'+t.tabContact+'</a></nav>';
@@ -259,11 +260,90 @@ function renderSafety(lang){ const t=T[lang];
   +'<h2>'+t.h2Faq+'</h2>'+faqHtml(t)+legalHtml(t);
  return shell(lang,'safety','safety',body,{title:t.secTitle,desc:t.secDesc,keywords:false});
 }
+/* ---- Onglet Regles de croisement (23/10/2026, demande d'Antoine) ----
+   SOURCE, et elle est le coeur du point : la plaquette « Wingfoil, ce qu'il faut
+   savoir pour pratiquer en toute securite », Federation Francaise de Voile,
+   novembre 2022. Les trois regles de priorite viennent de la, mot pour mot,
+   ainsi que les deux regles de vagues et le materiel du large. Rien n'est ecrit
+   de memoire : ce ne sont pas des conseils mais des REGLES, et une regle fausse
+   sur un site public est pire que pas de page du tout.
+   Ce que la plaquette NE dit pas n'est pas sur la page : ni depassement, ni
+   croisement avec un bateau, ni tribord et babord nommes comme tels.
+   Les schemas sont vus de DESSUS et dessines ici. Convention tenue sur les six :
+   vert = prioritaire, rouge = celui qui s'ecarte, trait pointille = la
+   trajectoire a modifier, fleches bleu pale = le vent. */
+function pilote(x,y,rot,col){
+  return '<g transform="translate('+x+','+y+') rotate('+rot+')">'
+   +'<ellipse cx="0" cy="0" rx="12" ry="4.5" fill="#d7eeec" stroke="currentColor" stroke-width="2"/>'
+   +'<path d="M-4 -2 L2 -17 L7 -3 Z" fill="'+col+'" stroke="'+col+'" stroke-width="1.5" stroke-linejoin="round"/></g>';
+}
+const VERT='#1f8f4e', ROUGE='#b3261e', VENT='#9fd4d0';
+function ventH(y,x1,x2){ /* vent horizontal, de droite a gauche */
+  return '<path d="M'+x2+' '+y+' H'+x1+' M'+(x1+5)+' '+(y-4)+' L'+x1+' '+y+' L'+(x1+5)+' '+(y+4)+'" stroke="'+VENT+'" stroke-width="2" fill="none" stroke-linecap="round"/>';
+}
+function ventV(x,y1,y2){ /* vent vertical, du haut vers le bas */
+  return '<path d="M'+x+' '+y1+' V'+y2+' M'+(x-4)+' '+(y2-5)+' L'+x+' '+y2+' L'+(x+4)+' '+(y2-5)+'" stroke="'+VENT+'" stroke-width="2" fill="none" stroke-linecap="round"/>';
+}
+const SCHEMA = {
+ /* 1. Vent de droite : le vert est prioritaire, le rouge s'ecarte. */
+ droite:'<svg viewBox="0 0 96 72" aria-hidden="true">'+ventH(10,60,92)+ventH(22,68,92)
+  +pilote(22,56,-22,VERT)+pilote(72,26,158,ROUGE)
+  +'<path d="M34 50 L56 34" stroke="'+VERT+'" stroke-width="2.5" stroke-linecap="round"/>'
+  +'<path d="M62 32 Q54 48 46 64" stroke="'+ROUGE+'" stroke-width="2.5" fill="none" stroke-dasharray="4 3" stroke-linecap="round"/></svg>',
+ /* 2. Sous le vent : le vent vient du haut, celui du haut est au vent et s'ecarte. */
+ sousVent:'<svg viewBox="0 0 96 72" aria-hidden="true">'+ventV(16,6,24)+ventV(80,6,24)
+  +pilote(48,26,8,ROUGE)+pilote(48,58,8,VERT)
+  +'<path d="M62 24 Q74 20 82 10" stroke="'+ROUGE+'" stroke-width="2.5" fill="none" stroke-dasharray="4 3" stroke-linecap="round"/>'
+  +'<path d="M62 57 H84" stroke="'+VERT+'" stroke-width="2.5" stroke-linecap="round"/></svg>',
+ /* 3. Pratiquant hesitant : planche de travers, l'autre s'ecarte. */
+ hesitant:'<svg viewBox="0 0 96 72" aria-hidden="true">'
+  +pilote(30,44,74,VERT)
+  +'<text x="30" y="20" font-size="15" font-weight="700" fill="'+VERT+'" text-anchor="middle">?</text>'
+  +pilote(72,52,-20,ROUGE)
+  +'<path d="M60 48 Q62 30 74 22" stroke="'+ROUGE+'" stroke-width="2.5" fill="none" stroke-dasharray="4 3" stroke-linecap="round"/></svg>',
+ /* 4. Vagues : ne pas voler au vent de celui qui surfe. */
+ vagues:'<svg viewBox="0 0 96 72" aria-hidden="true">'+ventV(12,4,20)
+  +'<path d="M4 58 Q20 44 36 58 T68 58 T96 54" stroke="'+VENT+'" stroke-width="3" fill="none"/>'
+  +pilote(44,52,-8,VERT)+pilote(52,22,-8,ROUGE)
+  +'<path d="M38 14 L66 30 M66 14 L38 30" stroke="'+ROUGE+'" stroke-width="3" stroke-linecap="round"/></svg>',
+ /* 5. Pas de saut au bord : la zone du bord est barree. */
+ saut:'<svg viewBox="0 0 96 72" aria-hidden="true">'
+  +'<rect x="0" y="56" width="96" height="16" fill="#efe6d6"/><path d="M0 56 H96" stroke="currentColor" stroke-width="2"/>'
+  +pilote(22,44,-14,ROUGE)
+  +'<path d="M8 32 L36 56 M36 32 L8 56" stroke="'+ROUGE+'" stroke-width="3" stroke-linecap="round"/>'
+  +pilote(72,26,-10,VERT)+'</svg>',
+ /* 6. Baigneurs : on s'eloigne du bord. */
+ baigneurs:'<svg viewBox="0 0 96 72" aria-hidden="true">'
+  +'<rect x="0" y="58" width="96" height="14" fill="#efe6d6"/><path d="M0 58 H96" stroke="currentColor" stroke-width="2"/>'
+  +'<g fill="currentColor"><circle cx="16" cy="50" r="4"/><circle cx="30" cy="54" r="4"/><circle cx="44" cy="49" r="4"/></g>'
+  +pilote(64,34,-18,VERT)
+  +'<path d="M76 28 L90 16 M86 14 L91 15 L90 21" stroke="'+VERT+'" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>'
+};
+function rulCard(sc,ti,su){ return '<div class="rcard"><div class="rpic">'+sc+'</div><div class="sbd"><div class="st">'+ti+'</div><div class="ss">'+su+'</div></div></div>'; }
+function renderRules(lang){ const t=T[lang];
+ const cards='<div class="rgrid">'
+  +rulCard(SCHEMA.droite,t.rulR1T,t.rulR1S)
+  +rulCard(SCHEMA.sousVent,t.rulR2T,t.rulR2S)
+  +rulCard(SCHEMA.hesitant,t.rulR3T,t.rulR3S)
+  +rulCard(SCHEMA.vagues,t.rulR4T,t.rulR4S)
+  +rulCard(SCHEMA.saut,t.rulR5T,t.rulR5S)
+  +rulCard(SCHEMA.baigneurs,t.rulR6T,t.rulR6S)
+  +'</div>';
+ const loi='<h2>'+t.rulLawH+'</h2><ul class="rlaw"><li>'+t.rulLaw1+'</li><li>'+t.rulLaw2+'</li></ul>';
+ const body='<h1>'+t.rulH1+'</h1><p class="lead">'+t.rulLead+'</p>'
+  +'<p class="rsame">'+t.rulSame+'</p>'
+  +'<h2>'+t.rulRegH+'</h2>'+cards
+  +loi
+  +'<p class="snote">'+t.rulNote+'</p>'
+  +'<h2>'+t.h2Faq+'</h2>'+faqHtml(t)+legalHtml(t);
+ return shell(lang,'rules','rules',body,{title:t.rulTitle,desc:t.rulDesc,keywords:false});
+}
 // écrire
 for(const lang of LANGS){ const dir = lang===XDEF ? OUT : OUT+'/'+lang; fs.mkdirSync(dir,{recursive:true});
  fs.writeFileSync(dir+'/index.html',renderIndex(lang));
  fs.writeFileSync(dir+'/alertes.html',renderAlertes(lang));
  fs.writeFileSync(dir+'/securite.html',renderSafety(lang));
+ fs.writeFileSync(dir+'/regles.html',renderRules(lang));
  fs.writeFileSync(dir+'/association.html',renderClub(lang));
  fs.writeFileSync(dir+'/cours.html',renderLessons(lang));
  fs.writeFileSync(dir+'/contact.html',renderContact(lang));
@@ -276,7 +356,7 @@ fs.mkdirSync(OUT + '/fonts', { recursive: true });
 for (const f of ['anton-latin-400.woff2','OFL.txt']) fs.copyFileSync('./fonts/'+f, OUT + '/fonts/' + f);
 // sitemap multilingue
 (function(){
-  const smPages = ['index','alerts','safety','club','lessons','contact'];
+  const smPages = ['index','alerts','safety','rules','club','lessons','contact'];
   let sm = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n';
   for (const pg of smPages) {
     for (const l of LANGS) {
@@ -284,7 +364,7 @@ for (const f of ['anton-latin-400.woff2','OFL.txt']) fs.copyFileSync('./fonts/'+
       for (const a of LANGS) sm += '    <xhtml:link rel="alternate" hreflang="' + META[a].htmlLang + '" href="' + abs(a, pg) + '"/>\n';
       sm += '    <xhtml:link rel="alternate" hreflang="x-default" href="' + abs(XDEF, pg) + '"/>\n';
       sm += '    <changefreq>' + (pg === 'index' || pg === 'alerts' ? 'daily' : 'monthly') + '</changefreq>\n';
-      sm += '    <priority>' + (pg === 'index' ? (l === XDEF ? '1.0' : '0.9') : (pg === 'alerts' ? '0.8' : (pg === 'safety' ? '0.7' : '0.6'))) + '</priority>\n  </url>\n';
+      sm += '    <priority>' + (pg === 'index' ? (l === XDEF ? '1.0' : '0.9') : (pg === 'alerts' ? '0.8' : (pg === 'safety' || pg === 'rules' ? '0.7' : '0.6'))) + '</priority>\n  </url>\n';
     }
   }
   sm += '</urlset>\n';

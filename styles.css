@@ -239,3 +239,16 @@ svg{width:100%;height:auto;display:block}
 .snote{font-size:12.5px;color:#48535f;background:#f3f7f8;border:1px solid var(--line);
   border-left:3px solid var(--water);border-radius:0 8px 8px 0;padding:9px 11px;margin:14px 0 0}
 @media (max-width:420px){.spic,.spic svg{width:38px;height:38px;flex-basis:38px}.scard{padding:10px 11px;gap:10px}}
+
+/* E29, 23/10/2026 : onglet Regles de croisement.
+   Meme carte que l'onglet Securite, mais le schema est vu de dessus et a besoin
+   de largeur : 96 px au lieu de 44, donc une colonne de moins dans la grille. */
+.rgrid{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));margin:10px 0 0}
+.rcard{display:flex;gap:12px;align-items:center;background:#fff;border:1px solid var(--line);
+  border-radius:10px;padding:12px 13px}
+.rpic{flex:0 0 96px;width:96px;color:var(--water)}
+.rpic svg{width:96px;height:72px;display:block}
+.rsame{font-size:13px;font-weight:700;color:var(--water);margin:8px 0 0}
+.rlaw{font-size:13px;color:#48535f;line-height:1.5;margin:8px 0 0;padding-left:20px}
+.rlaw li{margin:4px 0}
+@media (max-width:420px){.rpic,.rpic svg{width:76px;flex-basis:76px}.rpic svg{height:57px}.rcard{padding:10px 11px;gap:10px}}

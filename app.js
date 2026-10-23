@@ -23,7 +23,7 @@ var HS=[7,8,9,10,11,12,13,14,15,16,17,18,19,20,21], FILL=5.2;
 var GO_VENT_MIN   = 11; /* vent moyen mini (kn) pour afficher un creneau GO.
                            B12 : etait a 10, soit exactement le seuil de 1 etoile,
                            donc un jour note 1/5 affichait quand meme un GO. */
-var GO_VENT_MAX   = 25; /* vent moyen maxi (kn). Au-dela le site n'affiche plus de
+var GO_VENT_MAX   = 20; /* vent moyen maxi (kn). Au-dela le site n'affiche plus de
                            creneau. La litterature wingfoil situe entre 22 et 25 kn
                            la frontiere entre « confortable pour la plupart » et
                            « vent fort, petit materiel, pratiquant experimente »
@@ -33,7 +33,7 @@ var GO_VENT_MAX   = 25; /* vent moyen maxi (kn). Au-dela le site n'affiche plus 
                            il se tait plutot que d'envoyer quelqu'un dans des
                            conditions d'expert. Au spot, la bande 25-30 kn ne
                            represente de toute facon que 34 heures par an. */
-var GO_RAFALE_MAX = 50; /* rafale maxi (kn). Garde-fou d'EXCEPTION seulement, pour
+var GO_RAFALE_MAX = 38; /* rafale maxi (kn). Garde-fou d'EXCEPTION seulement, pour
                            le grain qui ne suit pas le vent moyen. Sur la plage
                            11-25 kn ce seuil ne coupe que 0,15 % des heures, 7 sur
                            3 ans. Il est volontairement place AU-DESSUS de la
@@ -41,7 +41,35 @@ var GO_RAFALE_MAX = 50; /* rafale maxi (kn). Garde-fou d'EXCEPTION seulement, po
                            redevenir un plafond de vent deguise : c'est toute la
                            lecon de A8. Le baisser le ramenerait vers la relation
                            normale, donc vers un plafond de vent deguise. */
-var GO_TROU_MAX   = 1;  /* trou, en heures, comble a l'interieur d'un creneau. */
+/* -----------------------------------------------------------------------------
+   23/10/2026 : CES DEUX SEUILS ONT ETE BAISSES, 25 -> 20 kn et 50 -> 38 kn, sur
+   feu vert d'Antoine, apres un constat de terrain de sa part : « c'est tempete
+   et on envoie du monde a l'eau ». Point A9 du backlog.
+   CE QUE LE SITE AFFICHAIT CE JOUR-LA : deux creneaux GO, 09:00-11:00 et
+   14:00-22:00, sur une journee a 19-27 kn de vent moyen et 37 a 53 kn de rafales.
+   CE QUE LA MESURE DE A8 N'AVAIT PAS VU, et c'est l'erreur de raisonnement qui a
+   produit ces seuils : puisque la rafale vaut 1,85 fois le vent moyen au spot,
+   un plafond de vent moyen a 25 kn autorise PAR CONSTRUCTION des rafales de
+   l'ordre de 46 kn. Un garde-fou rafale pose a 50 kn, « au-dessus de la relation
+   normale » pour ne pas etre un plafond deguise, ne peut donc par definition
+   JAMAIS rattraper un coup de vent : il ne coupe que le grain anormal. Le seul
+   levier qui protege est le plafond de VENT MOYEN. A8 avait raison sur la
+   mecanique et tort sur la conclusion : viser 25 kn pour un site public, c'est
+   viser le haut de la fourchette « expert, petit materiel ».
+   L'ancien raisonnement reste ecrit ci-dessus, il n'est pas efface : il explique
+   pourquoi le garde-fou rafale ne doit pas descendre vers 1,85 x GO_VENT_MAX
+   (soit 37 kn ici). 38 kn le laisse juste au-dessus de la relation normale au
+   nouveau plafond, donc toujours un garde-fou d'exception et non un plafond
+   deguise.
+   --------------------------------------------------------------------------- */
+var GO_TROU_MAX   = 1;  /* trou, en heures, comble a l'interieur d'un creneau.
+                           23/10/2026 : un trou n'est PLUS JAMAIS comble s'il
+                           contient une heure ecartee par un garde-fou (vent moyen
+                           ou rafale). Avant ce correctif, le 23/10 a 20 h
+                           (19 kn de moyen mais 46 kn de rafale) etait ecarte par
+                           le garde-fou, puis repontee entre 19 h et 21 h, et
+                           ressortait DANS la bande GO. Un lissage cosmetique
+                           annulait un garde-fou de securite. Voir goBloque(). */
 var GO_DUREE_MIN  = 2;  /* duree mini, en heures, d'un creneau affiche. En dessous
                            il n'est pas montre : une fenetre d'une heure obtenue
                            parce qu'une rafale passe juste sous le seuil n'est pas
@@ -72,6 +100,15 @@ function isGo(w,d){
   if(GO_EXIGE_CERTITUDE){ if(eauCre(w[0],d)!=='plein') return false; }
   else if(!present(w[0],d)) return false;
   return w[1]>=GO_VENT_MIN && w[1]<=GO_VENT_MAX && w[2]<GO_RAFALE_MAX;
+}
+/* Les heures ecartees par un GARDE-FOU, c'est-a-dire pour vent moyen trop fort ou
+   rafale trop forte, par opposition a celles ecartees faute de vent (GO_VENT_MIN)
+   ou faute d'eau. Un trou qui contient une de ces heures ne se comble jamais
+   (23/10/2026, point A9). */
+function goBloque(d){
+  return (d&&d.wind?d.wind:[]).filter(function(w){
+    return w[1]>GO_VENT_MAX || w[2]>=GO_RAFALE_MAX;
+  }).map(function(w){return w[0];});
 }
 var SM={fr:['N','NE','E','SE','S','SO','O','NO'],en:['N','NE','E','SE','S','SW','W','NW'],de:['N','NO','O','SO','S','SW','W','NW'],nl:['N','NO','O','ZO','Z','ZW','W','NW'],es:['N','NE','E','SE','S','SO','O','NO'],it:['N','NE','E','SE','S','SO','O','NO'],zh:['N','NE','E','SE','S','SW','W','NW'],br:['N','NE','E','SE','S','SW','W','NW']};
 var SECT=SM[LANG]||SM.en;
@@ -176,12 +213,16 @@ function pasDe(d){ return (d&&d.hs&&d.hs.length>=12)?1:2; }
    courts que GO_DUREE_MIN heures ne sont pas affiches du tout.
    Cette fonction sert A LA FOIS au texte du tableau et a la bande grisee du
    graphique : les deux ne peuvent donc pas diverger. */
-function goGroups(hs,pas){
+function goGroups(hs,pas,bloque){
   pas=pas||2;
+  bloque=bloque||[];
   hs=hs.slice().sort(function(a,b){return a-b;});
   var g=[],cur=[];
   for(var i=0;i<hs.length;i++){
-    if(!cur.length||hs[i]-cur[cur.length-1]<=pas*(1+GO_TROU_MAX))cur.push(hs[i]);
+    var prec=cur.length?cur[cur.length-1]:null;
+    /* A9 : on ne ponte jamais par-dessus une heure ecartee par un garde-fou. */
+    var dangerDansLeTrou = prec!==null && bloque.some(function(h){return h>prec && h<hs[i];});
+    if(!cur.length||(hs[i]-prec<=pas*(1+GO_TROU_MAX) && !dangerDansLeTrou))cur.push(hs[i]);
     else{g.push(cur);cur=[hs[i]];}
   }
   if(cur.length)g.push(cur);
@@ -213,7 +254,7 @@ function ventTenu(set,pas,heures){
   }
   return best===null?maxi:best;
 }
-function goText(hs,pas){return goGroups(hs,pas).map(function(g){return g.length>1?g[0]+':00–'+g[g.length-1]+':00':g[0]+':00';}).join(', ');}
+function goText(hs,pas,bloque){return goGroups(hs,pas,bloque).map(function(g){return g.length>1?g[0]+':00–'+g[g.length-1]+':00':g[0]+':00';}).join(', ');}
 
 var HREF=[7,9,11,13,15,17,19,21];  /* heures qui portent un chiffre dans le graphique */
 function daySVG(d){
@@ -222,7 +263,7 @@ function daySVG(d){
   var X=function(h){return xL+(h-7)*px;}, Y=function(L){return bot-(L/6)*(bot-top);};
   var s='<svg viewBox="0 0 '+W+' '+H+'">';
   var goH=d.wind.filter(function(w){return isGo(w,d);}).map(function(w){return w[0];});
-  goGroups(goH,pas).forEach(function(g){var a=X(g[0])-px*pas/2,b=X(g[g.length-1])+px*pas/2;
+  goGroups(goH,pas,goBloque(d)).forEach(function(g){var a=X(g[0])-px*pas/2,b=X(g[g.length-1])+px*pas/2;
     s+='<rect x="'+a.toFixed(1)+'" y="'+top+'" width="'+(b-a).toFixed(1)+'" height="'+(bot-top)+'" fill="rgba(15,110,86,.14)"/><text x="'+((a+b)/2).toFixed(1)+'" y="'+(top+12)+'" text-anchor="middle" font-size="10" font-weight="700" fill="#0f6e56">GO</text>';});
   for(var m=0;m<=6;m+=2){var y=Y(m);s+='<line x1="'+xL+'" y1="'+y.toFixed(1)+'" x2="'+xR+'" y2="'+y.toFixed(1)+'" stroke="#e7ebf0"/><text x="'+(xL-6)+'" y="'+(y+3).toFixed(1)+'" text-anchor="end" font-size="10" fill="#9aa3ac">'+m+' m</text>';}
   /* C10 : la ligne de reference suit la cote de la saison, portee par data.json
@@ -338,7 +379,7 @@ function render(){
   /* A1 : « inconnu » a son propre libelle. Sans lui, la journee tombait sur
      T.eauNone, « pas d'eau », qui AFFIRME. On ne sait pas n'est pas non. */
   var eauTxt=d.water==='plein'?T.eauAllday:d.water==='renvoiSoir'?T.eauUntil:d.water==='priseSoir'?T.eauFrom:d.water==='inconnu'?(T.eauUnknown||T.eauNone):(anyWater?T.eauTide:T.eauNone);
-  var goTxt=goH.length?goText(goH,pasDe(d)):'—';
+  var goTxt=goH.length?goText(goH,pasDe(d),goBloque(d)):'—';
   var tr=document.createElement('tr');tr.className='day'+(d.today?' today':'');
   tr.innerHTML='<td class="jour">'+trDay(d.d)+(d.today?'<small>'+T.today+'</small>':i===1?'<small>'+T.tomorrow+'</small>':'')+'<span class="wx">'+wx((d.wind.find(function(w){return w[0]===13;})||[])[5]||d.wxc)+' '+d.tmin+'–'+d.tmax+' °C</span><span class="chev">'+T.details+'</span></td>'
    +'<td class="stars">'+stars(note)+'</td>'

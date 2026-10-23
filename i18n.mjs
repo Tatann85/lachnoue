@@ -92,6 +92,9 @@ export const T = {
   rulLaw2:"Au-delà de 300 m d'un abri : flottabilité de 50 N au minimum ou combinaison, plus un moyen de repérage lumineux étanche de 6 heures d'autonomie.",
   rulSame:"Wing, planche à voile, windfoil : mêmes règles, ce sont tous des engins à voile.",
   rulNote:"Ces règles sont celles de la plaquette wingfoil de la Fédération Française de Voile (novembre 2022) et de la réglementation nationale. Une règle locale propre au plan d'eau, si elle existe, prime sur ce qui est écrit ici.",
+  rulPrio:"PRIORITAIRE",
+  rulEcart:"S'ÉCARTE",
+  rulVent:"VENT",
   svSky:"ciel",svTemp:"temp. (°C)",svWind:"vent (kn)",svGust:"raf. (kn)",svMarsh:"cote du marais (m)",svFill:"cote de remplissage de saison {c} m",svHigh:"marée haute",svPartial:"Prévision partielle (jour en cours)",
   eFill:"PRISE",eFillD:"remplissage",eDrain:"RENVOI",eDrainD:"vidange (renouvellement)",eTidal:"VA-ET-VIENT",eTidalD:"le niveau suit la marée",eLow:"FERMETURE BM",eLowD:"marais vidé",eClosed:"FERMÉE",eClosedD:"niveau maintenu (plein)",eUnknown:"ÉTAT INCONNU",eUnknownD:"manœuvre non reconnue, niveau incertain",
   // --- onglet alertes (20/09/2026) ---
@@ -287,6 +290,9 @@ export const T = {
   rulLaw2:"Beyond 300 m from shelter: buoyancy aid of at least 50 N or a wetsuit, plus a waterproof light signalling device with 6 hours of autonomy.",
   rulSame:"Wing, windsurf, windfoil: same rules, they are all sailing craft.",
   rulNote:"These rules come from the French Sailing Federation wingfoil leaflet (November 2022) and from national regulations. A local rule specific to this body of water, if one exists, overrides what is written here.",
+  rulPrio:"RIGHT OF WAY",
+  rulEcart:"KEEPS CLEAR",
+  rulVent:"WIND",
   svSky:"sky",svTemp:"temp. (°C)",svWind:"wind (kn)",svGust:"gust (kn)",svMarsh:"marsh level (m)",svFill:"seasonal fill level {c} m",svHigh:"high tide",svPartial:"Partial forecast (today)",
   eFill:"FILL",eFillD:"filling up",eDrain:"DRAIN",eDrainD:"draining (renewal)",eTidal:"TIDAL",eTidalD:"level follows the tide",eLow:"LOW-TIDE CLOSE",eLowD:"marsh drained",eClosed:"CLOSED",eClosedD:"level held (full)",eUnknown:"UNKNOWN",eUnknownD:"unrecognised operation, level uncertain",
   // --- onglet alertes (20/09/2026) ---
@@ -482,6 +488,9 @@ export const T = {
   rulLaw2:"Ab 300 m von einem Schutz: Schwimmhilfe mit mindestens 50 N oder Neoprenanzug, plus ein wasserdichtes Leuchtmittel mit 6 Stunden Autonomie.",
   rulSame:"Wing, Windsurf, Windfoil: dieselben Regeln, alles Segelfahrzeuge.",
   rulNote:"Diese Regeln stammen aus dem Wingfoil-Faltblatt des französischen Segelverbands (November 2022) und aus den nationalen Vorschriften. Eine lokale Regel für dieses Gewässer, falls es eine gibt, hat Vorrang.",
+  rulPrio:"VORFAHRT",
+  rulEcart:"WEICHT AUS",
+  rulVent:"WIND",
   svSky:"Himmel",svTemp:"Temp. (°C)",svWind:"Wind (kn)",svGust:"Böe (kn)",svMarsh:"Marschpegel (m)",svFill:"Füllstand der Saison {c} m",svHigh:"Hochwasser",svPartial:"Teilvorhersage (heute)",
   eFill:"EINLASS",eFillD:"füllt sich",eDrain:"ABLASS",eDrainD:"Entleerung (Erneuerung)",eTidal:"TIDENHUB",eTidalD:"Pegel folgt der Gezeit",eLow:"NW-SCHLIESSUNG",eLowD:"Marsch geleert",eClosed:"GESCHLOSSEN",eClosedD:"Pegel gehalten (voll)",eUnknown:"UNBEKANNT",eUnknownD:"unbekannter Vorgang, Pegel unsicher",
   // --- onglet alertes (20/09/2026) ---
@@ -677,6 +686,9 @@ export const T = {
   rulLaw2:"Vanaf 300 m van een schuilplaats: drijfhulpmiddel van minimaal 50 N of een wetsuit, plus een waterdicht lichtsignaal met 6 uur autonomie.",
   rulSame:"Wing, windsurf, windfoil: dezelfde regels, het zijn allemaal zeilvaartuigen.",
   rulNote:"Deze regels komen uit het wingfoil-boekje van de Franse zeilbond (november 2022) en uit de nationale regelgeving. Een plaatselijke regel voor dit water, als die bestaat, gaat voor.",
+  rulPrio:"VOORRANG",
+  rulEcart:"WIJKT UIT",
+  rulVent:"WIND",
   svSky:"lucht",svTemp:"temp. (°C)",svWind:"wind (kn)",svGust:"vlaag (kn)",svMarsh:"moeraspeil (m)",svFill:"vulpeil van het seizoen {c} m",svHigh:"hoogwater",svPartial:"Gedeeltelijke verwachting (vandaag)",
   eFill:"INLAAT",eFillD:"vult zich",eDrain:"AFLAAT",eDrainD:"leging (verversing)",eTidal:"GETIJ",eTidalD:"peil volgt het getij",eLow:"LW-SLUITING",eLowD:"moeras geleegd",eClosed:"GESLOTEN",eClosedD:"peil vastgehouden (vol)",eUnknown:"ONBEKEND",eUnknownD:"onbekende manoeuvre, peil onzeker",
   // --- onglet alertes (20/09/2026) ---
@@ -872,6 +884,9 @@ export const T = {
   rulLaw2:"Más allá de 300 m de un abrigo: flotabilidad de 50 N como mínimo o traje de neopreno, más un medio luminoso de localización estanco con 6 horas de autonomía.",
   rulSame:"Wing, windsurf, windfoil: las mismas reglas, todos son aparatos de vela.",
   rulNote:"Estas reglas provienen del folleto de wingfoil de la Federación Francesa de Vela (noviembre de 2022) y de la normativa nacional. Una regla local propia de esta lámina de agua, si existe, prevalece sobre lo escrito aquí.",
+  rulPrio:"PRIORIDAD",
+  rulEcart:"SE APARTA",
+  rulVent:"VIENTO",
   svSky:"cielo",svTemp:"temp. (°C)",svWind:"viento (kn)",svGust:"ráf. (kn)",svMarsh:"nivel de la marisma (m)",svFill:"nivel de llenado de temporada {c} m",svHigh:"marea alta",svPartial:"Previsión parcial (día en curso)",
   eFill:"LLENADO",eFillD:"se llena",eDrain:"VACIADO",eDrainD:"vaciado (renovación)",eTidal:"IDA Y VUELTA",eTidalD:"el nivel sigue la marea",eLow:"CIERRE EN BAJAMAR",eLowD:"marisma vaciada",eClosed:"CERRADA",eClosedD:"nivel mantenido (llena)",eUnknown:"DESCONOCIDO",eUnknownD:"maniobra no reconocida, nivel incierto",
   // --- onglet alertes (20/09/2026) ---
@@ -1067,6 +1082,9 @@ export const T = {
   rulLaw2:"Oltre 300 m da un riparo: galleggiabilità di almeno 50 N oppure muta, più un mezzo luminoso di segnalazione impermeabile con 6 ore di autonomia.",
   rulSame:"Wing, windsurf, windfoil: stesse regole, sono tutti mezzi a vela.",
   rulNote:"Queste regole vengono dal pieghevole wingfoil della Federazione Francese di Vela (novembre 2022) e dalla normativa nazionale. Una regola locale propria di questo specchio d'acqua, se esiste, prevale su quanto scritto qui.",
+  rulPrio:"PRIORITÀ",
+  rulEcart:"SI SCOSTA",
+  rulVent:"VENTO",
   svSky:"cielo",svTemp:"temp. (°C)",svWind:"vento (kn)",svGust:"raff. (kn)",svMarsh:"livello della palude (m)",svFill:"livello di riempimento stagionale {c} m",svHigh:"alta marea",svPartial:"Previsione parziale (giorno in corso)",
   eFill:"RIEMPIMENTO",eFillD:"si riempie",eDrain:"SVUOTAMENTO",eDrainD:"svuotamento (ricambio)",eTidal:"VA E VIENI",eTidalD:"il livello segue la marea",eLow:"CHIUSURA IN BASSA MAREA",eLowD:"palude svuotata",eClosed:"CHIUSA",eClosedD:"livello mantenuto (piena)",eUnknown:"SCONOSCIUTO",eUnknownD:"manovra non riconosciuta, livello incerto",
   // --- onglet alertes (20/09/2026) ---
@@ -1262,6 +1280,9 @@ export const T = {
   rulLaw2:"距避风处 300 米以外：至少 50 N 的浮力装置或湿衣，另加一个防水、续航 6 小时的发光示位装置。",
   rulSame:"翼板、帆板、风翼板：规则相同，都属于帆驱动器材。",
   rulNote:"这些规则来自法国帆船协会的翼板手册（2022 年 11 月）和国家法规。如果本水域另有当地规定，当地规定优先。",
+  rulPrio:"优先",
+  rulEcart:"避让",
+  rulVent:"风",
   svSky:"天空",svTemp:"气温 (°C)",svWind:"风 (节)",svGust:"阵风 (节)",svMarsh:"盐沼水位 (m)",svFill:"当季灌满水位 {c} m",svHigh:"高潮",svPartial:"部分预报（当天）",
   eFill:"进水",eFillD:"正在灌满",eDrain:"排水",eDrainD:"放水（换水）",eTidal:"随潮进出",eTidalD:"水位随潮汐变化",eLow:"低潮关闸",eLowD:"盐沼已放空",eClosed:"关闭",eClosedD:"水位保持（满）",eUnknown:"状态不明",eUnknownD:"操作无法识别，水位不明",
   // --- onglet alertes (20/09/2026) ---
@@ -1457,6 +1478,9 @@ export const T = {
   rulLaw2:"Dreist 300 m diouzh ur gwasked : neuñvusted 50 N d'an nebeutañ pe ur gwiskamant, ha un ardivink gouloù dic'hlebiant gant 6 eurvezh a emrenerezh.",
   rulSame:"Wing, windsurf, windfoil : hevelep reolennoù, dafar gant gouel int holl.",
   rulNote:"Ar reolennoù-mañ a zeu eus follennig wingfoil Kevredigezh Gall ar Gouelioù (Du 2022) hag eus al lezennoù broadel. Ma'z eus ul reolenn lec'hel evit al lenn-mañ, hi a zo tost da gentañ.",
+  rulPrio:"GWIR DEZHAÑ",
+  rulEcart:"PELLAAT",
+  rulVent:"AVEL",
   svSky:"oabl",svTemp:"temp. (°C)",svWind:"avel (kn)",svGust:"barr (kn)",svMarsh:"live ar geunioù (m)",svFill:"live leuniañ ar c'houlzad {c} m",svHigh:"mare uhel",svPartial:"Diougan darnel (an deiz-mañ)",
   eFill:"LEUNIAÑ",eFillD:"o leuniañ",eDrain:"GOULLONDERIÑ",eDrainD:"goullonderiñ (nevesaat an dour)",eTidal:"MONT-DONT",eTidalD:"al live a heul ar mare",eLow:"SERRIÑ MARE IZEL",eLowD:"geunioù goullonderet",eClosed:"SERRET",eClosedD:"live dalc'het (leun)",eUnknown:"DIANAV",eUnknownD:"oberiant dianav, live an dour dianav",
   // --- onglet alertes (20/09/2026) ---

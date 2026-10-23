@@ -252,3 +252,15 @@ svg{width:100%;height:auto;display:block}
 .rlaw{font-size:13px;color:#48535f;line-height:1.5;margin:8px 0 0;padding-left:20px}
 .rlaw li{margin:4px 0}
 @media (max-width:420px){.rpic,.rpic svg{width:76px;flex-basis:76px}.rpic svg{height:57px}.rcard{padding:10px 11px;gap:10px}}
+
+/* E29 revu le 23/10/2026, demande d'Antoine : les schemas etaient illisibles en
+   petit a cote du texte. Ils passent PLEINE LARGEUR, le texte sous le dessin.
+   Une seule colonne, meme sur grand ecran : un schema large vaut mieux que deux
+   schemas cote a cote, et la lecture se fait une regle a la fois. */
+.rgrid{display:block;margin:10px 0 0}
+.rfig{margin:0 0 16px;background:#fff;border:1px solid var(--line);border-radius:12px;
+  padding:12px 12px 10px;max-width:620px}
+.rfig svg{width:100%;height:auto;display:block;color:#15606b}
+.rfig figcaption{margin-top:8px;font-size:13.5px;line-height:1.45;color:#48535f}
+.rfig figcaption b{display:block;color:var(--ink,#16232b);font-size:15px;font-weight:800;margin-bottom:2px}
+@media (max-width:420px){.rfig{padding:9px 9px 8px}.rfig figcaption b{font-size:14.5px}}

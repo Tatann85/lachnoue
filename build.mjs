@@ -261,73 +261,103 @@ function renderSafety(lang){ const t=T[lang];
  return shell(lang,'safety','safety',body,{title:t.secTitle,desc:t.secDesc,keywords:false});
 }
 /* ---- Onglet Regles de croisement (23/10/2026, demande d'Antoine) ----
-   SOURCE, et elle est le coeur du point : la plaquette « Wingfoil, ce qu'il faut
-   savoir pour pratiquer en toute securite », Federation Francaise de Voile,
-   novembre 2022. Les trois regles de priorite viennent de la, mot pour mot,
-   ainsi que les deux regles de vagues et le materiel du large. Rien n'est ecrit
-   de memoire : ce ne sont pas des conseils mais des REGLES, et une regle fausse
-   sur un site public est pire que pas de page du tout.
-   Ce que la plaquette NE dit pas n'est pas sur la page : ni depassement, ni
-   croisement avec un bateau, ni tribord et babord nommes comme tels.
-   Les schemas sont vus de DESSUS et dessines ici. Convention tenue sur les six :
-   vert = prioritaire, rouge = celui qui s'ecarte, trait pointille = la
-   trajectoire a modifier, fleches bleu pale = le vent. */
-function pilote(x,y,rot,col){
-  return '<g transform="translate('+x+','+y+') rotate('+rot+')">'
-   +'<ellipse cx="0" cy="0" rx="12" ry="4.5" fill="#d7eeec" stroke="currentColor" stroke-width="2"/>'
-   +'<path d="M-4 -2 L2 -17 L7 -3 Z" fill="'+col+'" stroke="'+col+'" stroke-width="1.5" stroke-linejoin="round"/></g>';
+   SOURCE : plaquette « Wingfoil, ce qu'il faut savoir pour pratiquer en toute
+   securite », Federation Francaise de Voile, novembre 2022. Les trois regles de
+   priorite en viennent mot pour mot, ainsi que les deux regles de vagues et le
+   materiel exige au large. Ce que la plaquette ne dit pas n'est pas sur la page :
+   ni depassement, ni croisement avec un bateau. Ce sont des REGLES, pas des
+   conseils, et une regle fausse sur un site public est pire que pas de page.
+
+   LES SCHEMAS, REFAITS LE 23/10/2026 : Antoine les trouvait illisibles en petit,
+   a cote du texte. Ils sont desormais PLEINE LARGEUR, le texte sous le dessin.
+   Quatre regles de dessin, tenues sur les six :
+   1. le dessin porte des MOTS, pas seulement des couleurs : chaque pratiquant est
+      etiquete PRIORITAIRE ou S'ECARTE, et le vent porte son nom. Un schema qui a
+      besoin d'une legende n'est pas lisible ;
+   2. les etiquettes sont traduites comme le reste (cles rulPrio, rulEcart,
+      rulVent), sinon la page parle deux langues a la fois ;
+   3. le trait structurel est en currentColor et suit donc le theme ; seules les
+      deux couleurs qui PORTENT LE SENS sont en dur, vert pour le prioritaire et
+      rouge pour celui qui s'ecarte ;
+   4. texte a 20 unites au moins dans un viewBox de 480 : sur un telephone de
+      360 px la page est rendue a 0,75, donc 15 px reels. En dessous, c'est
+      illisible la ou le site est consulte, c'est-a-dire au spot.
+   Les identifiants de marqueurs sont suffixes par schema : deux <defs> de meme id
+   sur une page, et toutes les fleches prennent la couleur du premier. */
+const VERT='#157f45', ROUGE='#c0271d', VENT='#8ec9c6', SABLE='#e9dcc3';
+function rider(x,y,rot,col,sc){ sc=sc||1;
+  return '<g transform="translate('+x+','+y+') rotate('+rot+') scale('+sc+')">'
+   +'<ellipse cx="0" cy="0" rx="34" ry="11" fill="#eaf4f3" stroke="currentColor" stroke-width="3"/>'
+   +'<path d="M-12 -4 L4 -48 L20 -6 Z" fill="'+col+'" stroke="'+col+'" stroke-width="3" stroke-linejoin="round"/>'
+   +'<circle cx="0" cy="0" r="5" fill="currentColor"/></g>';
 }
-const VERT='#1f8f4e', ROUGE='#b3261e', VENT='#9fd4d0';
-function ventH(y,x1,x2){ /* vent horizontal, de droite a gauche */
-  return '<path d="M'+x2+' '+y+' H'+x1+' M'+(x1+5)+' '+(y-4)+' L'+x1+' '+y+' L'+(x1+5)+' '+(y+4)+'" stroke="'+VENT+'" stroke-width="2" fill="none" stroke-linecap="round"/>';
+function fleches(i){
+  const m=(id,c)=>'<marker id="'+id+i+'" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="'+c+'"/></marker>';
+  return '<defs>'+m('av',VERT)+m('ar',ROUGE)+m('aw',VENT)+'</defs>';
 }
-function ventV(x,y1,y2){ /* vent vertical, du haut vers le bas */
-  return '<path d="M'+x+' '+y1+' V'+y2+' M'+(x-4)+' '+(y2-5)+' L'+x+' '+y2+' L'+(x+4)+' '+(y2-5)+'" stroke="'+VENT+'" stroke-width="2" fill="none" stroke-linecap="round"/>';
+function vent(i,t,x1,y1,x2,y2,n,gap,horiz){
+  let s='';
+  for(let k=0;k<n;k++){ const dx=horiz?0:k*gap, dy=horiz?k*gap:0;
+    s+='<line x1="'+(x1+dx)+'" y1="'+(y1+dy)+'" x2="'+(x2+dx)+'" y2="'+(y2+dy)+'" stroke="'+VENT+'" stroke-width="5" marker-end="url(#aw'+i+')" stroke-linecap="round"/>';
+  }
+  const lx=horiz?(x1+x2)/2:x1+(n-1)*gap/2, ly=horiz?y1-16:Math.min(y1,y2)-14;
+  return s+'<text x="'+lx+'" y="'+ly+'" font-size="20" font-weight="700" fill="'+VENT+'" text-anchor="middle">'+t.rulVent+'</text>';
 }
-const SCHEMA = {
+function etiq(x,y,txt,col){ return '<text x="'+x+'" y="'+y+'" font-size="21" font-weight="800" fill="'+col+'" text-anchor="middle">'+txt+'</text>'; }
+function svgR(i,inner){ return '<svg viewBox="0 0 480 220" role="img" aria-label="">'+fleches(i)+inner+'</svg>'; }
+function schemas(t){
+  const P=t.rulPrio, E=t.rulEcart;
+  return {
  /* 1. Vent de droite : le vert est prioritaire, le rouge s'ecarte. */
- droite:'<svg viewBox="0 0 96 72" aria-hidden="true">'+ventH(10,60,92)+ventH(22,68,92)
-  +pilote(22,56,-22,VERT)+pilote(72,26,158,ROUGE)
-  +'<path d="M34 50 L56 34" stroke="'+VERT+'" stroke-width="2.5" stroke-linecap="round"/>'
-  +'<path d="M62 32 Q54 48 46 64" stroke="'+ROUGE+'" stroke-width="2.5" fill="none" stroke-dasharray="4 3" stroke-linecap="round"/></svg>',
- /* 2. Sous le vent : le vent vient du haut, celui du haut est au vent et s'ecarte. */
- sousVent:'<svg viewBox="0 0 96 72" aria-hidden="true">'+ventV(16,6,24)+ventV(80,6,24)
-  +pilote(48,26,8,ROUGE)+pilote(48,58,8,VERT)
-  +'<path d="M62 24 Q74 20 82 10" stroke="'+ROUGE+'" stroke-width="2.5" fill="none" stroke-dasharray="4 3" stroke-linecap="round"/>'
-  +'<path d="M62 57 H84" stroke="'+VERT+'" stroke-width="2.5" stroke-linecap="round"/></svg>',
- /* 3. Pratiquant hesitant : planche de travers, l'autre s'ecarte. */
- hesitant:'<svg viewBox="0 0 96 72" aria-hidden="true">'
-  +pilote(30,44,74,VERT)
-  +'<text x="30" y="20" font-size="15" font-weight="700" fill="'+VERT+'" text-anchor="middle">?</text>'
-  +pilote(72,52,-20,ROUGE)
-  +'<path d="M60 48 Q62 30 74 22" stroke="'+ROUGE+'" stroke-width="2.5" fill="none" stroke-dasharray="4 3" stroke-linecap="round"/></svg>',
- /* 4. Vagues : ne pas voler au vent de celui qui surfe. */
- vagues:'<svg viewBox="0 0 96 72" aria-hidden="true">'+ventV(12,4,20)
-  +'<path d="M4 58 Q20 44 36 58 T68 58 T96 54" stroke="'+VENT+'" stroke-width="3" fill="none"/>'
-  +pilote(44,52,-8,VERT)+pilote(52,22,-8,ROUGE)
-  +'<path d="M38 14 L66 30 M66 14 L38 30" stroke="'+ROUGE+'" stroke-width="3" stroke-linecap="round"/></svg>',
- /* 5. Pas de saut au bord : la zone du bord est barree. */
- saut:'<svg viewBox="0 0 96 72" aria-hidden="true">'
-  +'<rect x="0" y="56" width="96" height="16" fill="#efe6d6"/><path d="M0 56 H96" stroke="currentColor" stroke-width="2"/>'
-  +pilote(22,44,-14,ROUGE)
-  +'<path d="M8 32 L36 56 M36 32 L8 56" stroke="'+ROUGE+'" stroke-width="3" stroke-linecap="round"/>'
-  +pilote(72,26,-10,VERT)+'</svg>',
+ droite:svgR(1,vent(1,t,470,46,352,46,2,30,true)
+  +rider(120,150,-20,VERT)+etiq(120,200,P,VERT)
+  +'<line x1="160" y1="138" x2="250" y2="100" stroke="'+VERT+'" stroke-width="5" marker-end="url(#av1)" stroke-linecap="round"/>'
+  +rider(340,110,160,ROUGE)+etiq(392,206,E,ROUGE)
+  +'<path d="M300 125 Q268 160 258 196" stroke="'+ROUGE+'" stroke-width="5" fill="none" stroke-dasharray="10 8" marker-end="url(#ar1)" stroke-linecap="round"/>'),
+ /* 2. Sous le vent : le vent vient du haut, celui du haut est au vent. */
+ sousVent:svgR(2,vent(2,t,70,40,70,92,2,116,false)
+  +rider(236,100,0,ROUGE)+etiq(236,48,E,ROUGE)
+  +'<path d="M276 92 Q330 78 352 46" stroke="'+ROUGE+'" stroke-width="5" fill="none" stroke-dasharray="10 8" marker-end="url(#ar2)" stroke-linecap="round"/>'
+  +rider(236,170,0,VERT)+etiq(236,212,P,VERT)
+  +'<line x1="276" y1="170" x2="392" y2="170" stroke="'+VERT+'" stroke-width="5" marker-end="url(#av2)" stroke-linecap="round"/>'),
+ /* 3. Pratiquant hesitant : planche de travers, point d'interrogation. */
+ hesitant:svgR(3,rider(140,140,62,VERT,0.95)+etiq(140,205,P,VERT)
+  +'<text x="140" y="52" font-size="40" font-weight="800" fill="'+VERT+'" text-anchor="middle">?</text>'
+  +rider(340,160,-18,ROUGE)+etiq(392,206,E,ROUGE)
+  +'<path d="M300 146 Q268 96 300 58" stroke="'+ROUGE+'" stroke-width="5" fill="none" stroke-dasharray="10 8" marker-end="url(#ar3)" stroke-linecap="round"/>'),
+ /* 4. Vagues : celui qui surfe est prioritaire, on ne passe pas au vent. */
+ vagues:svgR(4,vent(4,t,66,44,66,96,2,104,false)
+  +'<path d="M20 190 Q90 150 160 190 T300 190 T460 182" stroke="'+VENT+'" stroke-width="7" fill="none"/>'
+  +rider(248,168,-6,VERT)+etiq(248,212,P,VERT)
+  +rider(258,80,-6,ROUGE)
+  +'<path d="M204 42 L312 114 M312 42 L204 114" stroke="'+ROUGE+'" stroke-width="8" stroke-linecap="round"/>'),
+ /* 5. Pas de saut au bord : barre pres du bord, admis au large. */
+ saut:svgR(5,'<rect x="0" y="178" width="480" height="42" fill="'+SABLE+'"/><line x1="0" y1="178" x2="480" y2="178" stroke="currentColor" stroke-width="3"/>'
+  +rider(110,140,-12,ROUGE,0.9)
+  +'<path d="M58 92 L162 180 M162 92 L58 180" stroke="'+ROUGE+'" stroke-width="8" stroke-linecap="round"/>'
+  +'<path d="M300 150 Q350 60 406 146" stroke="'+VERT+'" stroke-width="5" fill="none" marker-end="url(#av5)" stroke-linecap="round"/>'
+  +rider(300,156,-12,VERT,0.9)),
  /* 6. Baigneurs : on s'eloigne du bord. */
- baigneurs:'<svg viewBox="0 0 96 72" aria-hidden="true">'
-  +'<rect x="0" y="58" width="96" height="14" fill="#efe6d6"/><path d="M0 58 H96" stroke="currentColor" stroke-width="2"/>'
-  +'<g fill="currentColor"><circle cx="16" cy="50" r="4"/><circle cx="30" cy="54" r="4"/><circle cx="44" cy="49" r="4"/></g>'
-  +pilote(64,34,-18,VERT)
-  +'<path d="M76 28 L90 16 M86 14 L91 15 L90 21" stroke="'+VERT+'" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>'
-};
-function rulCard(sc,ti,su){ return '<div class="rcard"><div class="rpic">'+sc+'</div><div class="sbd"><div class="st">'+ti+'</div><div class="ss">'+su+'</div></div></div>'; }
-function renderRules(lang){ const t=T[lang];
+ baigneurs:svgR(6,'<rect x="0" y="182" width="480" height="38" fill="'+SABLE+'"/><line x1="0" y1="182" x2="480" y2="182" stroke="currentColor" stroke-width="3"/>'
+  +'<g fill="currentColor"><circle cx="60" cy="160" r="11"/><circle cx="118" cy="170" r="11"/><circle cx="176" cy="156" r="11"/></g>'
+  +rider(300,120,-16,VERT)
+  +'<line x1="340" y1="106" x2="440" y2="54" stroke="'+VERT+'" stroke-width="5" marker-end="url(#av6)" stroke-linecap="round"/>')
+  };
+}
+/* Une figure, une affirmation : le dessin, puis le titre et la phrase dessous.
+   L'aria-label reprend le titre, pour qui ne voit pas le dessin. */
+function rulFig(sc,ti,su){
+  return '<figure class="rfig">'+sc.replace('aria-label=""','aria-label="'+ti.replace(/"/g,'&quot;')+'"')
+   +'<figcaption><b>'+ti+'</b><span>'+su+'</span></figcaption></figure>';
+}
+function renderRules(lang){ const t=T[lang]; const S=schemas(t);
  const cards='<div class="rgrid">'
-  +rulCard(SCHEMA.droite,t.rulR1T,t.rulR1S)
-  +rulCard(SCHEMA.sousVent,t.rulR2T,t.rulR2S)
-  +rulCard(SCHEMA.hesitant,t.rulR3T,t.rulR3S)
-  +rulCard(SCHEMA.vagues,t.rulR4T,t.rulR4S)
-  +rulCard(SCHEMA.saut,t.rulR5T,t.rulR5S)
-  +rulCard(SCHEMA.baigneurs,t.rulR6T,t.rulR6S)
+  +rulFig(S.droite,t.rulR1T,t.rulR1S)
+  +rulFig(S.sousVent,t.rulR2T,t.rulR2S)
+  +rulFig(S.hesitant,t.rulR3T,t.rulR3S)
+  +rulFig(S.vagues,t.rulR4T,t.rulR4S)
+  +rulFig(S.saut,t.rulR5T,t.rulR5S)
+  +rulFig(S.baigneurs,t.rulR6T,t.rulR6S)
   +'</div>';
  const loi='<h2>'+t.rulLawH+'</h2><ul class="rlaw"><li>'+t.rulLaw1+'</li><li>'+t.rulLaw2+'</li></ul>';
  const body='<h1>'+t.rulH1+'</h1><p class="lead">'+t.rulLead+'</p>'

@@ -224,3 +224,18 @@ svg{width:100%;height:auto;display:block}
   padding:8px 10px;margin:0 0 10px}
 .dgrbox b{color:#b3261e}
 @media (max-width:420px){.dgr{font-size:10.5px;padding:2px 6px}}
+
+/* E28, 23/10/2026 : onglet Securite. Cartes a pictogramme.
+   Grille auto-ajustee, donc une seule regle pour le telephone et le bureau :
+   deux colonnes des que la largeur le permet, une seule sinon. */
+.sgrid{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));margin:10px 0 0}
+.scard{display:flex;gap:12px;align-items:flex-start;background:#fff;border:1px solid var(--line);
+  border-radius:10px;padding:12px 13px}
+.spic{flex:0 0 44px;width:44px;height:44px;color:var(--water)}
+.spic svg{width:44px;height:44px;display:block}
+.sbd{min-width:0}
+.scard .st{font-weight:800;font-size:14.5px;line-height:1.25}
+.scard .ss{font-size:13px;color:#48535f;margin-top:3px;line-height:1.45}
+.snote{font-size:12.5px;color:#48535f;background:#f3f7f8;border:1px solid var(--line);
+  border-left:3px solid var(--water);border-radius:0 8px 8px 0;padding:9px 11px;margin:14px 0 0}
+@media (max-width:420px){.spic,.spic svg{width:38px;height:38px;flex-basis:38px}.scard{padding:10px 11px;gap:10px}}

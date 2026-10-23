@@ -34,7 +34,7 @@ const FLAG = {
 const CSS = fs.readFileSync('./styles.css','utf8');
 function url(lang,pg){ const base = lang===XDEF ? '' : '/'+lang; if(pg==='index') return (base||'')+'/'; return base+'/'+PAGES[pg].file; }
 function abs(lang,pg){ return ORIGIN+url(lang,pg); }
-const PAGES = { index:{file:'index.html'}, alerts:{file:'alertes.html'}, club:{file:'association.html'}, lessons:{file:'cours.html'}, contact:{file:'contact.html'} };
+const PAGES = { index:{file:'index.html'}, alerts:{file:'alertes.html'}, safety:{file:'securite.html'}, club:{file:'association.html'}, lessons:{file:'cours.html'}, contact:{file:'contact.html'} };
 // Feuille de style propre a l'onglet alertes : injectee sur cette seule page.
 // styles.css est inline dans les 40 pages du site, y mettre ce bloc alourdirait
 // chaque page pour une seule d'entre elles.
@@ -64,6 +64,9 @@ function shell(lang,pg,active,body,extra){ const t=T[lang];
  // L'onglet alertes est en 2e position, demande d'Antoine le 20/09/2026.
  const tabs='<nav class="tabs" aria-label="nav"><a class="tab'+(active==='index'?' active':'')+'" href="'+url(lang,'index')+'">'+t.tabHome+'</a>'
   +'<a class="tab'+(active==='alerts'?' active':'')+'" href="'+url(lang,'alerts')+'">'+t.tabAlerts+'</a>'
+  /* Securite en 3e position, demande d'Antoine du 23/10/2026 : juste apres les
+     alertes, donc avant le club et les cours. */
+  +'<a class="tab'+(active==='safety'?' active':'')+'" href="'+url(lang,'safety')+'">'+t.tabSafety+'</a>'
   +'<a class="tab'+(active==='club'?' active':'')+'" href="'+url(lang,'club')+'">'+t.tabClub+'</a>'
   +'<a class="tab'+(active==='lessons'?' active':'')+'" href="'+url(lang,'lessons')+'">'+t.tabLessons+'</a>'
   +'<a class="tab'+(active==='contact'?' active':'')+'" href="'+url(lang,'contact')+'">'+t.tabContact+'</a></nav>';
@@ -219,10 +222,48 @@ function renderContact(lang){ const t=T[lang];
  const tail='<script>(function(){var f=document.getElementById("cform");if(!f)return;f.addEventListener("submit",function(e){e.preventDefault();var b=f.querySelector(".csend");b.textContent='+JSON.stringify(t.conSending)+';b.disabled=true;fetch(f.action,{method:"POST",body:new FormData(f),headers:{"Accept":"application/json"}}).then(function(r){if(r.ok){f.style.display="none";var k=document.getElementById("cok");k.style.display="block";k.scrollIntoView({behavior:"smooth",block:"center"});}else{b.textContent='+JSON.stringify(t.conSend)+';b.disabled=false;alert('+JSON.stringify(t.conErr)+');}}).catch(function(){b.textContent='+JSON.stringify(t.conSend)+';b.disabled=false;alert('+JSON.stringify(t.conErr)+');});});})();</script>\n';
  return shell(lang,'contact','contact',body,{title:t.conTitle,desc:t.conDesc,keywords:false,tail:tail});
 }
+/* ---- Onglet Securite (23/10/2026, demande d'Antoine) ----
+   Les pictogrammes sont DESSINES ICI, en SVG inline. Trois raisons de ne pas
+   mettre de photos ni d'images generees : aucun droit a verifier (la provenance
+   de banniere.jpg n'est deja pas documentee, point F5), un poids de l'ordre du
+   kilo-octet par dessin alors que le site a deja paye une facture de 16 Mo
+   (point E16), et un dessin qui reste net a toutes les tailles.
+   Les legendes font UNE phrase : le dessin porte le sens, et moins il y a de
+   texte, moins la traduction non relue par un natif est risquee (point E19,
+   breton et chinois). */
+const PICTO = {
+ vest:'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M17 7 L24 12 L31 7 L38 11 V40 H10 V11 Z" fill="#d7eeec" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M24 12 V40" stroke="currentColor" stroke-width="2"/><path d="M17 7 L20 18 M31 7 L28 18" stroke="currentColor" stroke-width="2"/></svg>',
+ casque:'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M8 30 A16 16 0 0 1 40 30 Z" fill="#d7eeec" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M6 30 H42 V34 H6 Z" fill="#fff" stroke="currentColor" stroke-width="2"/><path d="M24 14 V30 M14 20 L20 29 M34 20 L28 29" stroke="currentColor" stroke-width="2"/></svg>',
+ chausson:'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M16 6 H26 V24 L38 30 Q42 32 42 37 V41 H14 Q10 41 10 37 V12 Q10 6 16 6 Z" fill="#d7eeec" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M10 34 H42" stroke="currentColor" stroke-width="2"/></svg>',
+ combi:'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M18 6 H30 L34 14 V26 L31 42 H26 L24 28 L22 42 H17 L14 26 V14 Z" fill="#d7eeec" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M24 6 V20" stroke="currentColor" stroke-width="2"/></svg>',
+ leash:'<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="13" cy="13" r="6" fill="#d7eeec" stroke="currentColor" stroke-width="2"/><path d="M19 15 Q30 18 30 24 Q30 30 36 30 Q42 30 42 36 Q42 42 36 42" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="36" cy="42" r="2.5" fill="currentColor"/></svg>',
+ duo:'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M6 38 L16 12 L22 38 Z" fill="#d7eeec" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M26 38 L36 18 L42 38 Z" fill="#fff" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M4 42 H44" stroke="currentColor" stroke-width="2"/></svg>',
+ terre:'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M5 9 V39" stroke="currentColor" stroke-width="3"/><path d="M5 14 h6 M5 22 h6 M5 30 h6" stroke="currentColor" stroke-width="2"/><path d="M15 22 H38 M32 16 L38 22 L32 28" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 36 Q21 32 28 36 T44 36" fill="none" stroke="#9fd4d0" stroke-width="2.5"/></svg>',
+ froid:'<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="18" y="6" width="8" height="24" rx="4" fill="#d7eeec" stroke="currentColor" stroke-width="2"/><circle cx="22" cy="35" r="7" fill="#d7eeec" stroke="currentColor" stroke-width="2"/><path d="M22 14 V35" stroke="currentColor" stroke-width="2"/><path d="M38 9 V21 M33 12 L43 18 M43 12 L33 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>'
+};
+function secCard(p,ti,su){ return '<div class="scard"><div class="spic">'+p+'</div><div class="sbd"><div class="st">'+ti+'</div><div class="ss">'+su+'</div></div></div>'; }
+function renderSafety(lang){ const t=T[lang];
+ const cards='<div class="sgrid">'
+  +secCard(PICTO.vest,t.secI1T,t.secI1S)
+  +secCard(PICTO.casque,t.secI2T,t.secI2S)
+  +secCard(PICTO.chausson,t.secI3T,t.secI3S)
+  +secCard(PICTO.combi,t.secI4T,t.secI4S)
+  +secCard(PICTO.leash,t.secI5T,t.secI5S)
+  +secCard(PICTO.duo,t.secI6T,t.secI6S)
+  +secCard(PICTO.terre,t.secI7T,t.secI7S)
+  +secCard(PICTO.froid,t.secI8T,t.secI8S)
+  +'</div>';
+ const body='<h1>'+t.secH1+'</h1><p class="lead">'+t.secLead+'</p>'
+  +'<h2>'+t.secGearH+'</h2>'+cards
+  +'<p class="snote">'+t.secNote+'</p>'
+  +'<h2>'+t.h2Faq+'</h2>'+faqHtml(t)+legalHtml(t);
+ return shell(lang,'safety','safety',body,{title:t.secTitle,desc:t.secDesc,keywords:false});
+}
 // écrire
 for(const lang of LANGS){ const dir = lang===XDEF ? OUT : OUT+'/'+lang; fs.mkdirSync(dir,{recursive:true});
  fs.writeFileSync(dir+'/index.html',renderIndex(lang));
  fs.writeFileSync(dir+'/alertes.html',renderAlertes(lang));
+ fs.writeFileSync(dir+'/securite.html',renderSafety(lang));
  fs.writeFileSync(dir+'/association.html',renderClub(lang));
  fs.writeFileSync(dir+'/cours.html',renderLessons(lang));
  fs.writeFileSync(dir+'/contact.html',renderContact(lang));
@@ -235,7 +276,7 @@ fs.mkdirSync(OUT + '/fonts', { recursive: true });
 for (const f of ['anton-latin-400.woff2','OFL.txt']) fs.copyFileSync('./fonts/'+f, OUT + '/fonts/' + f);
 // sitemap multilingue
 (function(){
-  const smPages = ['index','alerts','club','lessons','contact'];
+  const smPages = ['index','alerts','safety','club','lessons','contact'];
   let sm = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n';
   for (const pg of smPages) {
     for (const l of LANGS) {
@@ -243,7 +284,7 @@ for (const f of ['anton-latin-400.woff2','OFL.txt']) fs.copyFileSync('./fonts/'+
       for (const a of LANGS) sm += '    <xhtml:link rel="alternate" hreflang="' + META[a].htmlLang + '" href="' + abs(a, pg) + '"/>\n';
       sm += '    <xhtml:link rel="alternate" hreflang="x-default" href="' + abs(XDEF, pg) + '"/>\n';
       sm += '    <changefreq>' + (pg === 'index' || pg === 'alerts' ? 'daily' : 'monthly') + '</changefreq>\n';
-      sm += '    <priority>' + (pg === 'index' ? (l === XDEF ? '1.0' : '0.9') : (pg === 'alerts' ? '0.8' : '0.6')) + '</priority>\n  </url>\n';
+      sm += '    <priority>' + (pg === 'index' ? (l === XDEF ? '1.0' : '0.9') : (pg === 'alerts' ? '0.8' : (pg === 'safety' ? '0.7' : '0.6'))) + '</priority>\n  </url>\n';
     }
   }
   sm += '</urlset>\n';

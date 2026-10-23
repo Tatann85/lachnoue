@@ -210,3 +210,17 @@ svg{width:100%;height:auto;display:block}
 .carte-bt:hover{background:var(--water-d)}
 .carte-note{margin:0;max-width:46ch;font-size:12.5px;color:var(--muted);line-height:1.5}
 .carte.on{padding:0;min-height:0;display:block;background:none;overflow:hidden}
+
+/* A11, 23/10/2026, demande d'Antoine : panneau DANGER.
+   Rouge franc et non une nuance : c'est le seul endroit du site qui dit
+   « n'y va pas ». Le badge remplace les etoiles dans le tableau, l'encadre
+   s'affiche en tete du panneau de detail avec les chiffres en noeuds, qui se
+   comprennent dans toutes les langues. */
+.dgr{display:inline-block;background:#b3261e;color:#fff;font-weight:800;
+  font-size:11.5px;letter-spacing:.03em;padding:3px 8px;border-radius:5px;
+  white-space:nowrap}
+.dgrbox{background:#fdecea;border:1px solid #b3261e;border-left-width:4px;
+  border-radius:0 7px 7px 0;color:#7f1d17;font-size:12.5px;line-height:1.5;
+  padding:8px 10px;margin:0 0 10px}
+.dgrbox b{color:#b3261e}
+@media (max-width:420px){.dgr{font-size:10.5px;padding:2px 6px}}

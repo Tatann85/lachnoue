@@ -45,6 +45,7 @@ export const T = {
   morning:"Matin",afternoon:"Après-midi / soir",lock:"Écluse",coef:"Coefficient",hightide:"Marée haute",
   footNote:"Vent & météo : Open-Meteo. Eau : calendrier écluse Rocade + marées SHOM. Coefficient sans unité.",
   eauAllday:"toute la journée",eauUntil:"jusqu'à ~21:00",eauTide:"autour de la marée",eauNone:"pas d'eau",eauUnknown:"niveau incertain",gust:"raf.",
+  dgr:"DANGER",dgrTxt:"Conditions dangereuses : ne pas naviguer. Vent moyen jusqu'à {v} kn, rafales jusqu'à {r} kn.",
   svSky:"ciel",svTemp:"temp. (°C)",svWind:"vent (kn)",svGust:"raf. (kn)",svMarsh:"cote du marais (m)",svFill:"cote de remplissage de saison {c} m",svHigh:"marée haute",svPartial:"Prévision partielle (jour en cours)",
   eFill:"PRISE",eFillD:"remplissage",eDrain:"RENVOI",eDrainD:"vidange (renouvellement)",eTidal:"VA-ET-VIENT",eTidalD:"le niveau suit la marée",eLow:"FERMETURE BM",eLowD:"marais vidé",eClosed:"FERMÉE",eClosedD:"niveau maintenu (plein)",eUnknown:"ÉTAT INCONNU",eUnknownD:"manœuvre non reconnue, niveau incertain",
   // --- onglet alertes (20/09/2026) ---
@@ -193,6 +194,7 @@ export const T = {
   morning:"Morning",afternoon:"Afternoon / evening",lock:"Lock",coef:"Coefficient",hightide:"High tide",
   footNote:"Wind & weather: Open-Meteo. Water: Rocade lock calendar + SHOM tides. Coefficient is unitless.",
   eauAllday:"all day",eauUntil:"until ~21:00",eauTide:"around high tide",eauNone:"no water",eauUnknown:"water level uncertain",gust:"gust",
+  dgr:"DANGER",dgrTxt:"Dangerous conditions: do not go out. Mean wind up to {v} kn, gusts up to {r} kn.",
   svSky:"sky",svTemp:"temp. (°C)",svWind:"wind (kn)",svGust:"gust (kn)",svMarsh:"marsh level (m)",svFill:"seasonal fill level {c} m",svHigh:"high tide",svPartial:"Partial forecast (today)",
   eFill:"FILL",eFillD:"filling up",eDrain:"DRAIN",eDrainD:"draining (renewal)",eTidal:"TIDAL",eTidalD:"level follows the tide",eLow:"LOW-TIDE CLOSE",eLowD:"marsh drained",eClosed:"CLOSED",eClosedD:"level held (full)",eUnknown:"UNKNOWN",eUnknownD:"unrecognised operation, level uncertain",
   // --- onglet alertes (20/09/2026) ---
@@ -341,6 +343,7 @@ export const T = {
   morning:"Vormittag",afternoon:"Nachmittag / Abend",lock:"Schleuse",coef:"Koeffizient",hightide:"Hochwasser",
   footNote:"Wind & Wetter: Open-Meteo. Wasser: Kalender Rocade-Schleuse + SHOM-Gezeiten. Koeffizient ohne Einheit.",
   eauAllday:"den ganzen Tag",eauUntil:"bis ~21:00",eauTide:"um das Hochwasser",eauNone:"kein Wasser",eauUnknown:"Wasserstand unsicher",gust:"Böe",
+  dgr:"GEFAHR",dgrTxt:"Gefährliche Bedingungen: nicht aufs Wasser. Mittlerer Wind bis {v} kn, Böen bis {r} kn.",
   svSky:"Himmel",svTemp:"Temp. (°C)",svWind:"Wind (kn)",svGust:"Böe (kn)",svMarsh:"Marschpegel (m)",svFill:"Füllstand der Saison {c} m",svHigh:"Hochwasser",svPartial:"Teilvorhersage (heute)",
   eFill:"EINLASS",eFillD:"füllt sich",eDrain:"ABLASS",eDrainD:"Entleerung (Erneuerung)",eTidal:"TIDENHUB",eTidalD:"Pegel folgt der Gezeit",eLow:"NW-SCHLIESSUNG",eLowD:"Marsch geleert",eClosed:"GESCHLOSSEN",eClosedD:"Pegel gehalten (voll)",eUnknown:"UNBEKANNT",eUnknownD:"unbekannter Vorgang, Pegel unsicher",
   // --- onglet alertes (20/09/2026) ---
@@ -489,6 +492,7 @@ export const T = {
   morning:"Ochtend",afternoon:"Middag / avond",lock:"Sluis",coef:"Coëfficiënt",hightide:"Hoogwater",
   footNote:"Wind & weer: Open-Meteo. Water: kalender Rocade-sluis + SHOM-getijden. Coëfficiënt zonder eenheid.",
   eauAllday:"de hele dag",eauUntil:"tot ~21:00",eauTide:"rond hoogwater",eauNone:"geen water",eauUnknown:"waterstand onzeker",gust:"vlaag",
+  dgr:"GEVAAR",dgrTxt:"Gevaarlijke omstandigheden: niet het water op. Gemiddelde wind tot {v} kn, windstoten tot {r} kn.",
   svSky:"lucht",svTemp:"temp. (°C)",svWind:"wind (kn)",svGust:"vlaag (kn)",svMarsh:"moeraspeil (m)",svFill:"vulpeil van het seizoen {c} m",svHigh:"hoogwater",svPartial:"Gedeeltelijke verwachting (vandaag)",
   eFill:"INLAAT",eFillD:"vult zich",eDrain:"AFLAAT",eDrainD:"leging (verversing)",eTidal:"GETIJ",eTidalD:"peil volgt het getij",eLow:"LW-SLUITING",eLowD:"moeras geleegd",eClosed:"GESLOTEN",eClosedD:"peil vastgehouden (vol)",eUnknown:"ONBEKEND",eUnknownD:"onbekende manoeuvre, peil onzeker",
   // --- onglet alertes (20/09/2026) ---
@@ -637,6 +641,7 @@ export const T = {
   morning:"Por la mañana",afternoon:"Tarde / noche",lock:"Esclusa",coef:"Coeficiente",hightide:"Marea alta",
   footNote:"Viento y meteo: Open-Meteo. Agua: calendario esclusa Rocade + mareas SHOM. Coeficiente sin unidad.",
   eauAllday:"todo el día",eauUntil:"hasta ~21:00",eauTide:"alrededor de la marea",eauNone:"sin agua",eauUnknown:"nivel incierto",gust:"ráf.",
+  dgr:"PELIGRO",dgrTxt:"Condiciones peligrosas: no salir al agua. Viento medio hasta {v} kn, rachas hasta {r} kn.",
   svSky:"cielo",svTemp:"temp. (°C)",svWind:"viento (kn)",svGust:"ráf. (kn)",svMarsh:"nivel de la marisma (m)",svFill:"nivel de llenado de temporada {c} m",svHigh:"marea alta",svPartial:"Previsión parcial (día en curso)",
   eFill:"LLENADO",eFillD:"se llena",eDrain:"VACIADO",eDrainD:"vaciado (renovación)",eTidal:"IDA Y VUELTA",eTidalD:"el nivel sigue la marea",eLow:"CIERRE EN BAJAMAR",eLowD:"marisma vaciada",eClosed:"CERRADA",eClosedD:"nivel mantenido (llena)",eUnknown:"DESCONOCIDO",eUnknownD:"maniobra no reconocida, nivel incierto",
   // --- onglet alertes (20/09/2026) ---
@@ -785,6 +790,7 @@ export const T = {
   morning:"Mattina",afternoon:"Pomeriggio / sera",lock:"Chiusa",coef:"Coefficiente",hightide:"Alta marea",
   footNote:"Vento e meteo: Open-Meteo. Acqua: calendario chiusa Rocade + maree SHOM. Coefficiente senza unità.",
   eauAllday:"tutto il giorno",eauUntil:"fino alle ~21:00",eauTide:"intorno all'alta marea",eauNone:"niente acqua",eauUnknown:"livello incerto",gust:"raff.",
+  dgr:"PERICOLO",dgrTxt:"Condizioni pericolose: non uscire in acqua. Vento medio fino a {v} kn, raffiche fino a {r} kn.",
   svSky:"cielo",svTemp:"temp. (°C)",svWind:"vento (kn)",svGust:"raff. (kn)",svMarsh:"livello della palude (m)",svFill:"livello di riempimento stagionale {c} m",svHigh:"alta marea",svPartial:"Previsione parziale (giorno in corso)",
   eFill:"RIEMPIMENTO",eFillD:"si riempie",eDrain:"SVUOTAMENTO",eDrainD:"svuotamento (ricambio)",eTidal:"VA E VIENI",eTidalD:"il livello segue la marea",eLow:"CHIUSURA IN BASSA MAREA",eLowD:"palude svuotata",eClosed:"CHIUSA",eClosedD:"livello mantenuto (piena)",eUnknown:"SCONOSCIUTO",eUnknownD:"manovra non riconosciuta, livello incerto",
   // --- onglet alertes (20/09/2026) ---
@@ -933,6 +939,7 @@ export const T = {
   morning:"上午",afternoon:"下午／傍晚",lock:"水闸",coef:"潮汐系数",hightide:"高潮",
   footNote:"风与天气：Open-Meteo。水：Rocade 水闸日历 + SHOM 潮汐。潮汐系数无单位。",
   eauAllday:"全天",eauUntil:"到 ~21:00",eauTide:"高潮前后",eauNone:"没有水",eauUnknown:"水位不明",gust:"阵风",
+  dgr:"危险",dgrTxt:"危险天气：请勿下水。平均风速最高 {v} 节，阵风最高 {r} 节。",
   svSky:"天空",svTemp:"气温 (°C)",svWind:"风 (节)",svGust:"阵风 (节)",svMarsh:"盐沼水位 (m)",svFill:"当季灌满水位 {c} m",svHigh:"高潮",svPartial:"部分预报（当天）",
   eFill:"进水",eFillD:"正在灌满",eDrain:"排水",eDrainD:"放水（换水）",eTidal:"随潮进出",eTidalD:"水位随潮汐变化",eLow:"低潮关闸",eLowD:"盐沼已放空",eClosed:"关闭",eClosedD:"水位保持（满）",eUnknown:"状态不明",eUnknownD:"操作无法识别，水位不明",
   // --- onglet alertes (20/09/2026) ---
@@ -1081,6 +1088,7 @@ export const T = {
   morning:"Beure",afternoon:"Endervezh / noz",lock:"Skluz",coef:"Kevatal",hightide:"Mare uhel",
   footNote:"Avel hag amzer : Open-Meteo. Dour : deiziataer skluz ar Rocade + mareoù SHOM. Kevatal hep unanenn.",
   eauAllday:"a-hed an deiz",eauUntil:"betek ~21:00",eauTide:"tro ar mare uhel",eauNone:"dour ebet",eauUnknown:"live an dour dianav",gust:"barr",
+  dgr:"DAÑJER",dgrTxt:"Amzer dañjerus : arabat mont war an dour. Avel keidenn betek {v} kn, barradoù betek {r} kn.",
   svSky:"oabl",svTemp:"temp. (°C)",svWind:"avel (kn)",svGust:"barr (kn)",svMarsh:"live ar geunioù (m)",svFill:"live leuniañ ar c'houlzad {c} m",svHigh:"mare uhel",svPartial:"Diougan darnel (an deiz-mañ)",
   eFill:"LEUNIAÑ",eFillD:"o leuniañ",eDrain:"GOULLONDERIÑ",eDrainD:"goullonderiñ (nevesaat an dour)",eTidal:"MONT-DONT",eTidalD:"al live a heul ar mare",eLow:"SERRIÑ MARE IZEL",eLowD:"geunioù goullonderet",eClosed:"SERRET",eClosedD:"live dalc'het (leun)",eUnknown:"DIANAV",eUnknownD:"oberiant dianav, live an dour dianav",
   // --- onglet alertes (20/09/2026) ---

@@ -97,9 +97,48 @@ var GO_EXIGE_CERTITUDE = false;
 function eauCre(h,d){ if(!d.eau) return null; return d.eau[h<=12?'m':(h<=17?'a':'s')]; }
 function isGo(w,d){
   if(w[0]<7 || w[0]>21) return false;
+  /* A11 : une journee marquee DANGER ne propose aucun creneau, a aucune heure.
+     Le test est ici et nulle part ailleurs, pour que le tableau et la bande du
+     graphique ne puissent pas raconter deux journees differentes. */
+  if(danger(d)) return false;
   if(GO_EXIGE_CERTITUDE){ if(eauCre(w[0],d)!=='plein') return false; }
   else if(!present(w[0],d)) return false;
   return w[1]>=GO_VENT_MIN && w[1]<=GO_VENT_MAX && w[2]<GO_RAFALE_MAX;
+}
+/* -----------------------------------------------------------------------------
+   DANGER. Demande d'Antoine du 23/10/2026 : « si c'est dangereux pas de go, pas
+   de 5 etoiles, il faut un panneau danger ». Point A11 du backlog.
+   Les deux seuils sont coherents entre eux : la rafale valant 1,85 fois le vent
+   moyen au spot, 25 kn de moyen donne normalement 46 kn de rafale, donc les deux
+   criteres designent a peu pres la meme journee. Le second rattrape la journee
+   anormalement rafaleuse, le premier la journee franchement ventee.
+   Une seule heure suffit a marquer la JOURNEE : le panneau est journalier, et
+   sur une journee marquee le site ne propose AUCUN creneau, meme si une heure du
+   soir redescend dans la plage navigable. C'est un choix de prudence assume, pas
+   un oubli : il coute quelques heures par an (au-dessus de 25 kn il y a environ
+   40 heures par an au spot) et il evite d'inviter quelqu'un a sortir le jour ou
+   la mer est montee.
+   --------------------------------------------------------------------------- */
+var DANGER_VENT   = 25; /* vent moyen (kn) a partir duquel la journee est marquee. */
+var DANGER_RAFALE = 45; /* rafale (kn) a partir de laquelle la journee est marquee. */
+function danger(d){
+  return (d&&d.wind?d.wind:[]).some(function(w){
+    return w[0]>=7 && w[0]<=21 && (w[1]>=DANGER_VENT || w[2]>=DANGER_RAFALE);
+  });
+}
+/* Les pires valeurs de la journee, pour que le panneau porte des CHIFFRES et pas
+   seulement un mot : un visiteur qui ne lit pas la langue comprend 53 kn. */
+function dangerPics(d){
+  var v=0,r=0;
+  (d&&d.wind?d.wind:[]).forEach(function(w){
+    if(w[0]<7||w[0]>21) return;
+    if(w[1]>v)v=w[1]; if(w[2]>r)r=w[2];
+  });
+  return {v:v,r:r};
+}
+function dangerTexte(d){
+  var p=dangerPics(d);
+  return String(T.dgrTxt||'').replace('{v}',p.v).replace('{r}',p.r);
 }
 /* Les heures ecartees par un GARDE-FOU, c'est-a-dire pour vent moyen trop fort ou
    rafale trop forte, par opposition a celles ecartees faute de vent (GO_VENT_MIN)
@@ -380,15 +419,21 @@ function render(){
      T.eauNone, « pas d'eau », qui AFFIRME. On ne sait pas n'est pas non. */
   var eauTxt=d.water==='plein'?T.eauAllday:d.water==='renvoiSoir'?T.eauUntil:d.water==='priseSoir'?T.eauFrom:d.water==='inconnu'?(T.eauUnknown||T.eauNone):(anyWater?T.eauTide:T.eauNone);
   var goTxt=goH.length?goText(goH,pasDe(d),goBloque(d)):'—';
+  var dgr=danger(d), dgrTxt=dgr?dangerTexte(d):'';
   var tr=document.createElement('tr');tr.className='day'+(d.today?' today':'');
   tr.innerHTML='<td class="jour">'+trDay(d.d)+(d.today?'<small>'+T.today+'</small>':i===1?'<small>'+T.tomorrow+'</small>':'')+'<span class="wx">'+wx((d.wind.find(function(w){return w[0]===13;})||[])[5]||d.wxc)+' '+d.tmin+'–'+d.tmax+' °C</span><span class="chev">'+T.details+'</span></td>'
-   +'<td class="stars">'+stars(note)+'</td>'
+   /* A11 : sur une journee DANGER, la colonne des etoiles porte le panneau et
+      non une note. Une etoile reste une note de qualite, et il n'y a rien a
+      noter : le site doit dire « n'y va pas », pas « c'est moyen ». */
+   +'<td class="stars">'+(dgr?'<span class="dgr" title="'+dgrTxt+'">⚠ '+(T.dgr||'DANGER')+'</span>':stars(note))+'</td>'
    +'<td><span class="eau '+(anyWater?'eau-y':'eau-n')+'">'+eauTxt+'</span></td>'
    +'<td><span class="windcell" style="background:'+wc(peakK)+';color:'+wtc(peakK)+'">'+peakK+' kn</span><span class="gust">'+T.gust+' '+peakG+' kn</span></td>'
    +'<td><span class="dircell">'+compassHTML((sectDeg(dom)+180)%360,favColor(favOf(avgDir(d.wind.map(function(w){return w[3];})))))+'<span class="sect">'+dom+'</span></span></td>'
    +'<td class="go '+(goH.length?'go-y':'go-n')+'">'+goTxt+'</td>';
   var det=document.createElement('tr');det.className='det';det.style.display='none';
-  det.innerHTML='<td colspan="6"><div class="detin"><div class="ampm">'
+  det.innerHTML='<td colspan="6"><div class="detin">'
+   +(dgr?'<div class="dgrbox"><b>⚠ '+(T.dgr||'DANGER')+'</b> '+dgrTxt+'</div>':'')
+   +'<div class="ampm">'
    +'<div class="seg"><b>'+T.morning+'</b><div class="li">'+T.lock+' : '+eclHTML(d.eclM)+'</div><div class="li">'+T.coef+' : '+d.coM+'</div><div class="li">'+T.hightide+' : '+d.pmM+'</div></div>'
    +'<div class="seg"><b>'+T.afternoon+'</b><div class="li">'+T.lock+' : '+eclHTML(d.eclS)+'</div><div class="li">'+T.coef+' : '+d.coS+'</div><div class="li">'+T.hightide+' : '+d.pmS+'</div></div>'
    +'</div>'+daySVG(d)+'<div style="font-size:10.5px;color:#9aa3ac;margin-top:4px">'+T.footNote+'</div></div></td>';

@@ -321,15 +321,43 @@ export function ecluseStates(cal, fromISO, toISO, marees, avert) {
       water = held === 'plein' ? 'plein' : (held === 'bas' ? 'bas' : 'inconnu');
       eclM = eclLabel(m) || heldLabel; eclS = eclLabel(s) || heldLabel;
     }
-    /* C7 — LE GARDE-FOU DU NORD. Applique APRES le choix d'etat, et seulement
-       sur les journees ou le modele AFFIRME de l'eau par retention : « plein »
-       et le soir d'une prise tardive. On ne touche ni a « bas » ni a « vav »,
-       qui ne promettent rien, ni a « inconnu », qui promet encore moins. */
-    if ((water === 'plein' || water === 'priseSoir') && nordOuvert(cal, cur)) {
-      water = 'vav'; newHeld = 'inconnu';
-      eclM = eclLabel(m) || eclLabel('VAV');
-      eclS = eclLabel(s) || eclLabel('VAV');
-    }
+    /* C7 — LE GARDE-FOU DU NORD A ETE POSE PUIS RETIRE LE MEME JOUR, LE
+       24/10/2026, ET LA RAISON MERITE D'ETRE LUE AVANT DE LE REMETTRE.
+
+       Pose a 17 h : une journee retenue dont la Gachere et la Bauduere sont
+       ouvertes etait reclassee VA-ET-VIENT, donc « incertain » partout.
+       Retire a 17 h 30, parce que DEUX OBSERVATIONS DE TERRAIN du meme jour le
+       contredisent, et qu'une observation bat un raisonnement :
+         15h45  un pratiquant juge que le mat de 65 passe tout juste et que le
+                85 touche, soit environ 66 cm d'eau ;
+         17h21  plusieurs pratiquants naviguent en 85 ET en 65, soit au moins
+                90 cm d'eau, une heure APRES la pleine mer.
+
+       CE QUE CES DEUX POINTS DISENT. A 15h45 le niveau valait exactement celui
+       de la prise du matin, min(cote de saison ; hauteur de la pleine mer de
+       04h00) = 4,98 m, ce que le modele retenu annoncait deja. Le marais
+       n'avait donc PAS suivi la maree descendante du matin : il n'avait pas
+       bouge. Puis il a MONTE au-dela, puisqu'a 17h21 il y a plus d'eau qu'a
+       15h45, et plus que la prise du matin n'en avait mis.
+
+       LE MARAIS NE SE VIDE PAS AVEC LA MAREE, IL ENCLIQUETTE. Il prend l'eau
+       quand la mer passe au-dessus de lui, et il garde quand elle redescend.
+       C'est coherent avec la Ch'noue vue completement vide : elle se vide
+       quand on OUVRE pour la vider, un renvoi ou une fermeture basse mer, pas
+       toute seule a chaque jusant.
+
+       Le garde-fou faisait donc exactement le mauvais pari : il transformait
+       une retenue correcte en toit pointu qui retombe a zero apres la pleine
+       mer. A 17 h il affichait 26 cm pendant que des gens naviguaient en 85.
+       Le modele retenu, lui, tombait juste a 15h45 et sous-estimait de 25 cm a
+       17h21 : moins faux, et faux du bon cote.
+
+       CE QUI RESTE A FAIRE, ET C'EST MAINTENANT DOCUMENTE PAR LA MESURE : un
+       modele a cliquet, le niveau monte vers la mer quand elle est au-dessus,
+       avec un retard de remplissage que ces deux points commencent a chiffrer,
+       et ne redescend jamais sans manoeuvre. nordOuvert() et le bloc nord de
+       calendar.json restent en place pour ce modele : ils disent quand le
+       marais peut prendre l'eau ailleurs que par la Rocade. */
     out[cur] = { water, eclM, eclS, fill: fillHeld };
     held = newHeld;
   }

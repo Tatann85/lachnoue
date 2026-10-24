@@ -92,24 +92,30 @@ t('mai       = 5,20 m', coteSaison('2026-05-01'), 5.2);
 t('septembre = 5,20 m', coteSaison('2026-09-24'), 5.2);
 t('octobre   = 5,00 m', coteSaison('2026-10-01'), 5.0);
 
-console.log('\nC7 - une journee retenue dont le nord est ouvert ne promet plus d eau');
-/* Le 24/10/2026 : prise a 04h00 puis Rocade fermee, mais Gachere et Bauduere
-   ouvertes toute la journee. Le modele annoncait « plein » de 7 h a 21 h
-   alors que la mer etait a 1,46 m a 10 h. */
+console.log('\nC7 - le nord ouvert ne doit PAS transformer une retenue en va-et-vient');
+/* Ces tests gardent une decision prise puis ANNULEE le 24/10/2026, et c'est
+   leur raison d'etre : empecher qu'on la reprenne par raisonnement.
+   Le garde-fou reclassait en va-et-vient toute journee retenue dont la
+   Gachere et la Bauduere sont ouvertes. Deux observations du meme jour l'ont
+   contredit : a 15h45 le niveau valait exactement celui de la prise du matin
+   (mat de 65 tout juste), et a 17h21 des pratiquants naviguaient en 85, une
+   heure APRES la pleine mer. Le marais ne se vide pas avec la maree, il
+   encliquette. Le garde-fou affichait 26 cm pendant que des gens naviguaient
+   en 85. nordOuvert() reste, le modele a cliquet l'utilisera. */
 const OUV4 = ['OUVERT', 'OUVERT', 'OUVERT', 'OUVERT'];
 const FER4 = ['FERME', 'FERME', 'FERME', 'FERME'];
 const D = '2026-10-24';
 const marJ = { [D]: { pmM: '04:00', hmM: 4.98 } };
 const etat = (nord, ev) => ecluseStates({ ecluse: { [D]: ev || { m: 'PRISE', s: null } }, nord }, D, D, marJ, [])[D].water;
 
-t('sans bloc nord, rien ne change',            etat(undefined), 'plein');
-t('nord ouvert : la journee devient vav',      etat({ [D]: { g: OUV4, b: OUV4 } }), 'vav');
-t('Gachere fermee : le marais reste isole',    etat({ [D]: { g: FER4, b: OUV4 } }), 'plein');
-t('Bauduere fermee : le marais reste isole',   etat({ [D]: { g: OUV4, b: FER4 } }), 'plein');
-t('ouverture partielle suffit a douter',       etat({ [D]: { g: ['FERME', 'OUVERT', 'FERME', 'FERME'], b: OUV4 } }), 'vav');
-/* Une journee de renvoi n affirme deja rien : le garde-fou ne doit pas la
-   transformer en vav, ce qui ferait REAPPARAITRE de l eau autour des marees. */
-t('une journee de renvoi n est pas touchee',   etat({ [D]: { g: OUV4, b: OUV4 } }, { m: 'RENVOI', s: null }), 'bas');
+t('sans bloc nord, la journee est retenue',    etat(undefined), 'plein');
+t('nord ouvert : elle reste retenue',          etat({ [D]: { g: OUV4, b: OUV4 } }), 'plein');
+t('Gachere fermee : retenue',                  etat({ [D]: { g: FER4, b: OUV4 } }), 'plein');
+t('Bauduere fermee : retenue',                 etat({ [D]: { g: OUV4, b: FER4 } }), 'plein');
+t('une journee de renvoi reste basse',         etat({ [D]: { g: OUV4, b: OUV4 } }, { m: 'RENVOI', s: null }), 'bas');
+/* nordOuvert reste juste et teste : c'est la brique du modele a cliquet. */
+t('nordOuvert voit les deux ouvrages ouverts', nordOuvert({ nord: { [D]: { g: OUV4, b: OUV4 } } }, D), true);
+t('nordOuvert dit non si la Gachere est fermee', nordOuvert({ nord: { [D]: { g: FER4, b: OUV4 } } }, D), false);
 t('nordOuvert sans donnee repond non',         nordOuvert({}, D), false);
 t('nordOuvert sur bloc mal forme repond non',  nordOuvert({ nord: { [D]: { g: 'OUVERT', b: OUV4 } } }, D), false);
 

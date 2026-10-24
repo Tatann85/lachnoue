@@ -197,8 +197,45 @@ export function verdictEau(d) {
   return out;
 }
 
+/* C7 — LE MARAIS SUD N'EST PAS TOUJOURS ISOLE QUAND LA ROCADE EST FERMEE.
+   Signale par Antoine le 24/10/2026, depuis le bord : le site annoncait de
+   l'eau de 7 h a 21 h alors qu'a 10 h la mer etait a 1,46 m et qu'un
+   pratiquant jugeait a 15h45 que l'eau venait tout juste de revenir.
+
+   CE QUE LE MODELE IGNORAIT. La Ch'noue est dans le marais SUD, alimente par
+   la Rocade (F1). La Bauduere est une ecluse INTERNE entre marais nord et
+   marais sud (F2), la Gachere est l'ecluse a la mer du marais nord. Quand ces
+   deux-la sont ouvertes, la chaine mer / Gachere / marais nord / Bauduere /
+   marais sud existe : le marais sud suit la maree MEME SI LA ROCADE EST
+   FERMEE. Le modele ne lisait que la Rocade et concluait « niveau retenu »,
+   c'est-a-dire de l'eau toute la journee. C'est le pire defaut possible ici,
+   affirmer de l'eau la ou il n'y en a pas.
+
+   CE QU'ON FAIT, ET CE QU'ON NE FAIT PAS. On ne calcule PAS le niveau par la
+   courbe de maree : cela demanderait deux nombres qu'on n'a pas, le niveau du
+   fond et le retard du marais sur la mer, et une seule observation ne separe
+   pas les deux. On se contente de retirer l'affirmation : une journee retenue
+   dont le nord est ouvert est reclassee VA-ET-VIENT, etat qui existe deja,
+   deja teste, et qui dit exactement ce qu'on sait. Le verdict devient
+   « incertain » sur les trois creneaux et l'eau n'est reconnue qu'autour des
+   pleines mers. Sur le 24/10/2026 cela donne de l'eau de 14 h a 18 h environ,
+   la ou la courbe de maree donne 14h10 a 18h15 : les deux lectures se
+   rejoignent, ce qui est rassurant sans etre une preuve.
+
+   Antoine a vu la Ch'noue completement vide : il n'existe donc pas de seuil
+   haut qui la retiendrait, et le marais peut descendre jusqu'a son fond. Le
+   modele complet attend une mesure d'HEURE, pas de hauteur : a quelle heure
+   l'eau arrive ou s'en va. Elle separe le fond et le retard. */
+export function nordOuvert(cal, iso) {
+  const n = (cal.nord || {})[iso];
+  if (!n || !Array.isArray(n.g) || !Array.isArray(n.b)) return false;
+  return n.g.some(v => v === 'OUVERT') && n.b.some(v => v === 'OUVERT');
+}
+
 // Calcule l'état de l'écluse jour par jour avec rétention (report du dernier état)
-function ecluseStates(cal, fromISO, toISO, marees, avert) {
+// Exportee depuis le 24/10/2026 pour que le filet de securite puisse tester le
+// garde-fou du nord sans fabriquer une fausse reponse Open-Meteo.
+export function ecluseStates(cal, fromISO, toISO, marees, avert) {
   const evDates = Object.keys(cal.ecluse).sort();
   let start = evDates.length && evDates[0] < fromISO ? evDates[0] : fromISO;
   const out = {};
@@ -283,6 +320,15 @@ function ecluseStates(cal, fromISO, toISO, marees, avert) {
       // Journee sans manoeuvre, ou FERMETURE declaree (C11) : le niveau est retenu.
       water = held === 'plein' ? 'plein' : (held === 'bas' ? 'bas' : 'inconnu');
       eclM = eclLabel(m) || heldLabel; eclS = eclLabel(s) || heldLabel;
+    }
+    /* C7 — LE GARDE-FOU DU NORD. Applique APRES le choix d'etat, et seulement
+       sur les journees ou le modele AFFIRME de l'eau par retention : « plein »
+       et le soir d'une prise tardive. On ne touche ni a « bas » ni a « vav »,
+       qui ne promettent rien, ni a « inconnu », qui promet encore moins. */
+    if ((water === 'plein' || water === 'priseSoir') && nordOuvert(cal, cur)) {
+      water = 'vav'; newHeld = 'inconnu';
+      eclM = eclLabel(m) || eclLabel('VAV');
+      eclS = eclLabel(s) || eclLabel('VAV');
     }
     out[cur] = { water, eclM, eclS, fill: fillHeld };
     held = newHeld;
@@ -514,7 +560,10 @@ async function main() {
     repli = e.message;
     console.log('AVERTISSEMENT — marées auto indisponibles (' + e.message + ') : repli sur calendar.json, sans hauteurs de pleine mer.');
   }
-  const data = build(om, { ecluse: cal.ecluse, marees, mareesRepli: repli != null });
+  /* C7 : le bloc nord doit traverser jusqu'au modele. Sans lui, nordOuvert()
+     repond toujours faux et le garde-fou ne se declenche jamais, en silence.
+     C'est exactement ce qui est arrive a la premiere mesure du 24/10/2026. */
+  const data = build(om, { ecluse: cal.ecluse, marees, nord: cal.nord, mareesRepli: repli != null });
   if (repli) data.avertissements.unshift('marées auto indisponibles : ' + repli);
   fs.writeFileSync('data.json', JSON.stringify(data, null, 1));
   console.log('data.json écrit —', data.days.length, 'jours, generatedAt', data.generatedAt);

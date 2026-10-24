@@ -150,6 +150,29 @@ export function parseAsmg(html) {
   return jours;
 }
 
+/* ETATS BRUTS DE LA GACHERE ET DE LA BAUDUERE, un par creneau de maree.
+   Ces deux ouvrages ne se lisent PAS comme la Rocade. La Rocade porte des
+   manoeuvres (prise, renvoi, va-et-vient) ; la Bauduere et la Gachere portent
+   surtout un ETAT, ouvert ou ferme, et c'est la remarque du point C7. On ne
+   les replie donc pas sur le vocabulaire des manoeuvres : on garde les quatre
+   creneaux tels quels, sous liste blanche, et c'est le modele qui en tire ce
+   qu'il sait en tirer.
+
+   POURQUOI LE SITE EN A BESOIN, decouvert le 24/10/2026. La Ch'noue est dans
+   le marais SUD, alimente par la Rocade (F1). La Bauduere est une ecluse
+   INTERNE entre marais nord et marais sud (F2), la Gachere est l'ecluse a la
+   mer du marais nord. Quand les deux sont ouvertes, la chaine
+   mer / Gachere / marais nord / Bauduere / marais sud existe, et le marais sud
+   n'est plus isole MEME SI LA ROCADE EST FERMEE. Le modele l'ignorait et
+   annoncait un niveau retenu toute la journee. */
+const ETATS_OUVRAGE = { 'Ouvert':'OUVERT', 'Fermé':'FERME', 'Ferme':'FERME', 'Prise':'PRISE', 'Prise1':'PRISE', 'Renvoi':'RENVOI', 'VV':'VAV', 'VV1':'VAV', 'FBM':'FBM' };
+export function etatsOuvrage(jour, ouvrage){
+  return jour.ecluses[ouvrage].map(function(v){
+    if(!(v in ETATS_OUVRAGE)) throw new Error('etat inconnu sur ' + ouvrage + ' : "' + String(v).slice(0,40) + '"');
+    return ETATS_OUVRAGE[v];
+  });
+}
+
 /* Etat d'un ouvrage replie en matin / soir, au vocabulaire du modele
    (PRISE, RENVOI, FBM, VAV, ou null pour « aucune manoeuvre »). */
 export function demiJournees(jour, ouvrage) {

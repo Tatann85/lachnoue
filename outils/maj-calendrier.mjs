@@ -20,7 +20,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { lireAsmg, demiJournees, mareesJour, URL_ROCADE } from '../asmg.mjs';
+import { lireAsmg, demiJournees, mareesJour, etatsOuvrage, URL_ROCADE } from '../asmg.mjs';
 
 const RACINE = path.resolve(path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1')), '..');
 const FICHIER = path.join(RACINE, 'calendar.json');
@@ -43,12 +43,17 @@ function main(jours) {
      pas, et la hauteur de pleine mer, qui n'existait nulle part jusqu'ici et
      que le point C10 attendait. Les divergences d'heure sont affichees, pas
      appliquees. */
-  const ecluse = {}, marees = {};
+  const ecluse = {}, marees = {}, nord = {};
   const divHeure = [], divCoef = [];
   let hAjout = 0;
   for (const j of jours) {
     const d = demiJournees(j, 'rocade');
     if (d.m != null || d.s != null) ecluse[j.date] = { m: d.m, s: d.s };
+
+    /* C7 : les deux autres ouvrages, etats bruts par creneau, sans repli.
+       Le modele s'en sert pour savoir si le marais sud communique avec la mer
+       alors meme que la Rocade est fermee. */
+    nord[j.date] = { g: etatsOuvrage(j, 'gachere'), b: etatsOuvrage(j, 'bauduere') };
 
     const neuf = mareesJour(j);
     const vieux = mareesAv[j.date];
@@ -71,9 +76,10 @@ function main(jours) {
 
   const trie = o => Object.fromEntries(Object.keys(o).sort().map(k => [k, o[k]]));
   const apres = {
-    _note: 'Calendrier des ecluses et marees, regenere depuis la source ASMG par outils/maj-calendrier.mjs. NE PAS EDITER A LA MAIN : la prochaine mise a jour ecraserait la correction. Source : ' + URL_ROCADE + '. Valeurs m (matin) / s (soir) : PRISE, RENVOI, FBM (fermeture basse mer), VAV (va-et-vient), ou null.',
+    _note: 'Calendrier des ecluses et marees, regenere depuis la source ASMG par outils/maj-calendrier.mjs. NE PAS EDITER A LA MAIN : la prochaine mise a jour ecraserait la correction. Source : ' + URL_ROCADE + '. Valeurs m (matin) / s (soir) : PRISE, RENVOI, FBM (fermeture basse mer), VAV (va-et-vient), ou null. Bloc nord : etats bruts de la Gachere (g) et de la Bauduere (b), un par creneau de maree, dans l ordre matin 1, matin 2, soir 1, soir 2.',
     ecluse: trie(ecluse),
-    marees: trie(marees)
+    marees: trie(marees),
+    nord: trie(nord)
   };
 
   // ---- ce qui change

@@ -1,5 +1,5 @@
 {
- "_note": "Calendrier des ecluses et marees, regenere depuis la source ASMG par outils/maj-calendrier.mjs. NE PAS EDITER A LA MAIN : la prochaine mise a jour ecraserait la correction. Source : https://www.asmg85.fr/page-calendrier-rocade/. Valeurs m (matin) / s (soir) : PRISE, RENVOI, FBM (fermeture basse mer), VAV (va-et-vient), ou null.",
+ "_note": "Calendrier des ecluses et marees, regenere depuis la source ASMG par outils/maj-calendrier.mjs. NE PAS EDITER A LA MAIN : la prochaine mise a jour ecraserait la correction. Source : https://www.asmg85.fr/page-calendrier-rocade/. Valeurs m (matin) / s (soir) : PRISE, RENVOI, FBM (fermeture basse mer), VAV (va-et-vient), ou null. Bloc nord : etats bruts de la Gachere (g) et de la Bauduere (b), un par creneau de maree, dans l ordre matin 1, matin 2, soir 1, soir 2.",
  "ecluse": {
   "2026-04-01": {
    "m": "PRISE",
@@ -2730,6 +2730,3858 @@
    "hmM": 4.5,
    "pmS": "23:24",
    "hmS": 4.27
+  }
+ },
+ "nord": {
+  "2026-04-01": {
+   "g": [
+    "PRISE",
+    "FERME",
+    "PRISE",
+    "FERME"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-04-02": {
+   "g": [
+    "PRISE",
+    "FERME",
+    "FERME",
+    "PRISE"
+   ],
+   "b": [
+    "OUVERT",
+    "FERME",
+    "OUVERT",
+    "FERME"
+   ]
+  },
+  "2026-04-03": {
+   "g": [
+    "FERME",
+    "PRISE",
+    "FERME",
+    "PRISE"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-04-04": {
+   "g": [
+    "FERME",
+    "PRISE",
+    "FERME",
+    "PRISE"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-04-05": {
+   "g": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-04-06": {
+   "g": [
+    "FERME",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-04-07": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-04-08": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-04-09": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-04-10": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-04-11": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-04-12": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-04-13": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-04-14": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "RENVOI",
+    "RENVOI"
+   ],
+   "b": [
+    "FERME",
+    "OUVERT",
+    "FERME",
+    "OUVERT"
+   ]
+  },
+  "2026-04-15": {
+   "g": [
+    "RENVOI",
+    "RENVOI",
+    "PRISE",
+    "FERME"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-04-16": {
+   "g": [
+    "PRISE",
+    "FERME",
+    "PRISE",
+    "FERME"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-04-17": {
+   "g": [
+    "PRISE",
+    "FERME",
+    "PRISE",
+    "FERME"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-04-18": {
+   "g": [
+    "PRISE",
+    "FERME",
+    "FERME",
+    "PRISE"
+   ],
+   "b": [
+    "OUVERT",
+    "FERME",
+    "OUVERT",
+    "FERME"
+   ]
+  },
+  "2026-04-19": {
+   "g": [
+    "FERME",
+    "PRISE",
+    "FERME",
+    "PRISE"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-04-20": {
+   "g": [
+    "FERME",
+    "PRISE",
+    "FERME",
+    "PRISE"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-04-21": {
+   "g": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-04-22": {
+   "g": [
+    "FERME",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-04-23": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-04-24": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-04-25": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-04-26": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-04-27": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "OUVERT",
+    "FERME",
+    "OUVERT"
+   ]
+  },
+  "2026-04-28": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-04-29": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-04-30": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "PRISE",
+    "FERME"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-05-01": {
+   "g": [
+    "PRISE",
+    "FERME",
+    "PRISE",
+    "FERME"
+   ],
+   "b": [
+    "OUVERT",
+    "FERME",
+    "OUVERT",
+    "FERME"
+   ]
+  },
+  "2026-05-02": {
+   "g": [
+    "PRISE",
+    "FERME",
+    "FERME",
+    "PRISE"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-05-03": {
+   "g": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-05-04": {
+   "g": [
+    "FERME",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-05-05": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-05-06": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-05-07": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-05-08": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-05-09": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-05-10": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-05-11": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-05-12": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-05-13": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-05-14": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "RENVOI",
+    "RENVOI"
+   ],
+   "b": [
+    "FERME",
+    "OUVERT",
+    "FERME",
+    "OUVERT"
+   ]
+  },
+  "2026-05-15": {
+   "g": [
+    "RENVOI",
+    "RENVOI",
+    "PRISE",
+    "FERME"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-05-16": {
+   "g": [
+    "PRISE",
+    "FERME",
+    "PRISE",
+    "FERME"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-05-17": {
+   "g": [
+    "PRISE",
+    "FERME",
+    "FERME",
+    "PRISE"
+   ],
+   "b": [
+    "OUVERT",
+    "FERME",
+    "OUVERT",
+    "FERME"
+   ]
+  },
+  "2026-05-18": {
+   "g": [
+    "FERME",
+    "PRISE",
+    "FERME",
+    "PRISE"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-05-19": {
+   "g": [
+    "FERME",
+    "PRISE",
+    "FERME",
+    "PRISE"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-05-20": {
+   "g": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-05-21": {
+   "g": [
+    "FERME",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-05-22": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-05-23": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-05-24": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-05-25": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-05-26": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-05-27": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "OUVERT",
+    "FERME",
+    "OUVERT"
+   ]
+  },
+  "2026-05-28": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-05-29": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-05-30": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "PRISE",
+    "FERME"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-05-31": {
+   "g": [
+    "PRISE",
+    "FERME",
+    "PRISE",
+    "FERME"
+   ],
+   "b": [
+    "OUVERT",
+    "FERME",
+    "OUVERT",
+    "FERME"
+   ]
+  },
+  "2026-06-01": {
+   "g": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "PRISE"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-06-02": {
+   "g": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-06-03": {
+   "g": [
+    "FERME",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-06-04": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-06-05": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-06-06": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-06-07": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-06-08": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-06-09": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-06-10": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-06-11": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "OUVERT",
+    "FERME",
+    "OUVERT"
+   ]
+  },
+  "2026-06-12": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-06-13": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "RENVOI",
+    "RENVOI"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-06-14": {
+   "g": [
+    "RENVOI",
+    "RENVOI",
+    "PRISE",
+    "FERME"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-06-15": {
+   "g": [
+    "PRISE",
+    "FERME",
+    "PRISE",
+    "FERME"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-06-16": {
+   "g": [
+    "PRISE",
+    "FERME",
+    "FERME",
+    "PRISE"
+   ],
+   "b": [
+    "OUVERT",
+    "FERME",
+    "OUVERT",
+    "FERME"
+   ]
+  },
+  "2026-06-17": {
+   "g": [
+    "FERME",
+    "PRISE",
+    "FERME",
+    "PRISE"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-06-18": {
+   "g": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "PRISE"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-06-19": {
+   "g": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-06-20": {
+   "g": [
+    "FERME",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-06-21": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-06-22": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-06-23": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-06-24": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-06-25": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-06-26": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-06-27": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-06-28": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-06-29": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-06-30": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "FERME",
+    "PRISE"
+   ],
+   "b": [
+    "FERME",
+    "OUVERT",
+    "FERME",
+    "OUVERT"
+   ]
+  },
+  "2026-07-01": {
+   "g": [
+    "FERME",
+    "PRISE",
+    "FERME",
+    "PRISE"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-07-02": {
+   "g": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "PRISE"
+   ],
+   "b": [
+    "OUVERT",
+    "FERME",
+    "OUVERT",
+    "FERME"
+   ]
+  },
+  "2026-07-03": {
+   "g": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-07-04": {
+   "g": [
+    "FERME",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-07-05": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-07-06": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-07-07": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-07-08": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-07-09": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-07-10": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-07-11": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-07-12": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "RENVOI",
+    "RENVOI"
+   ],
+   "b": [
+    "FERME",
+    "OUVERT",
+    "FERME",
+    "OUVERT"
+   ]
+  },
+  "2026-07-13": {
+   "g": [
+    "RENVOI",
+    "RENVOI",
+    "PRISE",
+    "FERME"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-07-14": {
+   "g": [
+    "PRISE",
+    "FERME",
+    "PRISE",
+    "FERME"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-07-15": {
+   "g": [
+    "PRISE",
+    "FERME",
+    "FERME",
+    "PRISE"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-07-16": {
+   "g": [
+    "FERME",
+    "PRISE",
+    "FERME",
+    "PRISE"
+   ],
+   "b": [
+    "OUVERT",
+    "FERME",
+    "OUVERT",
+    "FERME"
+   ]
+  },
+  "2026-07-17": {
+   "g": [
+    "FERME",
+    "PRISE",
+    "FERME",
+    "PRISE"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-07-18": {
+   "g": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "PRISE"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-07-19": {
+   "g": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-07-20": {
+   "g": [
+    "FERME",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-07-21": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-07-22": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-07-23": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-07-24": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-07-25": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-07-26": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-07-27": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "OUVERT",
+    "FERME",
+    "OUVERT"
+   ]
+  },
+  "2026-07-28": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-07-29": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-07-30": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "FERME",
+    "PRISE"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-07-31": {
+   "g": [
+    "FERME",
+    "PRISE",
+    "FERME",
+    "PRISE"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-08-01": {
+   "g": [
+    "FERME",
+    "PRISE",
+    "FERME",
+    "PRISE"
+   ],
+   "b": [
+    "OUVERT",
+    "FERME",
+    "OUVERT",
+    "FERME"
+   ]
+  },
+  "2026-08-02": {
+   "g": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "PRISE"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-08-03": {
+   "g": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-08-04": {
+   "g": [
+    "FERME",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-08-05": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-08-06": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-08-07": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-08-08": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-08-09": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-08-10": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "RENVOI",
+    "RENVOI"
+   ],
+   "b": [
+    "FERME",
+    "OUVERT",
+    "FERME",
+    "OUVERT"
+   ]
+  },
+  "2026-08-11": {
+   "g": [
+    "RENVOI",
+    "RENVOI",
+    "PRISE",
+    "FERME"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-08-12": {
+   "g": [
+    "PRISE",
+    "FERME",
+    "PRISE",
+    "FERME"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-08-13": {
+   "g": [
+    "PRISE",
+    "FERME",
+    "FERME",
+    "PRISE"
+   ],
+   "b": [
+    "OUVERT",
+    "FERME",
+    "OUVERT",
+    "FERME"
+   ]
+  },
+  "2026-08-14": {
+   "g": [
+    "FERME",
+    "PRISE",
+    "FERME",
+    "PRISE"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-08-15": {
+   "g": [
+    "FERME",
+    "PRISE",
+    "FERME",
+    "PRISE"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-08-16": {
+   "g": [
+    "FERME",
+    "PRISE",
+    "FERME",
+    "PRISE"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-08-17": {
+   "g": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-08-18": {
+   "g": [
+    "FERME",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-08-19": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-08-20": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-08-21": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-08-22": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-08-23": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-08-24": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-08-25": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "OUVERT",
+    "FERME",
+    "OUVERT"
+   ]
+  },
+  "2026-08-26": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-08-27": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-08-28": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "FERME",
+    "PRISE"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-08-29": {
+   "g": [
+    "FERME",
+    "PRISE",
+    "FERME",
+    "PRISE"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-08-30": {
+   "g": [
+    "FERME",
+    "PRISE",
+    "FERME",
+    "PRISE"
+   ],
+   "b": [
+    "OUVERT",
+    "FERME",
+    "OUVERT",
+    "FERME"
+   ]
+  },
+  "2026-08-31": {
+   "g": [
+    "FERME",
+    "PRISE",
+    "FERME",
+    "PRISE"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-09-01": {
+   "g": [
+    "FERME",
+    "PRISE",
+    "FERME",
+    "PRISE"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-09-02": {
+   "g": [
+    "FERME",
+    "PRISE",
+    "FERME",
+    "PRISE"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-09-03": {
+   "g": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-09-04": {
+   "g": [
+    "FERME",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-09-05": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-09-06": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-09-07": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "OUVERT",
+    "FERME",
+    "OUVERT"
+   ]
+  },
+  "2026-09-08": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "RENVOI",
+    "RENVOI"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-09-09": {
+   "g": [
+    "RENVOI",
+    "RENVOI",
+    "PRISE",
+    "FERME"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-09-10": {
+   "g": [
+    "PRISE",
+    "FERME",
+    "PRISE",
+    "FERME"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-09-11": {
+   "g": [
+    "PRISE",
+    "FERME",
+    "PRISE",
+    "FERME"
+   ],
+   "b": [
+    "OUVERT",
+    "FERME",
+    "OUVERT",
+    "FERME"
+   ]
+  },
+  "2026-09-12": {
+   "g": [
+    "PRISE",
+    "FERME",
+    "FERME",
+    "PRISE"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-09-13": {
+   "g": [
+    "FERME",
+    "PRISE",
+    "FERME",
+    "PRISE"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-09-14": {
+   "g": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-09-15": {
+   "g": [
+    "FERME",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-09-16": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-09-17": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-09-18": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-09-19": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-09-20": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-09-21": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-09-22": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-09-23": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "OUVERT",
+    "FERME",
+    "OUVERT"
+   ]
+  },
+  "2026-09-24": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-09-25": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "PRISE",
+    "FERME"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-09-26": {
+   "g": [
+    "PRISE",
+    "FERME",
+    "PRISE",
+    "FERME"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-09-27": {
+   "g": [
+    "PRISE",
+    "FERME",
+    "FERME",
+    "PRISE"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-09-28": {
+   "g": [
+    "FERME",
+    "PRISE",
+    "FERME",
+    "PRISE"
+   ],
+   "b": [
+    "OUVERT",
+    "FERME",
+    "OUVERT",
+    "FERME"
+   ]
+  },
+  "2026-09-29": {
+   "g": [
+    "FERME",
+    "PRISE",
+    "FERME",
+    "PRISE"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-09-30": {
+   "g": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-10-01": {
+   "g": [
+    "FERME",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-10-02": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-10-03": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-10-04": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-10-05": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-10-06": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "OUVERT",
+    "FERME",
+    "OUVERT"
+   ]
+  },
+  "2026-10-07": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-10-08": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "PRISE",
+    "FERME"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-10-09": {
+   "g": [
+    "FERME",
+    "FERME",
+    "PRISE",
+    "FERME"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-10-10": {
+   "g": [
+    "FERME",
+    "FERME",
+    "PRISE",
+    "FERME"
+   ],
+   "b": [
+    "OUVERT",
+    "FERME",
+    "OUVERT",
+    "FERME"
+   ]
+  },
+  "2026-10-11": {
+   "g": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "PRISE"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-10-12": {
+   "g": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-10-13": {
+   "g": [
+    "FERME",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-10-14": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-10-15": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-10-16": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-10-17": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-10-18": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-10-19": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-10-20": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-10-21": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-10-22": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "OUVERT",
+    "FERME",
+    "OUVERT"
+   ]
+  },
+  "2026-10-23": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-10-24": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-10-25": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "PRISE",
+    "FERME"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-10-26": {
+   "g": [
+    "FERME",
+    "FERME",
+    "PRISE",
+    "FERME"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-10-27": {
+   "g": [
+    "FERME",
+    "FERME",
+    "PRISE",
+    "FERME"
+   ],
+   "b": [
+    "OUVERT",
+    "FERME",
+    "OUVERT",
+    "FERME"
+   ]
+  },
+  "2026-10-28": {
+   "g": [
+    "FERME",
+    "FERME",
+    "PRISE",
+    "FERME"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-10-29": {
+   "g": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-10-30": {
+   "g": [
+    "FERME",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-10-31": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-11-01": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "OUVERT",
+    "FERME",
+    "OUVERT"
+   ]
+  },
+  "2026-11-02": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-11-03": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-11-04": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-11-05": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-11-06": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "PRISE",
+    "FERME"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-11-07": {
+   "g": [
+    "FERME",
+    "FERME",
+    "PRISE",
+    "FERME"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-11-08": {
+   "g": [
+    "FERME",
+    "FERME",
+    "PRISE",
+    "FERME"
+   ],
+   "b": [
+    "OUVERT",
+    "FERME",
+    "OUVERT",
+    "FERME"
+   ]
+  },
+  "2026-11-09": {
+   "g": [
+    "FERME",
+    "FERME",
+    "PRISE",
+    "FERME"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-11-10": {
+   "g": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-11-11": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-11-12": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-11-13": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-11-14": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "OUVERT",
+    "FERME",
+    "OUVERT"
+   ]
+  },
+  "2026-11-15": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-11-16": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-11-17": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-11-18": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-11-19": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-11-20": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-11-21": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-11-22": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-11-23": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "PRISE",
+    "FERME"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-11-24": {
+   "g": [
+    "FERME",
+    "FERME",
+    "PRISE",
+    "FERME"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-11-25": {
+   "g": [
+    "FERME",
+    "FERME",
+    "PRISE",
+    "FERME"
+   ],
+   "b": [
+    "OUVERT",
+    "FERME",
+    "OUVERT",
+    "FERME"
+   ]
+  },
+  "2026-11-26": {
+   "g": [
+    "FERME",
+    "FERME",
+    "PRISE",
+    "FERME"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-11-27": {
+   "g": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "PRISE"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-11-28": {
+   "g": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-11-29": {
+   "g": [
+    "FERME",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-11-30": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-12-01": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-12-02": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "OUVERT",
+    "FERME",
+    "OUVERT"
+   ]
+  },
+  "2026-12-03": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-12-04": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-12-05": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-12-06": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-12-07": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "PRISE",
+    "FERME"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-12-08": {
+   "g": [
+    "FERME",
+    "FERME",
+    "PRISE",
+    "FERME"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-12-09": {
+   "g": [
+    "FERME",
+    "FERME",
+    "PRISE",
+    "FERME"
+   ],
+   "b": [
+    "OUVERT",
+    "FERME",
+    "OUVERT",
+    "FERME"
+   ]
+  },
+  "2026-12-10": {
+   "g": [
+    "FERME",
+    "FERME",
+    "PRISE",
+    "FERME"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-12-11": {
+   "g": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-12-12": {
+   "g": [
+    "FERME",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-12-13": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-12-14": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "OUVERT",
+    "FERME",
+    "OUVERT"
+   ]
+  },
+  "2026-12-15": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-12-16": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-12-17": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-12-18": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-12-19": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-12-20": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-12-21": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-12-22": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-12-23": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "PRISE",
+    "FERME"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-12-24": {
+   "g": [
+    "FERME",
+    "FERME",
+    "PRISE",
+    "FERME"
+   ],
+   "b": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ]
+  },
+  "2026-12-25": {
+   "g": [
+    "FERME",
+    "FERME",
+    "PRISE",
+    "FERME"
+   ],
+   "b": [
+    "OUVERT",
+    "FERME",
+    "OUVERT",
+    "FERME"
+   ]
+  },
+  "2026-12-26": {
+   "g": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "PRISE"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-12-27": {
+   "g": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "PRISE"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-12-28": {
+   "g": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-12-29": {
+   "g": [
+    "FERME",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-12-30": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "FERME",
+    "FERME",
+    "FERME"
+   ]
+  },
+  "2026-12-31": {
+   "g": [
+    "OUVERT",
+    "OUVERT",
+    "OUVERT",
+    "OUVERT"
+   ],
+   "b": [
+    "FERME",
+    "OUVERT",
+    "FERME",
+    "OUVERT"
+   ]
   }
  }
 }

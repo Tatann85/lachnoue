@@ -29,7 +29,7 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { present, cote, verdictEau, coteSaison } from '../scraper.mjs';
+import { present, cote, verdictEau, coteSaison, nordOuvert, ecluseStates } from '../scraper.mjs';
 
 const ICI = dirname(fileURLToPath(import.meta.url));
 const RACINE = join(ICI, '..');
@@ -91,6 +91,27 @@ t('avril     = 5,00 m', coteSaison('2026-04-30'), 5.0);
 t('mai       = 5,20 m', coteSaison('2026-05-01'), 5.2);
 t('septembre = 5,20 m', coteSaison('2026-09-24'), 5.2);
 t('octobre   = 5,00 m', coteSaison('2026-10-01'), 5.0);
+
+console.log('\nC7 - une journee retenue dont le nord est ouvert ne promet plus d eau');
+/* Le 24/10/2026 : prise a 04h00 puis Rocade fermee, mais Gachere et Bauduere
+   ouvertes toute la journee. Le modele annoncait « plein » de 7 h a 21 h
+   alors que la mer etait a 1,46 m a 10 h. */
+const OUV4 = ['OUVERT', 'OUVERT', 'OUVERT', 'OUVERT'];
+const FER4 = ['FERME', 'FERME', 'FERME', 'FERME'];
+const D = '2026-10-24';
+const marJ = { [D]: { pmM: '04:00', hmM: 4.98 } };
+const etat = (nord, ev) => ecluseStates({ ecluse: { [D]: ev || { m: 'PRISE', s: null } }, nord }, D, D, marJ, [])[D].water;
+
+t('sans bloc nord, rien ne change',            etat(undefined), 'plein');
+t('nord ouvert : la journee devient vav',      etat({ [D]: { g: OUV4, b: OUV4 } }), 'vav');
+t('Gachere fermee : le marais reste isole',    etat({ [D]: { g: FER4, b: OUV4 } }), 'plein');
+t('Bauduere fermee : le marais reste isole',   etat({ [D]: { g: OUV4, b: FER4 } }), 'plein');
+t('ouverture partielle suffit a douter',       etat({ [D]: { g: ['FERME', 'OUVERT', 'FERME', 'FERME'], b: OUV4 } }), 'vav');
+/* Une journee de renvoi n affirme deja rien : le garde-fou ne doit pas la
+   transformer en vav, ce qui ferait REAPPARAITRE de l eau autour des marees. */
+t('une journee de renvoi n est pas touchee',   etat({ [D]: { g: OUV4, b: OUV4 } }, { m: 'RENVOI', s: null }), 'bas');
+t('nordOuvert sans donnee repond non',         nordOuvert({}, D), false);
+t('nordOuvert sur bloc mal forme repond non',  nordOuvert({ nord: { [D]: { g: 'OUVERT', b: OUV4 } } }, D), false);
 
 /* ---------------------------------------------------------------------------
    NON-DIVERGENCE scraper.mjs / app.js

@@ -318,6 +318,20 @@ export function build(om, cal) {
   om.hourly.time.forEach((t, i) => { H[String(t).slice(0, 13)] = { s: om.hourly.wind_speed_10m[i], g: om.hourly.wind_gusts_10m[i], d: om.hourly.wind_direction_10m[i], t: om.hourly.temperature_2m[i], c: om.hourly.weather_code[i] }; });
   const dates = om.daily.time;
   const marees = cal.marees || {};
+  /* C13 — PEREMPTION DU CALENDRIER, ajoute le 24/10/2026. Le calendrier des
+     ecluses s'etait arrete le 28/10/2026 et PERSONNE NE L'AVAIT VU : passe sa
+     derniere date, ecluseStates() retient le dernier niveau connu et le site
+     continue d'annoncer un verdict d'eau sans dire qu'il ne sait plus. Un
+     avertissement est donc leve 30 jours avant l'echeance ; comme
+     outils/sante-site.mjs controle que data.json ne porte AUCUN
+     avertissement, l'alarme remonte toute seule, un mois a l'avance. */
+  const finCal = Object.keys(cal.ecluse || {}).sort().pop();
+  if (!finCal) {
+    avert.push('le calendrier d\'ecluse est vide : le modele d\'eau ne sait rien');
+  } else {
+    const reste = Math.round((Date.parse(finCal) - Date.parse(dates[0])) / 86400000);
+    if (reste < 30) avert.push('le calendrier d\'ecluse se termine le ' + finCal + ', dans ' + reste + ' jour(s). Passe cette date le modele retient le dernier niveau connu sans le dire. Relancer outils/maj-calendrier.mjs --ecrire.');
+  }
   const es = ecluseStates(cal, dates[0], dates[dates.length - 1], marees, avert);
   const days = dates.map((date, i) => {
     const wind = HS.map(h => { const k = H[date + 'T' + pad(h)] || {}; return [h, num(k.s, 0, 0, 200), num(k.g, 0, 0, 250), num(k.d, 0, 0, 360), k.t != null ? Math.round(k.t) : null, k.c != null ? wmoLabel(k.c) : null]; });

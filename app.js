@@ -190,6 +190,42 @@ function eclHTML(state){var e=ecl(state);return '<span class="badge '+e[1]+'">'+
 function wx(c){c=(c||'').toLowerCase();if(/ensoleill|sunny|sonnig|zonnig/.test(c))return '☀️';if(/clair|clear|heiter|helder/.test(c))return '🌤️';if(/peu nuageux|partly|wolkig|bewolkt/.test(c))return '⛅';if(/voil/.test(c))return '🌥️';if(/couvert|nuageux|cloud|overcast|bedeckt|bewolkt/.test(c))return '☁️';if(/averse|pluie|bruine|rain|drizzle|shower|regen/.test(c))return '🌧️';if(/orage|thunder|storm|gewitter|onweer/.test(c))return '⛈️';if(/brum|brouill|fog|mist|nebel/.test(c))return '🌫️';if(/neige|snow|schnee|sneeuw/.test(c))return '🌨️';return '🌤️';}
 // 5,20 ou 5.20 selon la langue. L'anglais est la seule a utiliser le point.
 function fmtCote(v){ var t=Number(v).toFixed(2); return LANG==='en' ? t : t.replace('.',','); }
+
+/* C4 — HAUTEUR DE MAT CONSEILLEE, posee le 24/10/2026.
+   Le graphique affichait la cote du marais en metres. Personne ne navigue avec
+   une cote : sur ce plan d'eau on se demande si on passe en 65 ou en 85, et
+   c'est le mot que les pratiquants emploient entre eux. L'axe est donc gradue
+   en hauteur de mat.
+
+   LA CONVERSION EST UN SIMPLE DECALAGE, la courbe ne change pas de forme :
+      mat (cm) = (cote - MAT_FOND) x 100
+   MAT_FOND se deduit d'une observation, et d'une seule.
+
+   D'OU VIENT CETTE OBSERVATION. Le 24/10/2026 a 15h45, a la Ch'noue, un
+   pratiquant experimente juge qu'un mat de 65 passe tout juste et qu'un mat de
+   85 touche le fond. Deux calculs independants donnent le niveau de ce moment
+   a un centimetre pres : la droite entre la basse mer de 10h01 (1,46 m) et la
+   pleine mer de 16h16 (5,29 m) donne 4,97 m, et la regle C10 appliquee a la
+   prise de 04h00 donne 4,98 m. On retient 4,97 m pour 65 cm.
+
+   CE QUE CE CALAGE A DE BON, ET IL FAUT LE COMPRENDRE AVANT DE LE CORRIGER :
+   il est fait sur la cote QUE LE SITE AFFICHE, pas sur la physique. Si le
+   modele de cote se trompe de 20 cm un jour donne, le seuil se trompe du meme
+   montant et dans le meme sens, et le verdict rendu au pratiquant reste juste.
+   L'envers de cette qualite : toute correction du modele de cote, C7 et les
+   trois ecluses en premier, oblige a reprendre MAT_FOND.
+
+   CE QU'IL NE FAUT PAS SE RACONTER : UNE SEULE OBSERVATION, et le fond d'un
+   marais n'est pas plat. D'ou l'arrondi aux 5 cm INFERIEURS et la mention
+   portee sur le graphique. Il manque la borne d'en face, un jour ou le mat de
+   85 passe franchement. */
+var MAT_COTE_REF = 4.97;   /* cote observee, en metres */
+var MAT_CM_REF   = 65;     /* mat qui passait tout juste a cette cote, en cm */
+var MAT_FOND     = MAT_COTE_REF - MAT_CM_REF / 100;   /* 4,32 m */
+var MAT_MAX      = 120;    /* haut de l'axe, en cm */
+var MAT_REPERES  = [65, 85];
+function matCm(cote){ return Math.round((cote - MAT_FOND) * 100); }
+function matConseille(cm){ return Math.max(0, Math.floor(cm / 5) * 5); }
 var DOW=T.dow||{};
 function trDay(s){return String(s).replace(/^(Lun|Mar|Mer|Jeu|Ven|Sam|Dim)/,function(m){return DOW[m]||m;});}
 
@@ -299,21 +335,40 @@ var HREF=[7,9,11,13,15,17,19,21];  /* heures qui portent un chiffre dans le grap
 function daySVG(d){
   var pas=pasDe(d);
   var W=660,H=322,xL=88,xR=636,top=14,bot=158,px=(xR-xL)/14;
-  var X=function(h){return xL+(h-7)*px;}, Y=function(L){return bot-(L/6)*(bot-top);};
+  /* C4 : l'axe est gradue en HAUTEUR DE MAT, en centimetres, et non plus en
+     cote. Y prend donc des centimetres. Les valeurs hors cadre sont bornees :
+     un marais vide tombe sur le plancher du graphique, ce qui se lit comme
+     « aucun mat ne passe », et c'est exactement ce qu'on veut dire. */
+  var X=function(h){return xL+(h-7)*px;}, Y=function(cm){return bot-(Math.max(0,Math.min(MAT_MAX,cm))/MAT_MAX)*(bot-top);};
   var s='<svg viewBox="0 0 '+W+' '+H+'">';
   var goH=d.wind.filter(function(w){return isGo(w,d);}).map(function(w){return w[0];});
   goGroups(goH,pas,goBloque(d)).forEach(function(g){var a=X(g[0])-px*pas/2,b=X(g[g.length-1])+px*pas/2;
     s+='<rect x="'+a.toFixed(1)+'" y="'+top+'" width="'+(b-a).toFixed(1)+'" height="'+(bot-top)+'" fill="rgba(15,110,86,.14)"/><text x="'+((a+b)/2).toFixed(1)+'" y="'+(top+12)+'" text-anchor="middle" font-size="10" font-weight="700" fill="#0f6e56">GO</text>';});
-  for(var m=0;m<=6;m+=2){var y=Y(m);s+='<line x1="'+xL+'" y1="'+y.toFixed(1)+'" x2="'+xR+'" y2="'+y.toFixed(1)+'" stroke="#e7ebf0"/><text x="'+(xL-6)+'" y="'+(y+3).toFixed(1)+'" text-anchor="end" font-size="10" fill="#9aa3ac">'+m+' m</text>';}
+  for(var m=0;m<=MAT_MAX;m+=30){var y=Y(m);s+='<line x1="'+xL+'" y1="'+y.toFixed(1)+'" x2="'+xR+'" y2="'+y.toFixed(1)+'" stroke="#e7ebf0"/><text x="'+(xL-6)+'" y="'+(y+3).toFixed(1)+'" text-anchor="end" font-size="10" fill="#9aa3ac">'+m+'</text>';}
+  /* C4 : les deux reperes qui parlent au pratiquant. La courbe au-dessus de la
+     ligne, ce mat passe ; en dessous, il touche. Tracees avant la courbe pour
+     qu'elle passe par-dessus. */
+  MAT_REPERES.forEach(function(mm){var y=Y(mm);
+    s+='<line x1="'+xL+'" y1="'+y.toFixed(1)+'" x2="'+xR+'" y2="'+y.toFixed(1)+'" stroke="#9aa3ac" stroke-width="1" stroke-dasharray="2 3"/><text x="'+(xR-2)+'" y="'+(y+10).toFixed(1)+'" text-anchor="end" font-size="9" fill="#9aa3ac">'+String(T.svMat||'{n}').replace('{n}',mm)+'</text>';});
   /* C10 : la ligne de reference suit la cote de la saison, portee par data.json
      (champ fill). FILL ne sert plus que de repli pour un ancien data.json. */
   var fillJ = d.fill!=null ? d.fill : FILL;
-  var yF=Y(fillJ);
+  /* C4 — LE MAT CONSEILLE DU JOUR EST LE MAXIMUM DE LA COURBE, PAS LA COTE DE
+     REMPLISSAGE, et la difference n'est pas cosmetique. Vu a l'image le
+     24/10/2026 sur une journee de va-et-vient : la courbe culminait a 57 cm a
+     la pleine mer et redescendait a zero, pendant que le trait de reference
+     affichait « mat conseille 65 cm », tire de la cote de saison. Le site
+     aurait conseille un mat que l'eau ne portait a aucune heure. La cote de
+     saison est un PLAFOND THEORIQUE, atteint les jours de retention et jamais
+     les jours de va-et-vient. Ce qu'on affiche est donc le meilleur mat
+     REELLEMENT porte dans la journee. */
+  var matJour = Math.max.apply(null, HS.map(function(h){ return matCm(cote(h,d)); }));
+  var yF=Y(matJour);
   /* Le libelle de la cote de remplissage etait ancre a droite, exactement la ou
      tombe le trait de pleine mer en fin de journee : les deux textes se
      chevauchaient les jours de maree tardive. Depuis que l'heure de pleine mer
      est donnee a la minute (B5), le cas est frequent. Libelle ancre a gauche. */
-  s+='<line x1="'+xL+'" y1="'+yF.toFixed(1)+'" x2="'+xR+'" y2="'+yF.toFixed(1)+'" stroke="#8a4b00" stroke-width="1.2" stroke-dasharray="5 4"/><text x="'+(xL+4)+'" y="'+(yF-4).toFixed(1)+'" font-size="9.5" fill="#8a4b00">'+String(T.svFill||'').replace('{c}',fmtCote(fillJ))+'</text>';
+  s+='<line x1="'+xL+'" y1="'+yF.toFixed(1)+'" x2="'+xR+'" y2="'+yF.toFixed(1)+'" stroke="#8a4b00" stroke-width="1.2" stroke-dasharray="5 4"/><text x="'+(xL+4)+'" y="'+(yF-4).toFixed(1)+'" font-size="9.5" fill="#8a4b00">'+String(T.svFill||'').replace('{c}',matConseille(matJour))+'</text>';
   /* Le libelle « maree haute » etait pose a top+22, c'est-a-dire exactement a la
      hauteur ou passe la ligne de cote de remplissage en ete (5,20 m tombe a y=33
      et le libelle a y=36) : les deux textes se chevauchaient tous les jours de la
@@ -323,11 +378,15 @@ function daySVG(d){
   var tm=d.tideHigh;
   var yT=Math.min(bot-6,yF+14);
   s+='<line x1="'+X(tm).toFixed(1)+'" y1="'+top+'" x2="'+X(tm).toFixed(1)+'" y2="'+bot+'" stroke="#c9851a" stroke-width="1.1" stroke-dasharray="3 3"/><text x="'+(X(tm)+3).toFixed(1)+'" y="'+yT.toFixed(1)+'" font-size="9.5" fill="#c9851a">'+T.svHigh+'</text>';
-  var pts=HS.map(function(h){return X(h).toFixed(1)+','+Y(cote(h,d)).toFixed(1);}).join(' ');
+  var pts=HS.map(function(h){return X(h).toFixed(1)+','+Y(matCm(cote(h,d))).toFixed(1);}).join(' ');
   s+='<polyline points="'+pts+'" fill="none" stroke="#12857f" stroke-width="2.6" stroke-linejoin="round"/>';
   s+='<line x1="'+xL+'" y1="'+bot+'" x2="'+xR+'" y2="'+bot+'" stroke="#cfd6dd"/>';
   [7,9,11,13,15,17,19,21].forEach(function(h){s+='<text x="'+X(h).toFixed(1)+'" y="'+(bot+13)+'" text-anchor="middle" font-size="10" fill="#6b7785">'+h+':00</text>';});
   s+='<text x="'+xL+'" y="'+(top-2)+'" font-size="9.5" fill="#9aa3ac">'+T.svMarsh+'</text>';
+  /* C4 : la mention de calage. Une echelle tiree d'une seule observation doit
+     le dire a l'endroit ou on la lit, pas dans un document que personne
+     n'ouvrira. */
+  s+='<text x="'+xR+'" y="'+(top-2)+'" text-anchor="end" font-size="8.5" fill="#b3bac2">'+(T.svMatNote||'')+'</text>';
   var yw=186;
   s+='<text x="2" y="'+(yw+4)+'" font-size="9" fill="#9aa3ac">'+T.svSky+'</text>';
   var skyByH={}; d.wind.forEach(function(w){ if(w[5]) skyByH[w[0]]=w[5]; });

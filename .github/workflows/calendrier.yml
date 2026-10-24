@@ -1,0 +1,78 @@
+name: Relever le calendrier des ecluses
+
+# POURQUOI CE WORKFLOW EXISTE (points C7 et C13, 24/10/2026)
+#
+# calendar.json etait tenu a la main et s'etait arrete le 28/10/2026 sans que
+# personne le voie. Passe sa derniere date, le modele d'eau retient le dernier
+# niveau connu et le site continue d'annoncer un verdict d'eau sans dire qu'il
+# ne sait plus. Ce relevé automatique sert a trois choses :
+#
+#   1. ramasser les MOIS AJOUTES par l'ASMG au fil de l'annee, pour que le
+#      calendrier ne se termine plus jamais par surprise ;
+#   2. detecter les DONNEES QUI CHANGENT, c'est-a-dire les corrections faites
+#      en cours de mois, question restee ouverte depuis septembre sous le
+#      point X8. Chaque modification laisse desormais un commit date : le
+#      journal git EST la reponse a X8 ;
+#   3. ne JAMAIS toucher au site si la source est injoignable ou si sa
+#      structure a change. maj-calendrier.mjs echoue franchement dans ce cas
+#      et n'ecrit rien (regle A6).
+#
+# Le commit pousse ici declenche le workflow de publication, qui tourne deja
+# sur push. Celui-la ne commite rien, donc aucune boucle possible.
+
+on:
+  schedule:
+    - cron: '17 5 1 * *'   # le 1er de chaque mois a 05h17 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: calendrier
+  cancel-in-progress: false
+
+jobs:
+  relever:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Recuperer le depot
+        uses: actions/checkout@v4
+      - name: Installer Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # pipefail, sans quoi le code de sortie serait celui de tee et un echec
+      # de lecture de la source passerait pour un succes.
+      - name: Relever la source ASMG
+        run: |
+          set -o pipefail
+          node outils/maj-calendrier.mjs --ecrire | tee releve.txt
+
+      # Le modele doit encore passer ses tests AVEC le nouveau calendrier.
+      # Si un etat inattendu est entre dans calendar.json, rien n'est pousse.
+      - name: Verifier le modele d'eau
+        run: node outils/test-modele-eau.mjs
+
+      - name: Pousser si quelque chose a change
+        run: |
+          git config user.name  "releve-ecluses"
+          git config user.email "noreply@lachnoue.fr"
+          if git diff --quiet -- calendar.json; then
+            echo "La source ASMG n'a rien change. Aucun commit."
+            exit 0
+          fi
+          {
+            echo "Calendrier des ecluses : la source ASMG a change"
+            echo
+            echo "Releve automatique du $(date -u '+%d/%m/%Y a %Hh%M UTC')."
+            echo "Les lignes ci-dessous sont la sortie de outils/maj-calendrier.mjs."
+            echo
+            sed 's/^/    /' releve.txt
+          } > message.txt
+          git add calendar.json
+          git commit -F message.txt
+          rm -f message.txt releve.txt
+          git push

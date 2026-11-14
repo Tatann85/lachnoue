@@ -258,8 +258,17 @@ function mareeSoir(d){
   var s=T.filter(function(t){return t>=12;});
   if(s.length)return Math.min.apply(null,s);
   return T.length?Math.max.apply(null,T):null;}
+/* IL N'Y A PAS D'EAU AU-DESSUS DU VIDE, 14/11/2026. Copie exacte de la regle
+   de scraper.mjs. FOND doit valoir MAT_FOND, et le test des deux copies le
+   verifie. Le raisonnement complet est dans scraper.mjs, au-dessus de present().
+   MAT_MIN_NAV vaut 0 : c'est le seul seuil qu'on puisse poser sans l'inventer.
+   Le vrai seuil de navigabilite est le point C4, non tranche. */
+var FOND_MARAIS = 4.32;
+var MAT_MIN_NAV = 0;
+function assezDEau(h,d){ return cote(h,d) >= FOND_MARAIS + MAT_MIN_NAV/100; }
 function present(h,d){
   if(d.nav){var i=lvlIdx(h,d);if(i>=0&&d.nav[i]!=null)return !!d.nav[i];}
+  if(!assezDEau(h,d))return false;
   if(d.water==='plein')return true;
   if(d.water==='renvoiSoir')return h<=21;
   if(d.water==='priseSoir'){var t=mareeSoir(d);return t!==null&&h>=t;}

@@ -130,8 +130,45 @@ function ecartMaree(h, d) {
   if (!T.length) return null;              // B6 : rien a inventer
   return Math.min(...T.map(t => Math.abs(h - t)));
 }
+/* ========== IL N'Y A PAS D'EAU AU-DESSUS DU VIDE ==========
+   Posé le 14/11/2026, juste après la sinusoïde, et c'est elle qui l'a rendu
+   nécessaire.
+
+   present() répondait « il y a de l'eau » dès qu'on était à moins de deux
+   heures d'une pleine mer. Cette règle NE REGARDE JAMAIS LE NIVEAU. Elle a été
+   écrite quand le niveau était faux et constant : c'était alors tout ce dont on
+   disposait. Depuis que la cote est calculée sur les hauteurs réelles, c'est
+   present() qui est devenue la pièce qui ment.
+
+   CE QUE ÇA DONNAIT, le 18/11/2026, relevé avant correction : le site proposait
+   un créneau GO de 10 h à 13 h, avec un mât de −17, −4, −12 et −44 cm. Toutes
+   les heures du créneau étaient SOUS LE FOND du marais. Le site envoyait du
+   monde sur un marais à sec, parce qu'il y avait du vent et une pleine mer dans
+   les deux heures. Trois journées sur neuf étaient dans ce cas.
+
+   LA RÈGLE AJOUTÉE N'EST PAS UN JUGEMENT, C'EST DE L'ARITHMÉTIQUE : sous le
+   fond du marais, il n'y a pas d'eau. Elle s'applique EN PLUS des règles
+   existantes, jamais à leur place : elle ne peut donc qu'enlever de fausses
+   promesses, jamais en ajouter. Un verdict ne peut que devenir plus prudent.
+
+   MAT_MIN_NAV EST LA HAUTEUR D'EAU MINIMALE, EN CENTIMÈTRES, AU-DESSUS DE
+   LAQUELLE ON CONSIDÈRE QU'ON PEUT NAVIGUER. Elle vaut 0 : le seul seuil qu'on
+   puisse poser sans l'inventer. 0 veut dire « il y a de l'eau », pas « on peut
+   y aller » : à 14 cm on ne wingfoile pas. Le vrai seuil est le point C4 du
+   backlog, qui n'est pas tranché, et il appartient à ceux qui naviguent ici, pas
+   au modèle. Le jour où il est tranché, c'est CE nombre qu'on change, et lui
+   seul.
+
+   FOND_MARAIS doit rester égal à MAT_FOND dans app.js. Les deux valent 4,32 m,
+   issus d'une seule observation du 24/10/2026, et le test des deux copies le
+   vérifie à chaque exécution. */
+export const FOND_MARAIS = 4.32;   // cote du fond, en metres
+export const MAT_MIN_NAV = 0;      // hauteur d'eau minimale, en cm (C4 non tranche)
+function assezDEau(h, d) { return cote(h, d) >= FOND_MARAIS + MAT_MIN_NAV / 100; }
+
 // Y a-t-il de l'eau à l'heure h ?
 export function present(h, d) {
+  if (!assezDEau(h, d)) return false;        // sous le fond, il n'y a rien a promettre
   if (d.water === 'plein') return true;
   if (d.water === 'renvoiSoir') return h <= 21;
   // B1 : le marais se remplit a la maree du soir, rien avant.

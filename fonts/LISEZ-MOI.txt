@@ -1,15 +1,70 @@
-Anton, version v27, sous-ensemble latin, graisse 400 (la seule utilisee).
-Licence SIL Open Font License 1.1, voir OFL.txt : la redistribution est
-autorisee, la licence doit accompagner le fichier.
-Origine : paquet npm @fontsource/anton 5.3.0, qui redistribue les fichiers
-officiels du projet Google Fonts.
+DEUX POLICES, TOUTES DEUX SOUS LICENCE SIL OPEN FONT LICENSE 1.1.
+Le texte de la licence est dans OFL.txt, avec les deux mentions de copyright.
+La redistribution est autorisee, la licence doit accompagner les fichiers.
 
-Pourquoi ce fichier est ici : avant le 22/09/2026 chaque page chargeait
-fonts.googleapis.com, donc l'adresse IP de chaque visiteur partait chez
-Google aux Etats-Unis, sans consentement. C'etait le seul tiers vraiment
-genant du site, et les mentions legales le disaient. Point E16 du backlog.
+Ces fichiers ne partent PAS en ligne : build.mjs recopie explicitement, par une
+liste en dur, les seuls .woff2 et OFL.txt. Ce fichier-ci reste dans le depot.
 
-La police n'est utilisee que par .brand, le titre << La Ch'noue >> de la
-banniere. Le sous-ensemble latin suffit : ce titre est le meme dans les
-huit langues. Si un jour Anton sert a autre chose qu'a ce titre, verifier
-qu'il ne manque pas de caracteres (latin-ext, vietnamien).
+----------------------------------------------------------------------
+titan-one-latin-400.woff2   Titan One, version 1.001, sous-ensemble latin
+                            10 752 o
+----------------------------------------------------------------------
+Graisse 400, la seule qui existe. Utilisee uniquement par .brand, le titre
+<< La Ch'noue >> de la banniere.
+
+Posee le 14/11/2026, en remplacement d'Anton, a la demande d'Antoine qui
+voulait un titre plus << surf >>. Anton etait une grotesque etroite et grasse ;
+Titan One est une grasse arrondie. Le changement se voit, ce qui etait le but :
+Barlow Condensed 800, proposee d'abord, donnait un titre large de 143 px la ou
+Anton en faisait 142. Un pixel.
+
+Elle ALLEGE le site : 10 752 o contre 18 612 o, soit 7,8 ko de moins par page.
+
+Le sous-ensemble latin suffit : le titre est le meme dans les huit langues, et
+les accents du francais, de l'allemand, du neerlandais, de l'espagnol, de
+l'italien et du breton sont tous dans U+0000-00FF. Verifie caractere par
+caractere avant la pose. Si un jour Titan One sert a autre chose qu'a ce titre,
+revoir la couverture (latin-ext, vietnamien).
+
+----------------------------------------------------------------------
+inter-tight-latin-600-700.woff2   Inter Tight, version 3.004, latin
+                                  44 872 o
+----------------------------------------------------------------------
+UN SEUL fichier pour les graisses 600 ET 700 : Google sert pour cette famille
+un fichier VARIABLE qui couvre tout l'intervalle.
+
+Posee le 14/11/2026. Elle porte les chiffres, dates, onglets, pastilles de vent,
+badges et le creneau GO, avec font-variant-numeric: tabular-nums, pour que les
+colonnes de chiffres cessent de bouger d'une ligne a l'autre.
+
+LA COLONNE DES ETOILES EN EST EXCLUE, ET CE N'EST PAS UN OUBLI : le caractere
+etoile n'existe pas dans le sous-ensemble latin. Lui appliquer cette famille le
+ferait basculer sur une police de repli et changer de taille au milieu du
+tableau. Idem pour le triangle d'alerte.
+
+Le CHINOIS n'est pas couvert : sur /zh/ les onglets et les badges tombent sur la
+police systeme. Les chiffres restent en caracteres latins, donc les colonnes
+restent alignees. C'est assume.
+
+----------------------------------------------------------------------
+POURQUOI CES FICHIERS SONT ICI ET PAS CHEZ GOOGLE
+----------------------------------------------------------------------
+Avant le 22/09/2026 chaque page chargeait fonts.googleapis.com, donc l'adresse
+IP de chaque visiteur partait chez Google aux Etats-Unis, sans consentement.
+C'etait le seul tiers vraiment genant du site, et les mentions legales le
+disaient. Point E16 du backlog. Les deux polices sont desormais servies depuis
+le depot, et aucune requete ne sort du site.
+
+Les deux sont prechargees dans build.mjs, et pour une raison precise : elles
+servent le titre et le tableau, qui sont au-dessus de la ligne de flottaison.
+Sans prechargement, font-display:swap affiche d'abord la police systeme puis
+bascule, et tout bouge sous les yeux du visiteur.
+
+----------------------------------------------------------------------
+HISTORIQUE
+----------------------------------------------------------------------
+22/09/2026  Anton rapatriee depuis Google Fonts dans le depot (point E16).
+14/11/2026  Inter Tight posee sur les chiffres et les etiquettes.
+14/11/2026  Anton remplacee par Titan One sur le titre. anton-latin-400.woff2
+            retiree du depot le meme jour : plus aucune regle CSS ne l'appelait.
+            Elle reste recuperable dans l'historique git.

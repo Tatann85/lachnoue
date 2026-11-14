@@ -52,8 +52,8 @@ function head(lang,pg,extra){ const t=T[lang]; extra=extra||{}; const title=extr
  +(extra.keywords!==false?'<meta name="keywords" content="'+t.keywords+'">\n':'')
  +'<meta name="robots" content="'+robots+'">\n<meta name="theme-color" content="#12857f">\n'
  +'<link rel="icon" type="image/svg+xml" href="'+FAV+'">\n<link rel="apple-touch-icon" href="'+FAV_TOUCH+'">\n'
- +'<link rel="preload" as="font" type="font/woff2" href="/fonts/anton-latin-400.woff2" crossorigin>\n'
- /* Inter Tight est prechargee comme Anton, et pour une raison precise : elle
+ +'<link rel="preload" as="font" type="font/woff2" href="/fonts/titan-one-latin-400.woff2" crossorigin>\n'
+ /* Inter Tight est prechargee comme le titre, et pour une raison precise : elle
     sert les onglets et le tableau, qui sont au-dessus de la ligne de
     flottaison. Sans prechargement, font-display:swap affiche d'abord la police
     systeme puis bascule, et TOUT LE TABLEAU bouge sous les yeux du visiteur,
@@ -396,7 +396,7 @@ fs.copyFileSync('./alertes.js', OUT + '/alertes.js');
 fs.mkdirSync(OUT + '/fonts', { recursive: true });
 /* Liste explicite et non une copie du dossier : LISEZ-MOI.txt n'a rien a faire
    en ligne, et une copie aveugle publierait tout ce qui traine dans fonts/. */
-for (const f of ['anton-latin-400.woff2','inter-tight-latin-600-700.woff2','OFL.txt']) fs.copyFileSync('./fonts/'+f, OUT + '/fonts/' + f);
+for (const f of ['titan-one-latin-400.woff2','inter-tight-latin-600-700.woff2','OFL.txt']) fs.copyFileSync('./fonts/'+f, OUT + '/fonts/' + f);
 // sitemap multilingue
 (function(){
   const smPages = ['index','alerts','safety','rules','club','lessons','contact'];

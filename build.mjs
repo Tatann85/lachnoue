@@ -53,6 +53,12 @@ function head(lang,pg,extra){ const t=T[lang]; extra=extra||{}; const title=extr
  +'<meta name="robots" content="'+robots+'">\n<meta name="theme-color" content="#12857f">\n'
  +'<link rel="icon" type="image/svg+xml" href="'+FAV+'">\n<link rel="apple-touch-icon" href="'+FAV_TOUCH+'">\n'
  +'<link rel="preload" as="font" type="font/woff2" href="/fonts/anton-latin-400.woff2" crossorigin>\n'
+ /* Inter Tight est prechargee comme Anton, et pour une raison precise : elle
+    sert les onglets et le tableau, qui sont au-dessus de la ligne de
+    flottaison. Sans prechargement, font-display:swap affiche d'abord la police
+    systeme puis bascule, et TOUT LE TABLEAU bouge sous les yeux du visiteur,
+    d'autant que les chiffres passent en chasse fixe au meme instant. */
+ +'<link rel="preload" as="font" type="font/woff2" href="/fonts/inter-tight-latin-600-700.woff2" crossorigin>\n'
  +'<link rel="canonical" href="'+abs(lang,pg)+'">\n'+hreflangs(pg)
  +'<meta property="og:type" content="website">\n<meta property="og:locale" content="'+META[lang].ogLocale+'">\n<meta property="og:url" content="'+abs(lang,pg)+'">\n'
  +'<meta property="og:title" content="'+t.ogtitle+'">\n<meta property="og:description" content="'+desc+'">\n<meta property="og:image" content="'+ORIGIN+'/banniere.jpg">\n'
@@ -388,7 +394,9 @@ fs.copyFileSync('./alertes.js', OUT + '/alertes.js');
 // Les polices sont servies par le site : le workflow ne copie que les images,
 // c'est donc ici qu'on les recopie, comme app.js.
 fs.mkdirSync(OUT + '/fonts', { recursive: true });
-for (const f of ['anton-latin-400.woff2','OFL.txt']) fs.copyFileSync('./fonts/'+f, OUT + '/fonts/' + f);
+/* Liste explicite et non une copie du dossier : LISEZ-MOI.txt n'a rien a faire
+   en ligne, et une copie aveugle publierait tout ce qui traine dans fonts/. */
+for (const f of ['anton-latin-400.woff2','inter-tight-latin-600-700.woff2','OFL.txt']) fs.copyFileSync('./fonts/'+f, OUT + '/fonts/' + f);
 // sitemap multilingue
 (function(){
   const smPages = ['index','alerts','safety','rules','club','lessons','contact'];

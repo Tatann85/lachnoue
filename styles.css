@@ -6,6 +6,22 @@
    swap : le titre s'affiche tout de suite en sans-serif puis bascule. */
 @font-face{font-family:'Anton';font-style:normal;font-weight:400;font-display:swap;
   src:url(/fonts/anton-latin-400.woff2) format('woff2')}
+/* RELOOKING 4/5, 14/11/2026 : Inter Tight pour les chiffres et les etiquettes.
+   UN SEUL FICHIER, 44 ko, et c'est volontaire : Google sert pour cette famille
+   un fichier VARIABLE qui couvre tout l'intervalle 600 a 700. Deux fichiers
+   statiques auraient pese autant pour moins de souplesse.
+   SOUS-ENSEMBLE LATIN SEULEMENT. Il couvre le francais, l'anglais, l'allemand,
+   le neerlandais, l'espagnol, l'italien et le breton : leurs accents vivent
+   tous dans U+0000-00FF. Le CHINOIS n'est pas couvert, et c'est assume : sur
+   /zh/ les onglets et les badges tombent sur la police systeme. Les chiffres,
+   eux, restent en caracteres latins, donc les colonnes restent alignees.
+   Les symboles du site, l'etoile et le triangle d'alerte, ne sont pas dans ce
+   sous-ensemble : ils ne doivent donc JAMAIS recevoir cette famille, sinon ils
+   basculent sur une police de repli et changent de taille.
+   Servie depuis le depot, jamais depuis Google : aucune adresse IP de visiteur
+   ne part chez un tiers (point E16). Licence OFL 1.1. */
+@font-face{font-family:'Inter Tight';font-style:normal;font-weight:600 700;font-display:swap;
+  src:url(/fonts/inter-tight-latin-600-700.woff2) format('woff2')}
 :root{--bg:#f4f5f2;--card:#fff;--ink:#111917;--muted:#4e5d58;--line:#b2bdb8;--go:#157a3e;--no:#b91c1c;--star:#9e5508;--star-off:#6c7873;--water:#0e7c75;--water-d:#0b4f4a;--sand:#f4efe6;--danger-bg:#fdf2f2}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
@@ -308,3 +324,31 @@ tr.day.danger:hover td{background:#fae6e6}
 tr.day.danger.today td{background:var(--danger-bg)}
 tr.day.danger.open td{background:#f8dede}
 tr.day.danger .chev{background:var(--no)}
+
+/* ================================================================== */
+/*  RELOOKING 4/5, 14/11/2026 : LA TYPOGRAPHIE DES DONNEES            */
+/*                                                                    */
+/*  Le site affiche surtout des CHIFFRES : des noeuds, des degres,    */
+/*  des heures, des coefficients, des dates. Jusqu'ici ils etaient    */
+/*  rendus par la police systeme du visiteur, differente sur chaque   */
+/*  appareil, avec des chiffres de largeurs inegales.                 */
+/*                                                                    */
+/*  Inter Tight est posee sur ce qui porte une donnee ou une          */
+/*  etiquette : onglets, en-tetes et dates du tableau, pastilles de   */
+/*  vent, rafale, eau, creneau GO, badge DANGER, chevron de detail.   */
+/*  Le texte courant reste en police systeme : il n'y a aucune raison */
+/*  de faire telecharger une police pour lire un paragraphe.          */
+/*                                                                    */
+/*  tabular-nums aligne les chiffres en colonne d'une ligne a         */
+/*  l'autre : sans lui, un 1 est plus etroit qu'un 8 et les nombres   */
+/*  dansent d'une journee a la suivante.                              */
+/*                                                                    */
+/*  LA COLONNE DES ETOILES EN EST EXCLUE, et ce n'est pas un oubli :  */
+/*  le caractere etoile n'existe pas dans le sous-ensemble latin.     */
+/* ================================================================== */
+.tab,thead th,td.jour,.windcell,.gust,.eau,.go,.dgr,.chev,.sect,.upd{
+  font-family:'Inter Tight',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.windcell,.gust,.sect,td.jour,.go{font-variant-numeric:tabular-nums}
+td.jour{font-weight:700}
+thead th{font-weight:600;letter-spacing:.05em}
+.tab{font-weight:600}

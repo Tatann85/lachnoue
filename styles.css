@@ -216,13 +216,13 @@ svg{width:100%;height:auto;display:block}
    « n'y va pas ». Le badge remplace les etoiles dans le tableau, l'encadre
    s'affiche en tete du panneau de detail avec les chiffres en noeuds, qui se
    comprennent dans toutes les langues. */
-.dgr{display:inline-block;background:#b3261e;color:#fff;font-weight:800;
+.dgr{display:inline-block;background:var(--no);color:#fff;font-weight:800;
   font-size:11.5px;letter-spacing:.03em;padding:3px 8px;border-radius:5px;
   white-space:nowrap}
-.dgrbox{background:#fdecea;border:1px solid #b3261e;border-left-width:4px;
+.dgrbox{background:var(--danger-bg);border:1px solid var(--no);border-left-width:4px;
   border-radius:0 7px 7px 0;color:#7f1d17;font-size:12.5px;line-height:1.5;
   padding:8px 10px;margin:0 0 10px}
-.dgrbox b{color:#b3261e}
+.dgrbox b{color:var(--no)}
 @media (max-width:420px){.dgr{font-size:10.5px;padding:2px 6px}}
 
 /* E28, 23/10/2026 : onglet Securite. Cartes a pictogramme.
@@ -264,3 +264,28 @@ svg{width:100%;height:auto;display:block}
 .rfig figcaption{margin-top:8px;font-size:13.5px;line-height:1.45;color:#48535f}
 .rfig figcaption b{display:block;color:var(--ink,#16232b);font-size:15px;font-weight:800;margin-bottom:2px}
 @media (max-width:420px){.rfig{padding:9px 9px 8px}.rfig figcaption b{font-size:14.5px}}
+
+/* ================================================================== */
+/*  RELOOKING 2/5, 14/11/2026 : LA JOURNEE DANGER SE VOIT AVANT       */
+/*  D'ETRE LUE.                                                       */
+/*                                                                    */
+/*  Jusqu'ici une journee DANGER se distinguait par un seul badge     */
+/*  rouge dans la colonne des etoiles. Il fallait donc LIRE la ligne  */
+/*  pour savoir qu'il ne faut pas y aller. En balayant neuf journees  */
+/*  sur un telephone en plein soleil, c'est trop tard.                */
+/*                                                                    */
+/*  Desormais la ligne entiere porte le fond d'alerte et une barre    */
+/*  rouge de 4 px a gauche. La barre est posee en ombre interieure et */
+/*  non en bordure : une bordure decalerait le contenu de la cellule  */
+/*  et ferait sauter l'alignement des colonnes d'une ligne a l'autre. */
+/*                                                                    */
+/*  Le fond #fdf2f2 ne porte RIEN a lui seul : sa luminance est celle */
+/*  du fond de page, contraste 1,00. C'est la barre et le badge qui   */
+/*  signalent. Ne jamais alleger l'un en comptant sur l'autre.        */
+/* ================================================================== */
+tr.day.danger td{background:var(--danger-bg)}
+tr.day.danger td:first-child{box-shadow:inset 4px 0 0 var(--no)}
+tr.day.danger:hover td{background:#fae6e6}
+tr.day.danger.today td{background:var(--danger-bg)}
+tr.day.danger.open td{background:#f8dede}
+tr.day.danger .chev{background:var(--no)}

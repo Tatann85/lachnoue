@@ -479,7 +479,7 @@ function render(){
   var eauTxt=d.water==='plein'?T.eauAllday:d.water==='renvoiSoir'?T.eauUntil:d.water==='priseSoir'?T.eauFrom:d.water==='inconnu'?(T.eauUnknown||T.eauNone):(anyWater?T.eauTide:T.eauNone);
   var goTxt=goH.length?goText(goH,pasDe(d),goBloque(d)):'—';
   var dgr=danger(d), dgrTxt=dgr?dangerTexte(d):'';
-  var tr=document.createElement('tr');tr.className='day'+(d.today?' today':'');
+  var tr=document.createElement('tr');tr.className='day'+(d.today?' today':'')+(dgr?' danger':'');
   tr.innerHTML='<td class="jour">'+trDay(d.d)+(d.today?'<small>'+T.today+'</small>':i===1?'<small>'+T.tomorrow+'</small>':'')+'<span class="wx">'+wx((d.wind.find(function(w){return w[0]===13;})||[])[5]||d.wxc)+' '+d.tmin+'–'+d.tmax+' °C</span><span class="chev">'+T.details+'</span></td>'
    /* A11 : sur une journee DANGER, la colonne des etoiles porte le panneau et
       non une note. Une etoile reste une note de qualite, et il n'y a rien a

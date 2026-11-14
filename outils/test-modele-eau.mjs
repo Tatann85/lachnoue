@@ -192,7 +192,7 @@ if (i0 < 0 || i1 < 0 || i1 <= i0) {
 } else {
   const bloc = APP.slice(i0, i1);
   /* HS et FILL sont declares en tete d app.js ; on les redonne a l identique. */
-  nav = new Function('HS', 'FILL', bloc + '\nreturn { present: present, cote: cote };')(
+  nav = new Function('HS', 'FILLG', bloc + '\nreturn { present: present, cote: cote };')(
     [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21], 5.2);
   /* HEURES NON RONDES. Le graphique echantillonne toutes les 5 minutes depuis
      le 14/11/2026 : si les deux copies ne s'accordaient qu'aux heures rondes,
@@ -203,17 +203,24 @@ if (i0 < 0 || i1 < 0 || i1 <= i0) {
   /* Sans ext, la comparaison ne testait que le repli : les deux copies
      pouvaient diverger sur la sinusoide sans que rien ne crie. */
   const EXTS = [null, EXT_24_10, [[6, 4.4], [12.3, 2.1], [18.6, 4.6]], [[8, 5]], []];
+  /* LA COTE RETENUE DU JOUR DOIT ETRE DIFFERENTE DU REPLI GLOBAL (5,20 m).
+     Tant que les deux cas de test valaient 5,20, une copie pouvait se servir du
+     global et l'autre du champ du jour sans qu'aucun ecart n'apparaisse. C'est
+     exactement le defaut trouve le 14/11/2026 sur la journee du 21/11. */
+  const FILLS = [5.2, 4.89, 5.0, null];
   let cas = 0, ecarts = [];
   for (const water of ETATS) {
     for (const tides of MAREES) {
       for (const ext of EXTS) {
-      const d = { water, tides, ext, fill: 5.2 };
+      for (const fll of FILLS) {
+      const d = { water, tides, ext, fill: fll };
       for (const h of HSF) {
         cas++;
         const ps = present(h, d), pa = nav.present(h, d);
         if (ps !== pa) ecarts.push('present ' + water + ' t=' + JSON.stringify(tides) + ' h=' + h + ' : serveur ' + ps + ', navigateur ' + pa);
         const cs = +cote(h, d).toFixed(6), ca = +nav.cote(h, d).toFixed(6);
-        if (cs !== ca) ecarts.push('cote ' + water + ' t=' + JSON.stringify(tides) + ' ext=' + JSON.stringify(ext) + ' h=' + h + ' : serveur ' + cs + ', navigateur ' + ca);
+        if (cs !== ca) ecarts.push('cote ' + water + ' t=' + JSON.stringify(tides) + ' ext=' + JSON.stringify(ext) + ' fill=' + fll + ' h=' + h + ' : serveur ' + cs + ', navigateur ' + ca);
+      }
       }
       }
     }

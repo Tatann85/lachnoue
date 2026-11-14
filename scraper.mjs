@@ -222,6 +222,8 @@ function premiereMareeSoir(d) {
    REPLI. Sans liste d'extrêmes (vieux data.json, cas de test), on retombe sur
    l'ancienne droite. Ne pas la supprimer sans vérifier qu'aucun cache ne peut
    servir un fichier d'avant le 14/11/2026. */
+const PRISE_AVANT = 1.75;    // ouverture d'une prise, en heures avant la PM (note ASMG)
+const PRISE_APRES = 0.5;     // fermeture, 15 a 45 mn apres la PM : on prend le milieu
 const PENTE_VAV = 0.55;      // ancienne pente, m/h, conservee pour le repli
 const PLANCHER_VAV = 0.80;   // ancien plancher, m, idem
 /* Les extrêmes de marée qui encadrent une journée, en heures décimales, triés.
@@ -275,7 +277,38 @@ export function niveauMer(h, ext) {
 export function cote(h, d) {
   const FILL = d.fill != null ? d.fill : COTE_ETE;
   if (d.water === 'plein') return FILL;
-  if (d.water === 'priseSoir') { const t = premiereMareeSoir(d); return (t != null && h >= t) ? FILL : 1; }
+  /* UNE PRISE N'EST PAS UN INTERRUPTEUR. Corrige le 14/11/2026.
+     Avant : 1 m, puis saut instantane a la cote pleine a l'heure de la pleine
+     mer. Un escalier. Or une prise, c'est une PORTE QU'ON OUVRE pendant que la
+     mer monte : le marais se remplit en suivant la mer, donc en suivant la
+     sinusoide, puis la porte se referme et le niveau est RETENU.
+     La fenetre vient de la note de l'ASMG sur sa propre page : << lors des
+     prises, les ecluses sont ouvertes en moyenne 1h45 avant la PM et fermees
+     15 a 45 mn apres, mais tout depend des niveaux >>. On prend 1h45 avant et
+     30 mn apres, milieu de la fourchette annoncee.
+     CE QUE CE MODELE SUPPOSE, et il faut le savoir : porte ouverte, le marais
+     s'egalise INSTANTANEMENT avec la mer. C'est une borne haute. Un marais met
+     du temps a se remplir, donc pendant la fenetre le vrai niveau est quelque
+     part entre le niveau d'avant et la mer. Le niveau RETENU a la fin, lui,
+     n'est pas affecte : la mer est a son maximum a la pleine mer, qui tombe
+     dans la fenetre, donc le marais finit bien a la hauteur de cette pleine
+     mer, plafonnee par la cote de retenue. C'est la version prudente de
+     l'incertitude : elle porte sur le remplissage, pas sur le resultat. */
+  if (d.water === 'priseSoir') {
+    const t = premiereMareeSoir(d);
+    if (t == null) return 1;
+    const z = niveauMer(h, d.ext);
+    if (z == null) return h >= t ? FILL : 1;            // repli : ancien escalier
+    if (h < t - PRISE_AVANT) return 1;                  // porte fermee, marais bas
+    /* PORTE OUVERTE : le marais prend, il ne rend pas. On echantillonne la mer
+       a min(h, t) et non a h : la mer est a son maximum a la pleine mer, donc
+       apres t cela revient a tenir le plus haut niveau atteint. Sans ce
+       plafonnement, le modele faisait REDESCENDRE le marais avec la mer entre
+       la pleine mer et la fermeture de la porte, ce qui dessinait un petit
+       decroche sur la courbe et contredisait ce qu'on a observe le 24/10. */
+    if (h <= t + PRISE_APRES) return Math.max(1, Math.min(FILL, niveauMer(Math.min(h, t), d.ext)));
+    return FILL;                                        // porte refermee, niveau retenu
+  }
   if (d.water === 'renvoiSoir') return h <= 20 ? FILL : Math.max(2.6, FILL - 0.85 * (h - 20));
   if (d.water === 'vav') {
     const z = niveauMer(h, d.ext);

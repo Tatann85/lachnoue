@@ -2,7 +2,7 @@
    Lit window.T (traductions de la langue) et window.LANG. */
 (function(){
 var T=window.T||{}, LANG=window.LANG||'fr';
-var HS=[7,8,9,10,11,12,13,14,15,16,17,18,19,20,21], FILL=5.2;
+var HS=[7,8,9,10,11,12,13,14,15,16,17,18,19,20,21], FILLG=5.2;
 /* ---------------------------------------------------------------------------
    SEUILS DU SITE — un seul endroit a modifier, et chacun est justifie.
 
@@ -263,6 +263,8 @@ function mareeSoir(d){
    verifie. Le raisonnement complet est dans scraper.mjs, au-dessus de present().
    MAT_MIN_NAV vaut 0 : c'est le seul seuil qu'on puisse poser sans l'inventer.
    Le vrai seuil de navigabilite est le point C4, non tranche. */
+var PRISE_AVANT = 1.75;
+var PRISE_APRES = 0.5;
 var FOND_MARAIS = 4.32;
 var MAT_MIN_NAV = 0;
 function assezDEau(h,d){ return cote(h,d) >= FOND_MARAIS + MAT_MIN_NAV/100; }
@@ -293,10 +295,36 @@ function niveauMer(h,ext){
     }
   }
   return null;}
+/* LA COTE RETENUE EST CELLE DU JOUR, PAS 5,20 M. Corrige le 14/11/2026.
+   cote() se servait du FILL GLOBAL declare en tete de fichier, alors que
+   data.json porte depuis longtemps la cote retenue de chaque journee (champ
+   fill), calculee sur la hauteur reelle de la pleine mer qui a servi a la
+   prise. Le graphique le savait deja (var fillJ plus bas) ; cote() non.
+   POURQUOI PERSONNE NE L'AVAIT VU. Aux heures rondes, cote() lit lvl[] et
+   sort avant d'atteindre la formule : le defaut dormait. La courbe ne
+   s'echantillonnait qu'aux heures rondes, donc elle ne touchait jamais la
+   formule. Depuis qu'elle est tracee toutes les 5 minutes, le 21/11/2026
+   montrait un mur vertical a 14 h 30 et un palier a 88 cm, alors que la cote
+   retenue du jour vaut 4,89 m, soit 57 cm.
+   Le repli valait donc 5,20 m pour TOUTE journee de retenue servie depuis un
+   data.json ancien ou incomplet : une sur-estimation silencieuse de 31 cm ce
+   jour-la. FILL ne sert plus que de dernier repli. */
 function cote(h,d){
+  var FILL = d.fill!=null ? d.fill : FILLG;
   if(d.lvl){var i=lvlIdx(h,d);if(i>=0&&d.lvl[i]!=null)return d.lvl[i];}
   if(d.water==='plein')return FILL;
-  if(d.water==='priseSoir'){var t=mareeSoir(d);return (t!==null&&h>=t)?FILL:1;}
+  /* UNE PRISE N'EST PAS UN INTERRUPTEUR, 14/11/2026. Copie exacte de la regle
+     de scraper.mjs, ou se trouve le raisonnement complet. */
+  if(d.water==='priseSoir'){
+    var t=mareeSoir(d);
+    if(t===null)return 1;
+    var zp=niveauMer(h,d.ext);
+    if(zp===null)return h>=t?FILL:1;
+    if(h<t-PRISE_AVANT)return 1;
+    /* Porte ouverte, le marais prend et ne rend pas : on echantillonne la mer
+       a min(h,t). Raisonnement complet dans scraper.mjs. */
+    if(h<=t+PRISE_APRES)return Math.max(1,Math.min(FILL,niveauMer(Math.min(h,t),d.ext)));
+    return FILL;}
   if(d.water==='renvoiSoir')return h<=20?FILL:Math.max(2.6,FILL-0.85*(h-20));
   if(d.water==='vav'){
     var z=niveauMer(h,d.ext);
@@ -383,7 +411,7 @@ function daySVG(d){
     s+='<line x1="'+xL+'" y1="'+y.toFixed(1)+'" x2="'+xR+'" y2="'+y.toFixed(1)+'" stroke="#9aa3ac" stroke-width="1" stroke-dasharray="2 3"/><text x="'+(xR-2)+'" y="'+(y+10).toFixed(1)+'" text-anchor="end" font-size="9" fill="#9aa3ac">'+String(T.svMat||'{n}').replace('{n}',mm)+'</text>';});
   /* C10 : la ligne de reference suit la cote de la saison, portee par data.json
      (champ fill). FILL ne sert plus que de repli pour un ancien data.json. */
-  var fillJ = d.fill!=null ? d.fill : FILL;
+  var fillJ = d.fill!=null ? d.fill : FILLG;
   /* C4 — LE MAT CONSEILLE DU JOUR EST LE MAXIMUM DE LA COURBE, PAS LA COTE DE
      REMPLISSAGE, et la difference n'est pas cosmetique. Vu a l'image le
      24/10/2026 sur une journee de va-et-vient : la courbe culminait a 57 cm a

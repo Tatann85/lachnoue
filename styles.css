@@ -49,10 +49,29 @@ body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 -apple-system,
 }
 
 /* --- Onglets (pilules) --- */
-.tabs{display:flex;gap:8px;max-width:980px;margin:0 auto;padding:14px 14px 0;flex-wrap:wrap}
-.tab{flex:1;min-width:140px;text-align:center;text-decoration:none;font-weight:600;font-size:14.5px;color:var(--water);background:#eaf3f1;border:0;border-radius:12px;padding:14px 14px;transition:transform .08s,box-shadow .1s,background .1s,color .1s}
+/* RELOOKING 3/5, 14/11/2026 : LA NAVIGATION RENDAIT LA PAGE ILLISIBLE
+   AU PREMIER ECRAN.
+   Mesure avant : sept onglets a min-width 140 px plus 28 px de marge, donc
+   DEUX par rangee sur un telephone de 390 px, soit QUATRE rangees et environ
+   240 px. Ajoutes aux 230 px de bandeau, le tableau des neuf jours commencait
+   sous la ligne de flottaison : le produit du site n'etait pas visible en
+   arrivant.
+   Apres : une seule rangee de pilules qui defile horizontalement, environ
+   44 px. Le tableau remonte de 200 px et apparait immediatement.
+   LE PRIX A PAYER, ET IL EST REEL : sur telephone, trois onglets sur sept
+   sortent de l'ecran et demandent un glissement du doigt. On laisse donc
+   toujours une pilule coupee au bord droit, qui est le seul indice honnete
+   qu'il y a une suite. */
+.tabs{display:flex;gap:8px;max-width:980px;margin:0 auto;padding:14px 14px 0;
+  flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.tabs::-webkit-scrollbar{display:none}
+/* Au-dela de 760 px la hauteur n'est plus la ressource rare, et un onglet
+   coupe au bord droit sur un grand ecran ne se justifie pas : la rangee se
+   replie et les sept restent visibles. */
+@media(min-width:760px){.tabs{flex-wrap:wrap}}
+.tab{flex:0 0 auto;text-align:center;text-decoration:none;font-weight:600;font-size:14px;color:var(--water);background:#eaf3f1;border:0;border-radius:999px;padding:10px 16px;white-space:nowrap;transition:transform .08s,box-shadow .1s,background .1s,color .1s}
 .tab:hover{transform:translateY(-1px);background:#dcece9;color:var(--water-d)}
-.tab.active{background:var(--water);color:#fff;box-shadow:0 4px 14px rgba(18,133,127,.32)}
+.tab.active{background:var(--water);color:#fff;box-shadow:0 3px 10px rgba(14,124,117,.30)}
 
 .wrap{max-width:980px;margin:0 auto;padding:18px 14px 56px}
 h1{margin:12px 0 2px;font-size:21px;letter-spacing:.01em}

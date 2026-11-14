@@ -70,11 +70,16 @@ function shell(lang,pg,active,body,extra){ const t=T[lang];
   +'<a class="tab'+(active==='rules'?' active':'')+'" href="'+url(lang,'rules')+'">'+t.tabRules+'</a>'
   +'<a class="tab'+(active==='club'?' active':'')+'" href="'+url(lang,'club')+'">'+t.tabClub+'</a>'
   +'<a class="tab'+(active==='lessons'?' active':'')+'" href="'+url(lang,'lessons')+'">'+t.tabLessons+'</a>'
-  +'<a class="tab'+(active==='contact'?' active':'')+'" href="'+url(lang,'contact')+'">'+t.tabContact+'</a></nav>';
+  +'<a class="tab'+(active==='contact'?' active':'')+'" href="'+url(lang,'contact')+'">'+t.tabContact+'</a></nav>'
+  /* Relooking 3/5 : la navigation est desormais une rangee qui defile. Sur une
+     page autre que l'accueil, l'onglet actif peut etre hors de l'ecran a
+     droite. Ces trois lignes l'amenent au centre. block:"nearest" garantit que
+     le defilement VERTICAL de la page n'est pas touche. */
+  +'<script>(function(){var a=document.querySelector(".tab.active");if(a&&a.scrollIntoView)try{a.scrollIntoView({block:"nearest",inline:"center"})}catch(e){}})();<\/script>';
  const banner='<div class="banner"><img src="/banniere.jpg" alt="Les Sables-d\'Olonne &mdash; La Ch\'noue" fetchpriority="high">'
   +langSwitch(lang,pg)
   +'<div class="banner-cap"><p class="eyebrow">Les Sables-d\'Olonne &middot; Vend&eacute;e</p><span class="brand">La Ch\'noue</span></div>'
-  +'<svg class="wave" viewBox="0 0 1000 32" preserveAspectRatio="none"><path d="M0 20 C180 4 340 4 520 15 C700 27 860 20 1000 11 L1000 32 L0 32 Z" fill="#f6fbfb"></path></svg>'
+  +'<svg class="wave" viewBox="0 0 1000 32" preserveAspectRatio="none"><path d="M0 20 C180 4 340 4 520 15 C700 27 860 20 1000 11 L1000 32 L0 32 Z" fill="#f4f5f2"></path></svg>'
   +'</div>';
  return head(lang,pg,extra)+'<body>\n'+banner+'\n<div class="wrap">\n'+tabs+'\n'+body+'\n</div>\n'
   +(extra&&extra.tail?extra.tail:'')

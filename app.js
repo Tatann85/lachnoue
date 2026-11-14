@@ -161,7 +161,7 @@ function mean(a){return a.reduce(function(s,v){return s+v;},0)/a.length;}
 function wc(k){return k<8?'#eef3f6':k<12?'#cdebd6':k<16?'#83d483':k<20?'#f2df76':k<25?'#f4b657':k<30?'#ef8a4e':k<40?'#e2553f':'#a4508b';}
 function wtc(k){return k<25?'#1f2a36':'#fff';}
 function stars(n){var s='';for(var i=0;i<5;i++)s+=i<n?'★':'<span class="o">★</span>';return s;}
-function favColor(f){return f==='good'?'#0f6e56':f==='mid'?'#c9851a':'#b23b3b';}
+function favColor(f){return f==='good'?'#157a3e':f==='mid'?'#c9851a':'#b91c1c';}
 // Boussole HTML (colonne DIR.) : cadran + aiguille orientée dans le sens où va le vent.
 function compassHTML(deg,col){return '<svg viewBox="0 -8 40 46" style="width:34px;height:39px;display:inline-block;vertical-align:middle" aria-hidden="true">'
  +'<text x="20" y="-1" text-anchor="middle" font-size="8" fill="#5c716d" font-weight="700">N</text>'
@@ -343,7 +343,7 @@ function daySVG(d){
   var s='<svg viewBox="0 0 '+W+' '+H+'">';
   var goH=d.wind.filter(function(w){return isGo(w,d);}).map(function(w){return w[0];});
   goGroups(goH,pas,goBloque(d)).forEach(function(g){var a=X(g[0])-px*pas/2,b=X(g[g.length-1])+px*pas/2;
-    s+='<rect x="'+a.toFixed(1)+'" y="'+top+'" width="'+(b-a).toFixed(1)+'" height="'+(bot-top)+'" fill="rgba(15,110,86,.14)"/><text x="'+((a+b)/2).toFixed(1)+'" y="'+(top+12)+'" text-anchor="middle" font-size="10" font-weight="700" fill="#0f6e56">GO</text>';});
+    s+='<rect x="'+a.toFixed(1)+'" y="'+top+'" width="'+(b-a).toFixed(1)+'" height="'+(bot-top)+'" fill="rgba(21,122,62,.14)"/><text x="'+((a+b)/2).toFixed(1)+'" y="'+(top+12)+'" text-anchor="middle" font-size="10" font-weight="700" fill="#157a3e">GO</text>';});
   for(var m=0;m<=MAT_MAX;m+=30){var y=Y(m);s+='<line x1="'+xL+'" y1="'+y.toFixed(1)+'" x2="'+xR+'" y2="'+y.toFixed(1)+'" stroke="#e7ebf0"/><text x="'+(xL-6)+'" y="'+(y+3).toFixed(1)+'" text-anchor="end" font-size="10" fill="#9aa3ac">'+m+'</text>';}
   /* C4 : les deux reperes qui parlent au pratiquant. La courbe au-dessus de la
      ligne, ce mat passe ; en dessous, il touche. Tracees avant la courbe pour
@@ -368,7 +368,7 @@ function daySVG(d){
      tombe le trait de pleine mer en fin de journee : les deux textes se
      chevauchaient les jours de maree tardive. Depuis que l'heure de pleine mer
      est donnee a la minute (B5), le cas est frequent. Libelle ancre a gauche. */
-  s+='<line x1="'+xL+'" y1="'+yF.toFixed(1)+'" x2="'+xR+'" y2="'+yF.toFixed(1)+'" stroke="#8a4b00" stroke-width="1.2" stroke-dasharray="5 4"/><text x="'+(xL+4)+'" y="'+(yF-4).toFixed(1)+'" font-size="9.5" fill="#8a4b00">'+String(T.svFill||'').replace('{c}',matConseille(matJour))+'</text>';
+  s+='<line x1="'+xL+'" y1="'+yF.toFixed(1)+'" x2="'+xR+'" y2="'+yF.toFixed(1)+'" stroke="#9e5508" stroke-width="1.2" stroke-dasharray="5 4"/><text x="'+(xL+4)+'" y="'+(yF-4).toFixed(1)+'" font-size="9.5" fill="#9e5508">'+String(T.svFill||'').replace('{c}',matConseille(matJour))+'</text>';
   /* Le libelle « maree haute » etait pose a top+22, c'est-a-dire exactement a la
      hauteur ou passe la ligne de cote de remplissage en ete (5,20 m tombe a y=33
      et le libelle a y=36) : les deux textes se chevauchaient tous les jours de la
@@ -379,7 +379,7 @@ function daySVG(d){
   var yT=Math.min(bot-6,yF+14);
   s+='<line x1="'+X(tm).toFixed(1)+'" y1="'+top+'" x2="'+X(tm).toFixed(1)+'" y2="'+bot+'" stroke="#c9851a" stroke-width="1.1" stroke-dasharray="3 3"/><text x="'+(X(tm)+3).toFixed(1)+'" y="'+yT.toFixed(1)+'" font-size="9.5" fill="#c9851a">'+T.svHigh+'</text>';
   var pts=HS.map(function(h){return X(h).toFixed(1)+','+Y(matCm(cote(h,d))).toFixed(1);}).join(' ');
-  s+='<polyline points="'+pts+'" fill="none" stroke="#12857f" stroke-width="2.6" stroke-linejoin="round"/>';
+  s+='<polyline points="'+pts+'" fill="none" stroke="#0e7c75" stroke-width="2.6" stroke-linejoin="round"/>';
   s+='<line x1="'+xL+'" y1="'+bot+'" x2="'+xR+'" y2="'+bot+'" stroke="#cfd6dd"/>';
   [7,9,11,13,15,17,19,21].forEach(function(h){s+='<text x="'+X(h).toFixed(1)+'" y="'+(bot+13)+'" text-anchor="middle" font-size="10" fill="#6b7785">'+h+':00</text>';});
   s+='<text x="'+xL+'" y="'+(top-2)+'" font-size="9.5" fill="#9aa3ac">'+T.svMarsh+'</text>';
@@ -437,7 +437,7 @@ function daySVG(d){
     if(i){ s+='<line x1="'+a.toFixed(1)+'" y1="'+yc+'" x2="'+a.toFixed(1)+'" y2="'+(yc+hc)+'" stroke="#fff" stroke-width="1"/>'
             +'<line x1="'+a.toFixed(1)+'" y1="'+yr+'" x2="'+a.toFixed(1)+'" y2="'+(yr+hc)+'" stroke="#fff" stroke-width="1"/>'; }
   });
-  if(d.partial)s+='<text x="'+((xL+xR)/2).toFixed(1)+'" y="'+(yr+hc+13)+'" text-anchor="middle" font-size="10" fill="#b23b3b">'+T.svPartial+'</text>';
+  if(d.partial)s+='<text x="'+((xL+xR)/2).toFixed(1)+'" y="'+(yr+hc+13)+'" text-anchor="middle" font-size="10" fill="#b91c1c">'+T.svPartial+'</text>';
   s+='</svg>';return s;
 }
 var tb=document.getElementById('tb');

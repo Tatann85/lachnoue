@@ -147,13 +147,105 @@ function premiereMareeSoir(d) {
   if (soir.length) return Math.min(...soir);
   return T.length ? Math.max(...T) : null;
 }
+/* ===================== LA MARÉE EST UNE SINUSOÏDE =====================
+   Posé le 14/11/2026. Avant, le niveau d'un jour de va-et-vient valait
+   FILL − 0,55 × (heures depuis la pleine mer la plus proche), planché à 0,80.
+   Deux défauts, et le second est plus grave que le premier.
+
+   LE DESSIN. Cette formule est une DROITE. Elle descend du même pas à toute
+   heure, alors qu'une marée ne bouge presque pas pendant l'heure qui encadre
+   l'étale, chute au milieu du jusant, puis s'aplatit de nouveau en bas. La
+   courbe du site était donc une dent de scie là où la mer fait une vague.
+
+   LA HAUTEUR. 0,55 m/h et le plafond de saison étaient les MÊMES pour tous les
+   jours de l'année. Autrement dit le modèle promettait 5,00 m de marais un jour
+   de coefficient 35 comme un jour de coefficient 110. Or le 15/11/2026, coef 45,
+   la mer ne monte qu'à 4,52 m : un marais nourri par cette marée-là ne peut pas
+   aller plus haut. Le modèle annonçait un mât de 68 cm là où il y en a 20.
+   C'était faux dans le sens dangereux : trop d'eau promise.
+
+   CE QUI REMPLACE. Les quatre extrêmes réels du jour, heure ET hauteur, lus
+   dans le calendrier ASMG (champs pmM/hmM, bmM/hbM, pmS/hmS, bmS/hbS, ajoutés
+   le 14/11/2026), plus l'extrême de la veille et celui du lendemain pour que
+   7 h et 21 h soient TOUJOURS encadrés. Entre deux extrêmes consécutifs :
+
+       z(h) = (z1+z2)/2 + (z1−z2)/2 × cos( π × (h−t1)/(t2−t1) )
+
+   Cette forme vaut exactement z1 en t1 et z2 en t2, et sa pente y est NULLE :
+   l'étale est plate, sans raccord anguleux. Aucun paramètre à régler, aucune
+   constante empirique : ce sont les hauteurs de la source, interpolées.
+
+   CE QUE ÇA NE FAIT PAS. present() n'est pas touché : la présence d'eau reste
+   « à moins de 2 h d'une pleine mer », donc AUCUN verdict de créneau ne bouge.
+   Et le cliquet du 24/10 (le marais monte avec la mer et garde quand elle
+   redescend) n'est pas encore là : c'est le sujet suivant. Aujourd'hui le
+   niveau redescend avec la mer, ce qui SOUS-estime l'après-midi. Erreur dans
+   le bon sens, contrairement à celle qu'on vient de corriger.
+
+   REPLI. Sans liste d'extrêmes (vieux data.json, cas de test), on retombe sur
+   l'ancienne droite. Ne pas la supprimer sans vérifier qu'aucun cache ne peut
+   servir un fichier d'avant le 14/11/2026. */
+const PENTE_VAV = 0.55;      // ancienne pente, m/h, conservee pour le repli
+const PLANCHER_VAV = 0.80;   // ancien plancher, m, idem
+/* Les extrêmes de marée qui encadrent une journée, en heures décimales, triés.
+   Chaque entrée est [heure, hauteur en mètres]. On ajoute le DERNIER extrême de
+   la veille (heure − 24) et le PREMIER du lendemain (heure + 24) : sans eux, une
+   journée dont la première basse mer tombe à 01 h et la dernière pleine mer à
+   19 h laisserait 21 h sans encadrement, et le niveau de fin de journée serait
+   plat au lieu de redescendre.
+   Une hauteur manquante disqualifie l'extrême : on préfère deux points sûrs
+   éloignés à trois points dont un inventé. */
+function jourDecale(iso, n) {
+  const t = Date.parse(iso + 'T12:00:00Z');
+  if (!Number.isFinite(t)) return null;
+  return new Date(t + n * 86400000).toISOString().slice(0, 10);
+}
+function extremesDuJour(mar) {
+  if (!mar) return [];
+  const out = [];
+  const add = (hh, z) => { const h = hhmm(hh); if (h != null && z != null && Number.isFinite(z)) out.push([h, z]); };
+  add(mar.bmM, mar.hbM); add(mar.pmM, mar.hmM);
+  add(mar.bmS, mar.hbS); add(mar.pmS, mar.hmS);
+  return out.sort((a, b) => a[0] - b[0]);
+}
+export function extremesJour(date, marees) {
+  const M = marees || {};
+  const jour = extremesDuJour(M[date]);
+  if (!jour.length) return [];
+  const veille = extremesDuJour(M[jourDecale(date, -1)]);
+  const lendemain = extremesDuJour(M[jourDecale(date, 1)]);
+  const out = jour.slice();
+  if (veille.length) out.unshift([veille[veille.length - 1][0] - 24, veille[veille.length - 1][1]]);
+  if (lendemain.length) out.push([lendemain[0][0] + 24, lendemain[0][1]]);
+  return out.map(([h, z]) => [Math.round(h * 1000) / 1000, z]);
+}
+
+export function niveauMer(h, ext) {
+  if (!Array.isArray(ext) || ext.length < 2) return null;
+  if (h <= ext[0][0]) return ext[0][1];
+  if (h >= ext[ext.length - 1][0]) return ext[ext.length - 1][1];
+  for (let i = 0; i < ext.length - 1; i++) {
+    const [t1, z1] = ext[i], [t2, z2] = ext[i + 1];
+    if (h >= t1 && h <= t2) {
+      if (t2 === t1) return z2;
+      return (z1 + z2) / 2 + ((z1 - z2) / 2) * Math.cos(Math.PI * (h - t1) / (t2 - t1));
+    }
+  }
+  return null;
+}
+
 // Cote du marais à l'heure h, en mètres.
 export function cote(h, d) {
   const FILL = d.fill != null ? d.fill : COTE_ETE;
   if (d.water === 'plein') return FILL;
   if (d.water === 'priseSoir') { const t = premiereMareeSoir(d); return (t != null && h >= t) ? FILL : 1; }
   if (d.water === 'renvoiSoir') return h <= 20 ? FILL : Math.max(2.6, FILL - 0.85 * (h - 20));
-  if (d.water === 'vav') { const e = ecartMaree(h, d); return e == null ? 1 : Math.max(0.8, FILL - 0.55 * e); }
+  if (d.water === 'vav') {
+    const z = niveauMer(h, d.ext);
+    if (z != null) return z;                 // le marais suit la mer, hauteurs reelles
+    const e = ecartMaree(h, d);              // repli : ancienne droite
+    return e == null ? 1 : Math.max(PLANCHER_VAV, FILL - PENTE_VAV * e);
+  }
   return 1;
 }
 
@@ -420,8 +512,13 @@ export function build(om, cal) {
     const tides = [pmM, pmS].map(hhmm).filter(v => v != null);
     const tideHigh = tides.length ? tides.reduce((a, b) => Math.abs(b - 14) < Math.abs(a - 14) ? b : a) : null;
     if (!tides.length && st.water === 'vav') avert.push('va-et-vient le ' + date + ' sans heure de pleine mer : journee classee incertaine');
+    /* Les extrêmes qui encadrent la journée. On prend ceux de la veille et du
+       lendemain décalés de 24 h : sans eux, 7 h ou 21 h peuvent tomber hors des
+       quatre extrêmes du jour, et l'interpolation n'aurait rien à encadrer. */
+    const ext = extremesJour(date, marees);
+    if (st.water === 'vav' && ext.length < 2) avert.push('va-et-vient le ' + date + ' sans hauteurs de marée : niveau calculé par l\'ancienne droite');
     // Le niveau est calculé ici, une fois pour toutes. Voir le bloc NIVEAU D'EAU.
-    const ref = { water: st.water, tides, tideHigh, fill: st.fill != null ? st.fill : coteSaison(date) };
+    const ref = { water: st.water, tides, tideHigh, ext, fill: st.fill != null ? st.fill : coteSaison(date) };
     const lvl = HS_LVL.map(h => Math.round(cote(h, ref) * 100) / 100);
     const nav = HS_LVL.map(h => present(h, ref) ? 1 : 0);
     return {
@@ -431,7 +528,7 @@ export function build(om, cal) {
       eclM: st.eclM, eclS: st.eclS,
       coM: mar.coM || '—', coS: mar.coS || '—',
       hmM: mar.hmM != null ? mar.hmM : null, hmS: mar.hmS != null ? mar.hmS : null,
-      pmM, pmS, water: st.water, tides, tideHigh, fill: ref.fill, wind,
+      pmM, pmS, water: st.water, tides, tideHigh, ext, fill: ref.fill, wind,
       hs: HS_LVL, lvl, nav, eau: verdictEau(ref)
     };
   });
@@ -515,6 +612,12 @@ function lisJournee(bloc) {
     if (coef != null && (coef < 20 || coef > 121)) continue; // A6 : borne de definition
     tides.push({ type: m[1].toLowerCase(), time: pad(hh) + ':' + pad(mi), hh, haut, coef });
   }
+  /* LES BASSES MERS SONT RENDUES AUSSI, depuis le 14/11/2026. Elles etaient
+     lues depuis toujours par l'expression reguliere ci-dessus (c'est meme par
+     elles qu'on retrouve le coefficient), et jetees a la ligne suivante. Sans
+     elles, la sinusoide n'a que des points hauts a relier et le niveau ne
+     redescend jamais : la courbe devient une bosse molle de 12 h au lieu de
+     deux marees. */
   // le coefficient qui cloture une paire vaut pour la pleine mer de cette paire
   const highs = [];
   for (let i = 0; i < tides.length; i++) {
@@ -524,7 +627,8 @@ function lisJournee(bloc) {
     if (coef == null && i + 1 < tides.length && tides[i + 1].type === 'basse') coef = tides[i + 1].coef;
     highs.push({ time: t.time, hh: t.hh, haut: t.haut, coef: coef != null ? coef : null });
   }
-  return highs;
+  const lows = tides.filter(t => t.type === 'basse').map(t => ({ time: t.time, hh: t.hh, haut: t.haut }));
+  return { highs, lows };
 }
 
 async function fetchMareesAuto(dates) {
@@ -544,13 +648,16 @@ async function fetchMareesAuto(dates) {
     while ((dm = dayRe.exec(txt))) {
       const day = +dm[1];
       if (day < 1 || day > 31) continue;
-      const highs = lisJournee(dm[2]);
+      const { highs, lows } = lisJournee(dm[2]);
       if (!highs.length) continue;
       const am = highs.find(x => x.hh < 12), pm = highs.find(x => x.hh >= 12);
+      const bam = lows.find(x => x.hh < 12), bpm = lows.find(x => x.hh >= 12);
       out[ym + '-' + pad(day)] = {
         coM: am && am.coef ? String(am.coef) : '—', coS: pm && pm.coef ? String(pm.coef) : '—',
         pmM: am ? am.time : '—', pmS: pm ? pm.time : '—',
-        hmM: am ? am.haut : null, hmS: pm ? pm.haut : null
+        hmM: am ? am.haut : null, hmS: pm ? pm.haut : null,
+        bmM: bam ? bam.time : null, bmS: bpm ? bpm.time : null,
+        hbM: bam ? bam.haut : null, hbS: bpm ? bpm.haut : null
       };
       count++;
     }
@@ -572,7 +679,22 @@ async function main() {
   let repli = null;
   try {
     const auto = await fetchMareesAuto(om.daily.time);
-    marees = { ...marees, ...auto };
+    /* FUSION CHAMP PAR CHAMP, 14/11/2026. Avant, la journée venue de Météo
+       Consult REMPLAÇAIT entièrement celle du calendrier ASMG. Tant que les deux
+       portaient les mêmes champs, c'était sans effet. Depuis que le calendrier
+       porte aussi les basses mers, un remplacement en bloc les effaçait : la
+       sinusoïde se retrouvait avec deux pleines mers à relier et rien entre
+       elles, donc une bosse molle de douze heures au lieu de deux marées.
+       Désormais la source auto gagne CHAMP PAR CHAMP, et seulement là où elle a
+       quelque chose à dire. Ce qu'elle ignore reste au calendrier. */
+    const fusion = { ...marees };
+    for (const [jour, v] of Object.entries(auto)) {
+      const base = fusion[jour] || {};
+      const neuf = { ...base };
+      for (const [k, val] of Object.entries(v)) if (val != null && val !== '—') neuf[k] = val;
+      fusion[jour] = neuf;
+    }
+    marees = fusion;
     console.log('Marées auto OK —', Object.keys(auto).length, 'jours (SHOM / Météo Consult).');
   } catch (e) {
     /* B11 — L'ÉCHEC N'EST PLUS SILENCIEUX. Avant le 23/09/2026, la récupération

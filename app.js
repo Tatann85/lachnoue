@@ -265,12 +265,34 @@ function present(h,d){
   if(d.water==='priseSoir'){var t=mareeSoir(d);return t!==null&&h>=t;}
   if(d.water==='vav'){var e=ecartM(h,d);return e!==null&&e<=2;}
   return false;}
+/* LA MARÉE EST UNE SINUSOÏDE, 14/11/2026. Copie exacte de niveauMer() de
+   scraper.mjs : les deux doivent donner le même nombre, et le test
+   outils/test-modele-eau.mjs les compare sur des centaines de cas.
+   d.ext porte les extrêmes réels du jour (heure décimale, hauteur en mètres),
+   encadrés par le dernier de la veille et le premier du lendemain. Entre deux
+   extrêmes, demi-cosinusoïde : plate à l'étale, raide au milieu du jusant.
+   Le raisonnement complet est dans scraper.mjs, au-dessus de cote(). */
+function niveauMer(h,ext){
+  if(!ext||!ext.length||ext.length<2)return null;
+  if(h<=ext[0][0])return ext[0][1];
+  if(h>=ext[ext.length-1][0])return ext[ext.length-1][1];
+  for(var i=0;i<ext.length-1;i++){
+    var t1=ext[i][0],z1=ext[i][1],t2=ext[i+1][0],z2=ext[i+1][1];
+    if(h>=t1&&h<=t2){
+      if(t2===t1)return z2;
+      return (z1+z2)/2+((z1-z2)/2)*Math.cos(Math.PI*(h-t1)/(t2-t1));
+    }
+  }
+  return null;}
 function cote(h,d){
   if(d.lvl){var i=lvlIdx(h,d);if(i>=0&&d.lvl[i]!=null)return d.lvl[i];}
   if(d.water==='plein')return FILL;
   if(d.water==='priseSoir'){var t=mareeSoir(d);return (t!==null&&h>=t)?FILL:1;}
   if(d.water==='renvoiSoir')return h<=20?FILL:Math.max(2.6,FILL-0.85*(h-20));
-  if(d.water==='vav'){var e=ecartM(h,d);return e===null?1:Math.max(0.8,FILL-0.55*e);}
+  if(d.water==='vav'){
+    var z=niveauMer(h,d.ext);
+    if(z!==null)return z;
+    var e=ecartM(h,d);return e===null?1:Math.max(0.8,FILL-0.55*e);}
   return 1;}
 /* B9 — le pas d'echantillonnage etait cable a 2 h dans le regroupement des
    creneaux GO. Avec des donnees horaires, deux heures GO separees par une heure
@@ -362,7 +384,14 @@ function daySVG(d){
      saison est un PLAFOND THEORIQUE, atteint les jours de retention et jamais
      les jours de va-et-vient. Ce qu'on affiche est donc le meilleur mat
      REELLEMENT porte dans la journee. */
-  var matJour = Math.max.apply(null, HS.map(function(h){ return matCm(cote(h,d)); }));
+  /* Echantillonnage FIN, 14/11/2026. Avant, le meilleur mat du jour etait
+     cherche sur les seules heures rondes. Avec une droite c'etait sans
+     consequence : le maximum tombe forcement sur un extreme de la liste. Avec
+     une sinusoide, la pleine mer tombe a 19 h 06 et le maximum reel passait
+     entre 19 h et 20 h. On balaie donc toutes les 5 minutes. */
+  var PAS_FIN = 1/12;
+  var matJour = -1e9;
+  for (var hf = 7; hf <= 21.0001; hf += PAS_FIN) { var c = matCm(cote(hf, d)); if (c > matJour) matJour = c; }
   var yF=Y(matJour);
   /* Le libelle de la cote de remplissage etait ancre a droite, exactement la ou
      tombe le trait de pleine mer en fin de journee : les deux textes se
@@ -378,7 +407,16 @@ function daySVG(d){
   var tm=d.tideHigh;
   var yT=Math.min(bot-6,yF+14);
   s+='<line x1="'+X(tm).toFixed(1)+'" y1="'+top+'" x2="'+X(tm).toFixed(1)+'" y2="'+bot+'" stroke="#c9851a" stroke-width="1.1" stroke-dasharray="3 3"/><text x="'+(X(tm)+3).toFixed(1)+'" y="'+yT.toFixed(1)+'" font-size="9.5" fill="#c9851a">'+T.svHigh+'</text>';
-  var pts=HS.map(function(h){return X(h).toFixed(1)+','+Y(matCm(cote(h,d))).toFixed(1);}).join(' ');
+  /* LA COURBE. Avant : 15 points, un par heure ronde, relies par des segments
+     DROITS. Meme avec un modele sinusoidal derriere, le dessin serait reste
+     anguleux : on voyait une ligne brisee, pas une vague. Desormais un point
+     toutes les 5 minutes, soit 169 points. Le trait est genere a l'ouverture de
+     la journee, dans le navigateur : il ne pese rien dans la page servie.
+     Les points passent EXACTEMENT par les valeurs horaires de lvl[], puisque
+     c'est la meme fonction qui a produit les deux. */
+  var pts=[];
+  for (var hp = 7; hp <= 21.0001; hp += PAS_FIN) pts.push(X(hp).toFixed(1)+','+Y(matCm(cote(hp,d))).toFixed(1));
+  pts = pts.join(' ');
   s+='<polyline points="'+pts+'" fill="none" stroke="#0e7c75" stroke-width="2.6" stroke-linejoin="round"/>';
   s+='<line x1="'+xL+'" y1="'+bot+'" x2="'+xR+'" y2="'+bot+'" stroke="#cfd6dd"/>';
   [7,9,11,13,15,17,19,21].forEach(function(h){s+='<text x="'+X(h).toFixed(1)+'" y="'+(bot+13)+'" text-anchor="middle" font-size="10" fill="#6b7785">'+h+':00</text>';});

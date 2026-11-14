@@ -181,14 +181,32 @@ export function demiJournees(jour, ouvrage) {
 }
 
 /* Marees de la journee au format de calendar.json : pleine mer du matin et du
-   soir, coefficient et hauteur de chacune. Les BM ne sont pas retenues, le
-   modele ne s'en sert pas. */
+   soir, coefficient et hauteur de chacune.
+
+   LES BASSES MERS SONT RETENUES DEPUIS LE 14/11/2026, et c'est le point de
+   depart des vraies sinusoides. Avant, seules les PM etaient gardees : avec
+   deux points hauts et rien entre eux, le modele ne pouvait qu'interpoler en
+   DROITE, d'ou une courbe en dents de scie. Une maree n'est pas une droite.
+   Entre une PM et la BM qui suit, le niveau suit une demi-cosinusoide : il ne
+   bouge presque pas pendant la premiere heure, chute au milieu, puis s'aplatit
+   de nouveau en bas. Avec les deux extremes encadrants, l'interpolation devient
+   exacte, sans aucun parametre a regler.
+
+   bmM / hbM et bmS / hbS : heure et hauteur des deux basses mers. Les BM n'ont
+   pas de coefficient propre dans la source, et on n'en invente pas.
+   Pour memoire, ce commentaire disait : << Les BM ne sont pas retenues, le
+   modele ne s'en sert pas >>. C'etait vrai, et c'etait le defaut. */
 export function mareesJour(jour) {
-  const pm = (a, b) => [jour.tides[a], jour.tides[b]].find(t => t && t.etat === 'PM') || null;
+  const pick = (a, b, etat) => [jour.tides[a], jour.tides[b]].find(t => t && t.etat === etat) || null;
+  const pm = (a, b) => pick(a, b, 'PM');
+  const bm = (a, b) => pick(a, b, 'BM');
   const matin = pm(0, 1), soir = pm(2, 3);
+  const bMatin = bm(0, 1), bSoir = bm(2, 3);
   const out = {};
   if (matin) { out.pmM = matin.heure; if (matin.coef) out.coM = matin.coef; if (matin.hauteur != null) out.hmM = matin.hauteur; }
   if (soir)  { out.pmS = soir.heure;  if (soir.coef)  out.coS = soir.coef;  if (soir.hauteur != null) out.hmS = soir.hauteur; }
+  if (bMatin) { out.bmM = bMatin.heure; if (bMatin.hauteur != null) out.hbM = bMatin.hauteur; }
+  if (bSoir)  { out.bmS = bSoir.heure;  if (bSoir.hauteur != null) out.hbS = bSoir.hauteur; }
   return out;
 }
 

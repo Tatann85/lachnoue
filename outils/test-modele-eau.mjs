@@ -29,7 +29,7 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { present, cote, verdictEau, coteSaison, nordOuvert, ecluseStates } from '../scraper.mjs';
+import { present, cote, verdictEau, coteSaison, nordOuvert, ecluseStates, niveauMer, extremesJour } from '../scraper.mjs';
 
 const ICI = dirname(fileURLToPath(import.meta.url));
 const RACINE = join(ICI, '..');
@@ -42,6 +42,16 @@ function t(nom, reel, attendu) {
 }
 
 /* Journee de reference : pleine mer a 7 h 30 et a 19 h 55, cote d'ete. */
+/* LES EXTRÊMES DU 24/10/2026, relevés sur la page ASMG le jour même et
+   recopiés ici tels quels. Ce sont les quatre créneaux du tableau :
+     04:00 PM 4,98 m   10:01 BM 1,46 m   16:16 PM 5,29 m   22:20 BM 1,20 m
+   Deux observations de terrain ont été faites ce jour-là, à 15h45 et 17h21,
+   et le niveau de mer correspondant avait été calculé A LA MAIN en sinusoïde
+   dans claude/Observations-terrain-Chnoue_20261024.md : 5,23 m et 4,98 m.
+   Le code doit retrouver ces deux nombres. C'est le seul test du fichier qui
+   confronte le modèle à une journée réelle plutôt qu'à un cas construit. */
+const EXT_24_10 = [[4, 4.98], [10 + 1 / 60, 1.46], [16 + 16 / 60, 5.29], [22 + 20 / 60, 1.20]];
+
 const J = { tides: [7.5, 19.92], fill: 5.2 };
 
 console.log('\nB1 - une PRISE le soir ne remplit le marais qu a la maree du soir');
@@ -127,6 +137,49 @@ t('nordOuvert sur bloc mal forme repond non',  nordOuvert({ nord: { [D]: { g: 'O
    Si l'extraction echoue, c'est que le bloc a ete deplace ou renomme : le test
    le dit et echoue, plutot que de passer en silence sur une comparaison vide.
    --------------------------------------------------------------------------- */
+console.log('\nsinusoide - la maree n est pas une droite');
+{
+  const z = h => +niveauMer(h, EXT_24_10).toFixed(2);
+  t('24/10 a 15h45 : 5,23 m comme au calcul manuel', z(15.75), 5.23);
+  t('24/10 a 17h21 : 4,98 m comme au calcul manuel', z(17 + 21 / 60), 4.98);
+  t('la pleine mer vaut exactement la hauteur du tableau', z(16 + 16 / 60), 5.29);
+  t('la basse mer aussi', z(10 + 1 / 60), 1.46);
+  /* L'ETALE EST PLATE. C'est toute la difference avec une droite : dans les six
+     minutes qui encadrent la pleine mer, le niveau ne doit pas bouger d'un cm. */
+  const pm = 16 + 16 / 60;
+  t('etale plate : rien ne bouge a +/- 6 min de la PM',
+    [z(pm - 0.1), z(pm + 0.1)], [5.29, 5.29]);
+  /* LE MILIEU DU JUSANT EST RAIDE. Entre la PM et la BM suivante, la chute a
+     mi-parcours doit etre plus forte que celle d'une droite de meme amplitude. */
+  const bm = 22 + 20 / 60, mi = (pm + bm) / 2, q = (pm + mi) / 2;
+  const pente = (niveauMer(mi - 0.25, EXT_24_10) - niveauMer(mi + 0.25, EXT_24_10)) / 0.5;
+  const penteDroite = (5.29 - 1.20) / (bm - pm);
+  t('mi-jusant plus raide qu une droite', pente > penteDroite * 1.4, true);
+  t('mi-jusant : la moitie exacte de l amplitude', +niveauMer(mi, EXT_24_10).toFixed(3), +((5.29 + 1.20) / 2).toFixed(3));
+  t('au premier quart, encore au-dessus de la droite', niveauMer(q, EXT_24_10) > 5.29 - penteDroite * (q - pm), true);
+  /* HORS LISTE, ON NE PROLONGE PAS LA COURBE : on tient la derniere valeur
+     connue. Inventer une maree avant le premier extreme serait l'erreur que
+     B6 a deja corrigee ailleurs. */
+  t('avant le premier extreme : on tient la valeur', niveauMer(1, EXT_24_10), 4.98);
+  t('apres le dernier : idem', niveauMer(23.5, EXT_24_10), 1.20);
+  t('moins de deux extremes : aucune reponse', niveauMer(12, [[4, 4.98]]), null);
+  t('liste absente : aucune reponse', niveauMer(12, null), null);
+  /* LA LISTE EST CONSTRUITE AVEC LES VOISINS. Sans l'extreme de la veille et
+     celui du lendemain, 7 h ou 21 h peuvent tomber hors encadrement. */
+  const cal = {
+    '2026-11-13': { pmM: '06:10', hmM: 4.80, bmM: '00:20', hbM: 1.90, pmS: '18:25', hmS: 4.50, bmS: '12:40', hbS: 1.88 },
+    '2026-11-14': { pmM: '06:53', hmM: 4.71, bmM: '01:01', hbM: 1.96, pmS: '19:06', hmS: 4.37, bmS: '13:25', hbS: 1.93 },
+    '2026-11-15': { pmM: '07:37', hmM: 4.52, bmM: '01:40', hbM: 2.18, pmS: '19:52', hmS: 4.17, bmS: '14:07', hbS: 2.14 }
+  };
+  const ex = extremesJour('2026-11-14', cal);
+  t('six extremes : quatre du jour plus deux voisins', ex.length, 6);
+  t('le premier vient de la veille, decale de 24 h', ex[0][0] < 0, true);
+  t('le dernier vient du lendemain', ex[5][0] > 24, true);
+  t('21 h est bien encadre', ex[0][0] < 21 && ex[5][0] > 21, true);
+  t('liste triee par heure croissante', ex.map(e => e[0]).every((v, i, a) => i === 0 || a[i - 1] < v), true);
+  t('journee absente du calendrier : liste vide', extremesJour('2026-01-01', cal), []);
+}
+
 console.log('\nLES DEUX COPIES DU MODELE DISENT-ELLES LA MEME CHOSE ?');
 
 const APP = readFileSync(join(RACINE, 'app.js'), 'utf8');
@@ -141,19 +194,27 @@ if (i0 < 0 || i1 < 0 || i1 <= i0) {
   /* HS et FILL sont declares en tete d app.js ; on les redonne a l identique. */
   nav = new Function('HS', 'FILL', bloc + '\nreturn { present: present, cote: cote };')(
     [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21], 5.2);
-  const HSF = [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];
+  /* HEURES NON RONDES. Le graphique echantillonne toutes les 5 minutes depuis
+     le 14/11/2026 : si les deux copies ne s'accordaient qu'aux heures rondes,
+     la courbe dessinee pourrait mentir entre deux points. */
+  const HSF = [7, 7.0833, 8, 9.5, 10, 11, 12, 13, 14, 15, 15.75, 16, 17, 18, 19, 19.1, 20, 21];
   const ETATS = ['plein', 'bas', 'vav', 'renvoiSoir', 'priseSoir', 'inconnu', 'PAS_UN_ETAT'];
   const MAREES = [[7.5, 19.92], [19.92], [7.5], [], [13.0, 1.2]];
+  /* Sans ext, la comparaison ne testait que le repli : les deux copies
+     pouvaient diverger sur la sinusoide sans que rien ne crie. */
+  const EXTS = [null, EXT_24_10, [[6, 4.4], [12.3, 2.1], [18.6, 4.6]], [[8, 5]], []];
   let cas = 0, ecarts = [];
   for (const water of ETATS) {
     for (const tides of MAREES) {
-      const d = { water, tides, fill: 5.2 };
+      for (const ext of EXTS) {
+      const d = { water, tides, ext, fill: 5.2 };
       for (const h of HSF) {
         cas++;
         const ps = present(h, d), pa = nav.present(h, d);
         if (ps !== pa) ecarts.push('present ' + water + ' t=' + JSON.stringify(tides) + ' h=' + h + ' : serveur ' + ps + ', navigateur ' + pa);
         const cs = +cote(h, d).toFixed(6), ca = +nav.cote(h, d).toFixed(6);
-        if (cs !== ca) ecarts.push('cote ' + water + ' t=' + JSON.stringify(tides) + ' h=' + h + ' : serveur ' + cs + ', navigateur ' + ca);
+        if (cs !== ca) ecarts.push('cote ' + water + ' t=' + JSON.stringify(tides) + ' ext=' + JSON.stringify(ext) + ' h=' + h + ' : serveur ' + cs + ', navigateur ' + ca);
+      }
       }
     }
   }

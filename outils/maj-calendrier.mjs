@@ -45,7 +45,7 @@ function main(jours) {
      appliquees. */
   const ecluse = {}, marees = {}, nord = {};
   const divHeure = [], divCoef = [];
-  let hAjout = 0;
+  let hAjout = 0, bAjout = 0;
   for (const j of jours) {
     const d = demiJournees(j, 'rocade');
     if (d.m != null || d.s != null) ecluse[j.date] = { m: d.m, s: d.s };
@@ -63,6 +63,15 @@ function main(jours) {
     for (const k of ['pmM', 'pmS']) if ((vieux[k] || null) !== (neuf[k] || null) && vieux[k] && vieux[k] !== '—' && neuf[k]) divHeure.push([j.date, k, vieux[k], neuf[k]]);
     for (const k of ['coM', 'coS']) if ((vieux[k] || null) !== (neuf[k] || null) && vieux[k] && vieux[k] !== '—' && neuf[k]) divCoef.push([j.date, k, vieux[k], neuf[k]]);
     for (const k of ['hmM', 'hmS']) if (vieux[k] == null && neuf[k] != null) { fusion[k] = neuf[k]; hAjout++; }
+
+    /* LES BASSES MERS, ajoutees le 14/11/2026. Meme politique que les hauteurs
+       de PM : on COMPLETE ce qui manque, on n'ecrase jamais ce qui est la. La
+       difference est qu'aucune journee ne les a encore, donc ce bloc les pose
+       toutes au premier passage. Elles servent aux vraies sinusoides : sans la
+       BM entre deux PM, le niveau ne peut qu'etre interpole en droite.
+       Une divergence d'heure de BM n'est pas signalee comme celle des PM : il
+       n'y a pas d'historique a comparer. Au prochain passage, il y en aura. */
+    for (const k of ['bmM', 'bmS', 'hbM', 'hbS']) if (vieux[k] == null && neuf[k] != null) { fusion[k] = neuf[k]; bAjout++; }
     marees[j.date] = fusion;
   }
 
@@ -107,6 +116,7 @@ function main(jours) {
   console.log('\n  MAREES');
   console.log('    jours ajoutes                 : ' + marAjout);
   console.log('    hauteurs de pleine mer posees : ' + hAjout + '   (champ nouveau, attendu par C10)');
+  console.log('    champs de basse mer poses     : ' + bAjout + '   (heure et hauteur, pour les sinusoides)');
   console.log('    divergences d\'heure NON appliquees : ' + divHeure.length);
   for (const [d, k, a, b] of divHeure) console.log('      ' + d + ' ' + k + '   nous ' + a + '   ASMG ' + b);
   console.log('    divergences de coefficient NON appliquees : ' + divCoef.length);

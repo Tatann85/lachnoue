@@ -263,6 +263,12 @@ function mareeSoir(d){
    verifie. Le raisonnement complet est dans scraper.mjs, au-dessus de present().
    MAT_MIN_NAV vaut 0 : c'est le seul seuil qu'on puisse poser sans l'inventer.
    Le vrai seuil de navigabilite est le point C4, non tranche. */
+/* CE QUE LE MARAIS PERD PORTE FERMEE, 14/11/2026. Mesure, pas hypothese : le
+   24/10 a 17h21, 65 min apres la pleine mer, la mer etait 31 cm plus bas et le
+   marais portait encore au moins 85 cm. Il ne redescend pas avec la mer. La
+   perte est bornee entre 0 et 11 cm/h SUR CETTE HEURE-LA, et rien n'est connu
+   au-dela. Raisonnement complet dans scraper.mjs. */
+var PERTE_CLIQUET = 0;
 var PRISE_AVANT = 1.75;
 var PRISE_APRES = 0.5;
 var FOND_MARAIS = 4.32;
@@ -324,7 +330,7 @@ function cote(h,d){
     /* Porte ouverte, le marais prend et ne rend pas : on echantillonne la mer
        a min(h,t). Raisonnement complet dans scraper.mjs. */
     if(h<=t+PRISE_APRES)return Math.max(1,Math.min(FILL,niveauMer(Math.min(h,t),d.ext)));
-    return FILL;}
+    return Math.max(FOND_MARAIS, FILL - PERTE_CLIQUET/100*(h-(t+PRISE_APRES)));}
   if(d.water==='renvoiSoir')return h<=20?FILL:Math.max(2.6,FILL-0.85*(h-20));
   if(d.water==='vav'){
     var z=niveauMer(h,d.ext);

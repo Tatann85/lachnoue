@@ -222,6 +222,34 @@ function premiereMareeSoir(d) {
    REPLI. Sans liste d'extrêmes (vieux data.json, cas de test), on retombe sur
    l'ancienne droite. Ne pas la supprimer sans vérifier qu'aucun cache ne peut
    servir un fichier d'avant le 14/11/2026. */
+/* ========== CE QUE LE MARAIS PERD QUAND LA PORTE EST FERMEE ==========
+   Pose le 14/11/2026, et pour une fois ce n'est pas une hypothese : c'est une
+   MESURE, tiree de l'observation n.2 du 24/10/2026.
+
+   LES FAITS. Pleine mer a 16h16 a 5,29 m. A 17h21, soit 1 h 05 plus tard, la
+   mer est redescendue a 4,98 m. Au meme instant, plusieurs pratiquants
+   naviguent en mat de 85 ET de 65 : le marais porte donc AU MOINS 85 cm, et
+   l'observation dit << vraisemblablement 90 et plus >>.
+
+   CE QUE CA DEMONTRE. Si le marais avait suivi la mer, il serait a 4,98 m,
+   soit 66 cm : le mat de 85 n'aurait pas passe. Il est passe. LE MARAIS NE
+   REDESCEND PAS AVEC LA MER, et l'ecart est d'au moins 19 cm. Ce jour-la la
+   Gachere et la Bauduere etaient toutes les deux OUVERTES : le marais tient
+   meme quand le nord communique avec la mer.
+
+   CE QUE CA BORNE. Perte maximale 5,29 - 5,17 = 12 cm en 65 minutes, soit
+   11 cm/h. Avec la lecture << 90 et plus >>, 6,5 cm/h. Et la mesure est tout
+   aussi compatible avec ZERO : rien ne prouve qu'il perde quoi que ce soit.
+
+   CE QUE CA NE DIT PAS, et c'est la limite a ne pas franchir : l'observation
+   couvre 65 MINUTES. Le site, lui, tient le niveau jusqu'a 7 heures apres la
+   fermeture. Extrapoler une borne d'une heure a sept heures serait exactement
+   le genre de saut qui a produit toutes les erreurs corrigees aujourd'hui.
+   PERTE_CLIQUET vaut donc 0 : la valeur mesuree la plus probable, et celle qui
+   ne pretend rien au-dela de ce qu'on a vu. Le jour ou quelqu'un note une
+   HEURE DE FIN DE NAVIGABILITE apres une prise, c'est CE nombre qu'on change,
+   et lui seul. C'est l'inconnue n.1 du journal d'observations. */
+const PERTE_CLIQUET = 0;     // cm/h perdus porte fermee. Mesure : entre 0 et 11, sur 65 min
 const PRISE_AVANT = 1.75;    // ouverture d'une prise, en heures avant la PM (note ASMG)
 const PRISE_APRES = 0.5;     // fermeture, 15 a 45 mn apres la PM : on prend le milieu
 const PENTE_VAV = 0.55;      // ancienne pente, m/h, conservee pour le repli
@@ -307,7 +335,10 @@ export function cote(h, d) {
        la pleine mer et la fermeture de la porte, ce qui dessinait un petit
        decroche sur la courbe et contredisait ce qu'on a observe le 24/10. */
     if (h <= t + PRISE_APRES) return Math.max(1, Math.min(FILL, niveauMer(Math.min(h, t), d.ext)));
-    return FILL;                                        // porte refermee, niveau retenu
+    /* Porte refermee : le niveau est RETENU, moins la perte eventuelle. A
+       PERTE_CLIQUET = 0 cette ligne vaut exactement FILL ; elle existe pour que
+       le jour ou la perte est mesuree, il n'y ait qu'un nombre a changer. */
+    return Math.max(FOND_MARAIS, FILL - PERTE_CLIQUET / 100 * (h - (t + PRISE_APRES)));
   }
   if (d.water === 'renvoiSoir') return h <= 20 ? FILL : Math.max(2.6, FILL - 0.85 * (h - 20));
   if (d.water === 'vav') {

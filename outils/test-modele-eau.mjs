@@ -180,6 +180,32 @@ console.log('\nsinusoide - la maree n est pas une droite');
   t('journee absente du calendrier : liste vide', extremesJour('2026-01-01', cal), []);
 }
 
+console.log('\ncliquet - le marais ne redescend pas avec la mer');
+{
+  /* OBSERVATION N.2 DU 24/10/2026, 17h21. Pleine mer a 16h16 a 5,29 m ; a
+     17h21 la mer est a 4,98 m, 31 cm plus bas, et plusieurs pratiquants
+     naviguent en mat de 85 ET de 65. Le marais porte donc au moins 85 cm.
+     Si le modele le faisait suivre la mer, il donnerait 66 cm et le 85 ne
+     passerait pas. Ce test interdit de reintroduire ce comportement. */
+  const FOND = 4.32, mat = c => Math.round((c - FOND) * 100);
+  const t2410 = 16 + 16 / 60;
+  const j = { water: 'priseSoir', tides: [4, t2410], ext: EXT_24_10, fill: 5.29 };
+  const h = 17 + 21 / 60;
+  t('la mer est bien redescendue a 4,98 m', +niveauMer(h, EXT_24_10).toFixed(2), 4.98);
+  t('le marais, lui, tient 5,29 m', +cote(h, j).toFixed(2), 5.29);
+  t('soit un mat de 97 cm, et non 66', mat(cote(h, j)), 97);
+  t('au moins 85 cm, comme observe', mat(cote(h, j)) >= 85, true);
+  t('il y a donc de l eau a 17h21', present(h, j), true);
+  /* Et pendant le remplissage, le marais SUIT la mer : a 15h45 l'observation
+     n.1 donne la mer a 5,23 m et le marais au meme niveau. */
+  t('a 15h45 le marais est au niveau de la mer', +cote(15.75, j).toFixed(2), 5.23);
+  /* Porte encore ouverte juste apres la pleine mer, le marais ne rend pas ce
+     qu il a pris : il tient le plus haut niveau atteint, il ne redescend pas. */
+  t('juste apres la PM, il ne redescend pas', +cote(t2410 + 0.25, j).toFixed(2), 5.29);
+  /* Avant l ouverture de la porte, rien n est promis. */
+  t('avant l ouverture, aucune eau promise', present(t2410 - 2, j), false);
+}
+
 console.log('\nLES DEUX COPIES DU MODELE DISENT-ELLES LA MEME CHOSE ?');
 
 const APP = readFileSync(join(RACINE, 'app.js'), 'utf8');

@@ -94,6 +94,19 @@ var NOTE_TOOMUCH  = 35; /* au-dela (kn de vent tenu) la note tombe a 1 etoile.
    incertain. Mesure sur tout le calendrier avant de basculer, l'effet est
    important les jours de va-et-vient, frequents en novembre. Voir le backlog. */
 var GO_EXIGE_CERTITUDE = false;
+/* HAUTEUR D'EAU MINIMALE POUR PROPOSER UN CRENEAU, en centimetres de mat.
+   Donnee par Antoine le 14/11/2026 : << le mini c'est 65 >>. C'est le plus
+   petit mat avec lequel on navigue ici, et c'est confirme par l'observation du
+   24/10 ou le 65 passait et le 85 touchait.
+   POURQUOI ICI ET PAS DANS present(). present() repond a << y a-t-il de
+   l'eau >>, et la colonne eau du tableau en depend. A 20 cm il Y A de l'eau :
+   dire le contraire serait faux. Ce qu'on ne peut pas faire, c'est NAVIGUER
+   dedans. Le seuil appartient donc au creneau GO, qui est une recommandation,
+   pas au constat.
+   CE QUE CA ENLEVE, releve sur les 9 jours publies : le 15/11 de 7 h a 9 h
+   (14 a 18 cm) et le 20/11 de 12 h a 15 h (12 a 31 cm). Le site proposait
+   d'aller naviguer dans 12 cm d'eau. */
+var GO_MAT_MIN = 65;
 function eauCre(h,d){ if(!d.eau) return null; return d.eau[h<=12?'m':(h<=17?'a':'s')]; }
 function isGo(w,d){
   if(w[0]<7 || w[0]>21) return false;
@@ -103,6 +116,8 @@ function isGo(w,d){
   if(danger(d)) return false;
   if(GO_EXIGE_CERTITUDE){ if(eauCre(w[0],d)!=='plein') return false; }
   else if(!present(w[0],d)) return false;
+  /* Il y a de l'eau, mais y en a-t-il ASSEZ ? Voir GO_MAT_MIN. */
+  if(matCm(cote(w[0],d)) < GO_MAT_MIN) return false;
   return w[1]>=GO_VENT_MIN && w[1]<=GO_VENT_MAX && w[2]<GO_RAFALE_MAX;
 }
 /* -----------------------------------------------------------------------------

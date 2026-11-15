@@ -243,15 +243,35 @@ function renderContact(lang){ const t=T[lang];
    Les legendes font UNE phrase : le dessin porte le sens, et moins il y a de
    texte, moins la traduction non relue par un natif est risquee (point E19,
    breton et chinois). */
+/* LES HUIT ILLUSTRATIONS, 15/11/2026. Elles remplacent les pictogrammes SVG
+   dessines a la main le 23/10/2026.
+   Le commentaire qui precedait disait l'inverse de ce qu'on fait maintenant :
+   il refusait les images pour trois raisons, et voici ou en est chacune.
+   LES DROITS : regles, et mieux qu'avant. On sait qui a produit chaque image,
+   sur quel brief et quand, ce qui n'est toujours pas le cas de banniere.jpg
+   (point F5). Quatre viennent de Gemini, quatre de Canva, toutes sur le meme
+   brief : objet unique, fond blanc pur, aucune ombre portee, palette du site.
+   LE POIDS : 94 ko pour les huit, en WebP 200 x 200 avec transparence, contre
+   3 ko pour les huit SVG. C'est le vrai cout, et il est assume. Il porte sur la
+   SEULE page Securite.
+   LA NETTETE : reglee par le 200 x 200. L'affichage monte a 96 px, donc 192 px
+   sur un ecran Retina : la source couvre.
+   CE QUE JE NE VENDS PAS : ces images sont DECORATIVES. Leur alt est vide, un
+   lecteur d'ecran les ignore, et le message de securite reste porte par le
+   texte. Elles ne rendent personne plus prudent.
+   width et height sont ecrits dans le HTML pour que la place soit reservee
+   avant le chargement : sans eux, les huit cartes sautent quand les images
+   arrivent. loading=lazy parce qu'elles sont sous la ligne de flottaison. */
+function illus(n){ return '<img src="/illus/' + n + '.webp" alt="" width="200" height="200" loading="lazy" decoding="async">'; }
 const PICTO = {
- vest:'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M17 7 L24 12 L31 7 L38 11 V40 H10 V11 Z" fill="#d7eeec" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M24 12 V40" stroke="currentColor" stroke-width="2"/><path d="M17 7 L20 18 M31 7 L28 18" stroke="currentColor" stroke-width="2"/></svg>',
- casque:'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M8 30 A16 16 0 0 1 40 30 Z" fill="#d7eeec" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M6 30 H42 V34 H6 Z" fill="#fff" stroke="currentColor" stroke-width="2"/><path d="M24 14 V30 M14 20 L20 29 M34 20 L28 29" stroke="currentColor" stroke-width="2"/></svg>',
- chausson:'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M16 6 H26 V24 L38 30 Q42 32 42 37 V41 H14 Q10 41 10 37 V12 Q10 6 16 6 Z" fill="#d7eeec" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M10 34 H42" stroke="currentColor" stroke-width="2"/></svg>',
- combi:'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M18 6 H30 L34 14 V26 L31 42 H26 L24 28 L22 42 H17 L14 26 V14 Z" fill="#d7eeec" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M24 6 V20" stroke="currentColor" stroke-width="2"/></svg>',
- leash:'<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="13" cy="13" r="6" fill="#d7eeec" stroke="currentColor" stroke-width="2"/><path d="M19 15 Q30 18 30 24 Q30 30 36 30 Q42 30 42 36 Q42 42 36 42" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="36" cy="42" r="2.5" fill="currentColor"/></svg>',
- duo:'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M6 38 L16 12 L22 38 Z" fill="#d7eeec" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M26 38 L36 18 L42 38 Z" fill="#fff" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M4 42 H44" stroke="currentColor" stroke-width="2"/></svg>',
- terre:'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M5 9 V39" stroke="currentColor" stroke-width="3"/><path d="M5 14 h6 M5 22 h6 M5 30 h6" stroke="currentColor" stroke-width="2"/><path d="M15 22 H38 M32 16 L38 22 L32 28" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 36 Q21 32 28 36 T44 36" fill="none" stroke="#9fd4d0" stroke-width="2.5"/></svg>',
- froid:'<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="18" y="6" width="8" height="24" rx="4" fill="#d7eeec" stroke="currentColor" stroke-width="2"/><circle cx="22" cy="35" r="7" fill="#d7eeec" stroke="currentColor" stroke-width="2"/><path d="M22 14 V35" stroke="currentColor" stroke-width="2"/><path d="M38 9 V21 M33 12 L43 18 M43 12 L33 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>'
+ vest:illus('secu-gilet'),
+ casque:illus('secu-casque'),
+ chausson:illus('secu-chaussons'),
+ combi:illus('secu-combinaison'),
+ leash:illus('secu-leash'),
+ duo:illus('secu-binome'),
+ terre:illus('secu-vent-terre'),
+ froid:illus('secu-froid')
 };
 function secCard(p,ti,su){ return '<div class="scard"><div class="spic">'+p+'</div><div class="sbd"><div class="st">'+ti+'</div><div class="ss">'+su+'</div></div></div>'; }
 function renderSafety(lang){ const t=T[lang];
@@ -397,6 +417,11 @@ fs.mkdirSync(OUT + '/fonts', { recursive: true });
 /* Liste explicite et non une copie du dossier : LISEZ-MOI.txt n'a rien a faire
    en ligne, et une copie aveugle publierait tout ce qui traine dans fonts/. */
 for (const f of ['titan-one-latin-400.woff2','inter-tight-latin-600-700.woff2','OFL.txt']) fs.copyFileSync('./fonts/'+f, OUT + '/fonts/' + f);
+/* Les illustrations de la page Securite. Filtre sur .webp et non liste en dur :
+   il y en a huit et elles bougeront, alors que les polices sont deux et que la
+   liste en dur y protege LISEZ-MOI.txt. */
+fs.mkdirSync(OUT + '/illus', { recursive: true });
+for (const f of fs.readdirSync('./illus').filter(x => x.endsWith('.webp'))) fs.copyFileSync('./illus/'+f, OUT + '/illus/' + f);
 // sitemap multilingue
 (function(){
   const smPages = ['index','alerts','safety','rules','club','lessons','contact'];

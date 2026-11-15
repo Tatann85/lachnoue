@@ -175,7 +175,16 @@ function avgDir(ds){var x=0,y=0;ds.forEach(function(d){x+=Math.cos(d*Math.PI/180
 function mean(a){return a.reduce(function(s,v){return s+v;},0)/a.length;}
 function wc(k){return k<8?'#eef3f6':k<12?'#cdebd6':k<16?'#83d483':k<20?'#f2df76':k<25?'#f4b657':k<30?'#ef8a4e':k<40?'#e2553f':'#a4508b';}
 function wtc(k){return k<25?'#1f2a36':'#fff';}
-function stars(n){var s='';for(var i=0;i<5;i++)s+=i<n?'★':'<span class="o">★</span>';return s;}
+/* L'ETOILE ETEINTE EST UN CONTOUR, PAS UNE ETOILE PLEINE GRISE. 15/11/2026.
+   Zero etoile s'affichait en CINQ etoiles pleines grises : d'un coup d'oeil,
+   une journee notee 0 se lisait comme une journee notee 5. C'est ce qui a fait
+   dire a Antoine que le site annoncait go un vendredi sans eau.
+   La charte du 14/11 l'avait deja tranche et je ne l'avais pas applique :
+   << retenir la version en contour : elle distingue le plein du vide par la
+   FORME et pas seulement par la couleur, ce qui sert aussi les daltoniens >>.
+   Contrastes mesures : 3,06 pour l'etoile pleine eteinte, sous le seuil de 3,0
+   sur le fond de page ; 4,59 pour le contour. */
+function stars(n){var s='';for(var i=0;i<5;i++)s+=i<n?'★':'<span class="o">☆</span>';return s;}
 function favColor(f){return f==='good'?'#157a3e':f==='mid'?'#c9851a':'#b91c1c';}
 // Boussole HTML (colonne DIR.) : cadran + aiguille orientée dans le sens où va le vent.
 function compassHTML(deg,col){return '<svg viewBox="0 -8 40 46" style="width:34px;height:39px;display:inline-block;vertical-align:middle" aria-hidden="true">'
@@ -557,14 +566,31 @@ function render(){
      comme le vent affiche en decoulent. Le chiffre affiche est donc toujours
      celui qui a fait la note. */
   var aft=d.wind.filter(function(w){return w[0]>=13&&w[0]<=21;});
-  var sail=d.wind.filter(function(w){return w[0]>=7&&w[0]<=21&&present(w[0],d);});
+  /* LA NOTE PORTE SUR LES HEURES NAVIGABLES, PAS SUR LES HEURES MOUILLEES.
+     Corrige le 15/11/2026, signale par Antoine : << tu dis go vendredi alors
+     qu'il faut 65 mini >>.
+     Le 20/11/2026, le site affichait CINQ ETOILES et AUCUN creneau sur la meme
+     ligne. La colonne go etait juste, le seuil de 65 cm venait d'etre pose ;
+     c'est la note qui etait restee en arriere. Elle se calculait sur les heures
+     ou present() trouve de l'eau, donc des 12 cm, et elle voyait un vent parfait
+     sur un marais ou l'on ne peut pas naviguer. Cinq etoiles sont lues comme un
+     feu vert, bien plus vite que la derniere colonne.
+     La regle A8 exigeait deja que << la note et le creneau ne racontent jamais
+     deux journees differentes >>. Elle n'etait plus tenue : la voici reportee
+     sur le meme seuil que le creneau.
+     ATTENTION A CE QUI N'EST PAS TOUCHE : anyWater garde son sens, << y a-t-il
+     de l'eau >>, et la colonne eau continue d'annoncer 12 cm comme de l'eau.
+     C'est voulu. Il y a de l'eau, on ne peut simplement pas naviguer dedans. */
+  var navigable=function(h){ return present(h,d) && matCm(cote(h,d))>=GO_MAT_MIN; };
+  var assezDEauPourNoter=HS.some(navigable);
+  var sail=d.wind.filter(function(w){return w[0]>=7&&w[0]<=21&&navigable(w[0]);});
   var refSet=sail.length?sail:(aft.length?aft:d.wind);
   /* A8 : la note porte sur le vent TENU, plus sur le maximum du jour. Le chiffre
      affiche dans la ligne reste celui qui fait la note, c'est la regle B8. */
   var peakK=ventTenu(refSet,pasDe(d),NOTE_TENU);
   var peakG=Math.max.apply(null,refSet.map(function(w){return w[2];}));
-  var peakW=anyWater?peakK:0;
-  var note; if(!anyWater||peakW<10)note=0; else if(peakW<11)note=1; else if(peakW<13)note=2; else if(peakW<14)note=3; else if(peakW<15)note=4; else note=5;
+  var peakW=assezDEauPourNoter?peakK:0;
+  var note; if(!assezDEauPourNoter||peakW<10)note=0; else if(peakW<11)note=1; else if(peakW<13)note=2; else if(peakW<14)note=3; else if(peakW<15)note=4; else note=5;
   /* A5 : plafond haut. Sans cela la note ne redescendait jamais et 40 kn valait 5 etoiles.
      A8 : le second plafond suit GO_VENT_MAX, pour que la note et le creneau
      ne racontent jamais deux journees differentes. */

@@ -377,18 +377,38 @@ function schemas(t){
 }
 /* Une figure, une affirmation : le dessin, puis le titre et la phrase dessous.
    L'aria-label reprend le titre, pour qui ne voit pas le dessin. */
+/* LES SIX SCHEMAS SONT DES IMAGES DEPUIS LE 15/11/2026, a la demande
+   d'Antoine. Ils etaient dessines en SVG inline ici meme depuis le 23/10.
+
+   CE QU'ON PERD, ET IL FAUT LE SAVOIR : les schemas SVG portaient des MOTS,
+   PRIORITAIRE et S'ECARTE, traduits dans les huit langues, et le vent portait
+   son nom. Une image ne peut pas porter de texte, sinon elle n'est juste que
+   sur une page sur huit. La regle n'est donc plus lue que dans la position,
+   la trajectoire et la couleur : turquoise va tout droit, anthracite
+   s'infleche. Le titre et la phrase sous l'image, eux, restent traduits.
+
+   DEUX DES SIX ONT ETE SIGNALEES COMME DOUTEUSES AVANT LA POSE, et posees
+   quand meme sur decision d'Antoine : sur tribord, les deux trajectoires
+   s'inflechissent, donc on ne voit pas qui s'ecarte ; sur baigneurs, une des
+   fleches pointe vers les baigneurs. Si quelqu'un les refait un jour, ce sont
+   ces deux-la.
+
+   L'aria-label reprend le titre, pour qui ne voit pas le dessin. alt est vide
+   parce que le titre juste en dessous dit deja la meme chose : le repeter
+   ferait lire la phrase deux fois a un lecteur d'ecran. */
+function rulImg(n){ return '<img class="rsch" src="/regles/' + n + '.webp" alt="" width="1100" height="821" loading="lazy" decoding="async">'; }
 function rulFig(sc,ti,su){
-  return '<figure class="rfig">'+sc.replace('aria-label=""','aria-label="'+ti.replace(/"/g,'&quot;')+'"')
+  return '<figure class="rfig" role="img" aria-label="'+ti.replace(/"/g,'&quot;')+'">'+sc
    +'<figcaption><b>'+ti+'</b><span>'+su+'</span></figcaption></figure>';
 }
 function renderRules(lang){ const t=T[lang]; const S=schemas(t);
  const cards='<div class="rgrid">'
-  +rulFig(S.droite,t.rulR1T,t.rulR1S)
-  +rulFig(S.sousVent,t.rulR2T,t.rulR2S)
-  +rulFig(S.hesitant,t.rulR3T,t.rulR3S)
-  +rulFig(S.vagues,t.rulR4T,t.rulR4S)
-  +rulFig(S.saut,t.rulR5T,t.rulR5S)
-  +rulFig(S.baigneurs,t.rulR6T,t.rulR6S)
+  +rulFig(rulImg('regle-1-tribord'),t.rulR1T,t.rulR1S)
+  +rulFig(rulImg('regle-2-sous-le-vent'),t.rulR2T,t.rulR2S)
+  +rulFig(rulImg('regle-3-hesitation'),t.rulR3T,t.rulR3S)
+  +rulFig(rulImg('regle-4-vagues'),t.rulR4T,t.rulR4S)
+  +rulFig(rulImg('regle-5-sauts'),t.rulR5T,t.rulR5S)
+  +rulFig(rulImg('regle-6-baigneurs'),t.rulR6T,t.rulR6S)
   +'</div>';
  const loi='<h2>'+t.rulLawH+'</h2><ul class="rlaw"><li>'+t.rulLaw1+'</li><li>'+t.rulLaw2+'</li></ul>';
  const body='<h1>'+t.rulH1+'</h1><p class="lead">'+t.rulLead+'</p>'
@@ -420,6 +440,8 @@ for (const f of ['titan-one-latin-400.woff2','inter-tight-latin-600-700.woff2','
 /* Les illustrations de la page Securite. Filtre sur .webp et non liste en dur :
    il y en a huit et elles bougeront, alors que les polices sont deux et que la
    liste en dur y protege LISEZ-MOI.txt. */
+fs.mkdirSync(OUT + '/regles', { recursive: true });
+for (const f of fs.readdirSync('./regles').filter(x => x.endsWith('.webp'))) fs.copyFileSync('./regles/'+f, OUT + '/regles/' + f);
 fs.mkdirSync(OUT + '/illus', { recursive: true });
 for (const f of fs.readdirSync('./illus').filter(x => x.endsWith('.webp'))) fs.copyFileSync('./illus/'+f, OUT + '/illus/' + f);
 // sitemap multilingue

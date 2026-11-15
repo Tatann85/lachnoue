@@ -126,6 +126,10 @@ tr.day.open .chev{background:#5b6470}
 .hint{background:#eef6f4;border:1px solid #d5e7e2;color:#1e3a36;border-radius:9px;padding:9px 12px;font-size:12.5px;margin:0 0 10px;display:flex;align-items:flex-start;gap:7px;line-height:1.4}
 /* --star-off etait declare dans la palette du 14/11 et jamais branche :
    les etoiles eteintes tournaient encore sur l ancien #d8dde3. */
+/* Les schemas de la page Regles, passes en images le 15/11/2026. Pleine
+   largeur, hauteur libre : le rapport est fixe par width/height dans le HTML,
+   ce qui reserve la place avant le chargement et evite que la page saute. */
+.rsch{display:block;width:100%;height:auto;border-radius:8px}
 .stars{color:var(--star);font-size:14px;white-space:nowrap}.stars .o{color:var(--star-off)}
 .windcell{display:inline-block;min-width:46px;border-radius:7px;padding:3px 4px;font-weight:800;font-size:13.5px}
 .gust{display:block;font-size:10.5px;color:var(--muted);font-weight:400;margin-top:2px}
